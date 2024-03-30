@@ -10,7 +10,7 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(HOST_SERVICE_TEST "Compile Test" OFF)
+option(HOST_SERVICE_TEST "Compile HostService Test" OFF)
 
 # ##############################################################################
 # 依赖
