@@ -20,6 +20,12 @@ struct Memory : public PropertyAccess<access>
         return static_cast<PropertyBase*>(this);
     }
 
+    /* 显式类型转换 */
+    explicit operator PropertyBase*()
+    {
+        return static_cast<PropertyBase*>(this);
+    }
+
     /* 地址运算符 */
     T* operator&()
     {
