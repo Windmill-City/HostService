@@ -36,8 +36,8 @@ target_link_libraries(host_service PRIVATE libcrc)
 # ##############################################################################
 # 测试
 # ##############################################################################
-if(HOST_SERVICE_TEST)
+if(BUILD_HOST_SERVICE_TEST)
   include(CTest)
   enable_testing()
   add_subdirectory(test build/test)
-endif(HOST_SERVICE_TEST)
+endif(BUILD_HOST_SERVICE_TEST)
