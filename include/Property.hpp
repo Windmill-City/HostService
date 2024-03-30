@@ -11,7 +11,7 @@ struct Property : public PropertyAccess<access>
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
-        _value       = value;
+        _value = value;
     }
 
     /* 隐式类型转换 */
