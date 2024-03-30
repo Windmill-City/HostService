@@ -58,4 +58,14 @@ enum class Command : uint8_t
      * CMD,E_ID_NOT_EXIST
      */
     GET_MEMORY,
+    /**
+     * @brief 获取属性值长度
+     *
+     * 请求: CMD,属性Id
+     * 应答:
+     * CMD,S_OK,属性长度
+     * CMD,E_NO_PERMISSION
+     * CMD,E_ID_NOT_EXIST
+     */
+    GET_SIZE,
 };

@@ -114,4 +114,10 @@ struct Property : public PropertyBase
         _assign(*(T*)p_value);
         return ErrorCode::S_OK;
     }
+
+    virtual ErrorCode get_size(uint16_t& size) override
+    {
+        size = sizeof(_value);
+        return ErrorCode::S_OK;
+    }
 };

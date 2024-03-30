@@ -256,6 +256,7 @@ bool HostServer::_check_access(const Command cmd, const PropertyBase* prop)
     ErrorCode code;
     switch (cmd)
     {
+    case Command::GET_SIZE:
     case Command::GET_MEMORY:
     case Command::GET_PROPERTY:
     {

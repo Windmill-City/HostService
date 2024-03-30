@@ -60,7 +60,7 @@ struct Struct : public PropertyBase
             return ErrorCode::E_OBJECT_SIZE_TOO_LARGE;
         }
 
-        size    = sizeof(_value);
+        size     = sizeof(_value);
         *p_value = (uint8_t*)&_value;
         return ErrorCode::S_OK;
     }
@@ -99,4 +99,10 @@ struct Struct : public PropertyBase
         *p_value = (uint8_t*)&_value + offset;
         return ErrorCode::S_OK;
     }
-};
+
+    virtual ErrorCode get_size(uint16_t& size) override
+    {
+        size = sizeof(_value);
+        return ErrorCode::S_OK;
+    }
+}

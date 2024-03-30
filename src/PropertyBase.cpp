@@ -21,3 +21,9 @@ ErrorCode PropertyBase::get_mem(const uint16_t offset, uint8_t** p_value, uint8_
     datlen = 0;
     return ErrorCode::E_NO_IMPLEMENT;
 }
+
+ErrorCode PropertyBase::get_size(uint16_t& size)
+{
+    size = 0;
+    return ErrorCode::E_NO_IMPLEMENT;
+}

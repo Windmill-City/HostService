@@ -33,7 +33,7 @@ enum class Access : uint8_t
 
 struct PropertyBase
 {
-    Access      access;
+    Access            access;
     /**
      * @brief 设置属性值
      *
@@ -68,4 +68,11 @@ struct PropertyBase
      * @return ErrorCode 错误码
      */
     virtual ErrorCode get_mem(const uint16_t offset, uint8_t** p_value, uint8_t& datlen);
+    /**
+     * @brief 获取属性长度
+     *
+     * @param size 属性长度
+     * @return ErrorCode 错误码
+     */
+    virtual ErrorCode get_size(uint16_t& size);
 };
