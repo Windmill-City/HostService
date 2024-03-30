@@ -7,17 +7,7 @@ struct Property : public PropertyBase
 {
     T _value;
 
-    Property()
-        : Property(0)
-    {
-    }
-
-    Property(T value)
-        : Property(value, Access::READ)
-    {
-    }
-
-    Property(T value, Access access)
+    Property(T value = 0, Access access = Access::READ)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 

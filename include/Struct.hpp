@@ -8,12 +8,7 @@ struct Struct : public PropertyBase
 {
     T _value;
 
-    Struct()
-        : Struct(Access::READ)
-    {
-    }
-
-    Struct(Access access)
+    Struct(Access access = Access::READ)
     {
         static_assert(std::is_class_v<T> && std::is_standard_layout_v<T>);
         this->access = access;

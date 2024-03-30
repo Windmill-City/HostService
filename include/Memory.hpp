@@ -6,12 +6,7 @@ struct Memory : public PropertyBase
 {
     T _value[len];
 
-    Memory()
-        : Memory(Access::READ)
-    {
-    }
-
-    Memory(Access access)
+    Memory(Access access = Access::READ)
     {
         this->access = access;
     }

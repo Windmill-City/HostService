@@ -19,28 +19,29 @@ struct Range : public Property<T>
         T max;
     };
 
-    RangeMode      mode = RangeMode::Hard;
+    RangeMode      mode;
     Struct<_Range> _range;
 
-    Range()
-        : Range(0, 0, 0)
-    {
-    }
-
-    Range(T value, T min, T max)
-        : Range(value, min, max, Access::READ)
-    {
-    }
-
-    Range(T value, T min, T max, Access access)
+    Range(T         value = 0,
+          T         min   = 0,
+          T         max   = 0,
+          RangeMode mode  = RangeMode::Hard,
+          Access    val   = Access::READ_WRITE,
+          Access    range = Access::READ)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
         this->_value = value;
-        this->access = access;
+
         this->min()  = min;
         this->max()  = max;
+
         this->clamp();
+
+        this->mode    = mode;
+
+        this->access  = val;
+        _range.access = range;
     }
 
     /**

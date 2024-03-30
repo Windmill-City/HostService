@@ -10,7 +10,7 @@ TEST(Range, sizeof)
 
 TEST_F(HostCS, Range_GetProperty)
 {
-    Range<float> prop{18.8f, 0.0f, 25.f, Access::READ_WRITE};
+    Range<float> prop{18.8f, 0.0f, 25.f};
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -24,7 +24,7 @@ TEST_F(HostCS, Range_GetProperty)
 
 TEST_F(HostCS, Range_SetProperty)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f, Access::READ_WRITE};
+    Range<float> prop{0.0f, 0.0f, 25.f};
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -39,7 +39,7 @@ TEST_F(HostCS, Range_SetProperty)
 
 TEST_F(HostCS, Range_SetMemory)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f, Access::READ_WRITE};
+    Range<float> prop{0.0f, 0.0f, 25.f};
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -56,7 +56,7 @@ TEST_F(HostCS, Range_SetMemory)
 
 TEST_F(HostCS, Range_GetMemory)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f, Access::READ_WRITE};
+    Range<float> prop{0.0f, 0.0f, 25.f};
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -72,7 +72,7 @@ TEST_F(HostCS, Range_GetMemory)
 
 TEST_F(HostCS, Range_GetSize)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f, Access::READ_WRITE};
+    Range<float> prop{0.0f, 0.0f, 25.f};
     server.insert(0x01, prop);
 
     RequestBuilder builder;

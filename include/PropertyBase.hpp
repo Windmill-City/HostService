@@ -33,7 +33,7 @@ enum class Access : uint8_t
 
 struct PropertyBase
 {
-    Access            access = Access::READ;
+    Access            access;
     /**
      * @brief 设置属性值
      *
