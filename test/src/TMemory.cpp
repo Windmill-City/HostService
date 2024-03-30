@@ -58,6 +58,7 @@ TEST_F(HostCS, Memory_GetMemory)
 {
     Memory<float, 1> prop{Access::READ_WRITE};
     server.insert(0x01, prop);
+    prop[0] = 18.8f;
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -66,6 +67,8 @@ TEST_F(HostCS, Memory_GetMemory)
     builder.tx(client, Command::GET_MEMORY);
 
     Poll();
+
+    EXPECT_EQ(*(float*)client._extra, 18.8f);
 }
 
 TEST_F(HostCS, Memory_GetSize)

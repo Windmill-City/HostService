@@ -17,12 +17,15 @@ TEST_F(HostCS, Struct_GetProperty)
 {
     Struct<FloatSt> prop{Access::READ_WRITE};
     server.insert(0x01, prop);
+    prop.get().val = 18.8f;
 
     RequestBuilder builder;
     builder.id(0x01);
     builder.tx(client, Command::GET_PROPERTY);
 
     Poll();
+
+    EXPECT_FLOAT_EQ(*(float*)client._extra, 18.8f);
 }
 
 TEST_F(HostCS, Struct_SetProperty)
@@ -36,6 +39,8 @@ TEST_F(HostCS, Struct_SetProperty)
     builder.tx(client, Command::SET_PROPERTY);
 
     Poll();
+
+    EXPECT_FLOAT_EQ(prop.get().val, 18.8f);
 }
 
 TEST_F(HostCS, Struct_SetMemory)
@@ -51,12 +56,15 @@ TEST_F(HostCS, Struct_SetMemory)
     builder.tx(client, Command::SET_MEMORY);
 
     Poll();
+
+    EXPECT_FLOAT_EQ(prop.get().val, 18.8f);
 }
 
 TEST_F(HostCS, Struct_GetMemory)
 {
     Struct<FloatSt> prop{Access::READ_WRITE};
     server.insert(0x01, prop);
+    prop.get().val = 18.8f;
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -65,6 +73,8 @@ TEST_F(HostCS, Struct_GetMemory)
     builder.tx(client, Command::GET_MEMORY);
 
     Poll();
+
+    EXPECT_FLOAT_EQ(*(float*)client._extra, 18.8f);
 }
 
 TEST_F(HostCS, Struct_GetSize)
