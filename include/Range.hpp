@@ -13,11 +13,15 @@ enum class RangeMode : uint8_t
 template <typename T>
 struct Range : public Property<T>
 {
+#pragma pack(1)
+
     struct _Range
     {
         T min;
         T max;
     };
+
+#pragma pack()
 
     RangeMode      mode;
     Struct<_Range> _range;
