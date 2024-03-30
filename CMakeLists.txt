@@ -10,7 +10,7 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(COMPILE_TEST "Compile Test" OFF)
+option(HOST_SERVICE_TEST "Compile Test" OFF)
 
 # ##############################################################################
 # 依赖
@@ -36,8 +36,8 @@ target_link_libraries(host_service PRIVATE libcrc)
 # ##############################################################################
 # 测试
 # ##############################################################################
-if(COMPILE_TEST)
+if(HOST_SERVICE_TEST)
   include(CTest)
   enable_testing()
   add_subdirectory(test build/test)
-endif(COMPILE_TEST)
+endif(HOST_SERVICE_TEST)
