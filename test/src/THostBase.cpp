@@ -29,7 +29,7 @@ struct HostBaseImpl : public HostBase
 
 TEST(HostBase, sizeof)
 {
-    EXPECT_EQ(sizeof(HostBase), 16);
+    EXPECT_EQ(sizeof(HostBase), 8);
 }
 
 TEST(HostBase, tx_rx)
