@@ -10,6 +10,18 @@ struct RequestBuilder
     }
 
     /**
+     * @brief 添加属性Id
+     *
+     * @param id 属性Id
+     * @return true 添加成功
+     * @return false 附加参数长度超出最大帧长限制
+     */
+    bool id(const uint16_t id)
+    {
+        return add(id);
+    }
+
+    /**
      * @brief 添加附加参数
      *
      * @tparam T 参数类型

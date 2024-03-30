@@ -8,8 +8,21 @@ struct Property : public PropertyBase
     T _value;
 
     Property()
+        : Property(0)
+    {
+    }
+
+    Property(T value)
+        : Property(value, Access::READ)
+    {
+    }
+
+    Property(T value, Access access)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
+
+        this->access = access;
+        _value       = value;
     }
 
     /* 隐式类型转换 */
