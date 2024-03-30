@@ -9,13 +9,13 @@ struct FloatSt
 
 TEST(Struct, sizeof)
 {
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
 }
 
 TEST_F(HostCS, Struct_GetProperty)
 {
-    Struct<FloatSt> prop{Access::READ_WRITE};
+    Struct<FloatSt> prop;
     server.insert(0x01, prop);
     prop.get().val = 18.8f;
 
@@ -30,7 +30,7 @@ TEST_F(HostCS, Struct_GetProperty)
 
 TEST_F(HostCS, Struct_SetProperty)
 {
-    Struct<FloatSt> prop{Access::READ_WRITE};
+    Struct<FloatSt> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -45,7 +45,7 @@ TEST_F(HostCS, Struct_SetProperty)
 
 TEST_F(HostCS, Struct_SetMemory)
 {
-    Struct<FloatSt> prop{Access::READ_WRITE};
+    Struct<FloatSt> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -62,7 +62,7 @@ TEST_F(HostCS, Struct_SetMemory)
 
 TEST_F(HostCS, Struct_GetMemory)
 {
-    Struct<FloatSt> prop{Access::READ_WRITE};
+    Struct<FloatSt> prop;
     server.insert(0x01, prop);
     prop.get().val = 18.8f;
 
@@ -79,7 +79,7 @@ TEST_F(HostCS, Struct_GetMemory)
 
 TEST_F(HostCS, Struct_GetSize)
 {
-    Struct<FloatSt> prop{Access::READ_WRITE};
+    Struct<FloatSt> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;

@@ -3,15 +3,14 @@
 #include <string.h>
 #include <type_traits>
 
-template <typename T>
-struct Struct : public PropertyBase
+template <typename T, Access access = Access::READ_WRITE>
+struct Struct : public PropertyAccess<access>
 {
     T _value;
 
-    Struct(Access access = Access::READ)
+    Struct()
     {
         static_assert(std::is_class_v<T> && std::is_standard_layout_v<T>);
-        this->access = access;
     }
 
     /* 隐式类型转换 */

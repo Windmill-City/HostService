@@ -4,7 +4,7 @@
 
 TEST_F(HostCS, Read_Read)
 {
-    Property<bool> prop{true, Access::READ};
+    Property<bool, Access::READ> prop{true};
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -18,7 +18,7 @@ TEST_F(HostCS, Read_Read)
 
 TEST_F(HostCS, Read_Read_Protect_NotPrivileged)
 {
-    Property<bool> prop{true, Access::READ_PROTECT};
+    Property<bool, Access::READ_PROTECT> prop{true};
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -33,7 +33,7 @@ TEST_F(HostCS, Read_Read_Protect_NotPrivileged)
 TEST_F(HostCS, Read_Read_Protect_Privileged)
 {
     server.privileged = true;
-    Property<bool> prop{true, Access::READ_PROTECT};
+    Property<bool, Access::READ_PROTECT> prop{true};
     server.insert(0x01, prop);
     
     RequestBuilder builder;
@@ -47,7 +47,7 @@ TEST_F(HostCS, Read_Read_Protect_Privileged)
 
 TEST_F(HostCS, Read_Read_Write_Protect_NotPrivileged)
 {
-    Property<bool> prop{true, Access::READ_WRITE_PROTECT};
+    Property<bool, Access::READ_WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
     
     RequestBuilder builder;
@@ -62,7 +62,7 @@ TEST_F(HostCS, Read_Read_Write_Protect_NotPrivileged)
 TEST_F(HostCS, Read_Read_Write_Protect_Privileged)
 {
     server.privileged = true;
-    Property<bool> prop{true, Access::READ_WRITE_PROTECT};
+    Property<bool, Access::READ_WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
     
     RequestBuilder builder;
@@ -76,7 +76,7 @@ TEST_F(HostCS, Read_Read_Write_Protect_Privileged)
 
 TEST_F(HostCS, Read_Write_Protect_NotPrivileged)
 {
-    Property<bool> prop{true, Access::WRITE_PROTECT};
+    Property<bool, Access::WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
     
     RequestBuilder builder;
@@ -91,7 +91,7 @@ TEST_F(HostCS, Read_Write_Protect_NotPrivileged)
 TEST_F(HostCS, Read_Write_Protect_Privileged)
 {
     server.privileged = true;
-    Property<bool> prop{true, Access::WRITE_PROTECT};
+    Property<bool, Access::WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
     
     RequestBuilder builder;
@@ -105,7 +105,7 @@ TEST_F(HostCS, Read_Write_Protect_Privileged)
 
 TEST_F(HostCS, Read_Read_Write)
 {
-    Property<bool> prop{true, Access::READ_WRITE};
+    Property<bool, Access::WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
     
     RequestBuilder builder;

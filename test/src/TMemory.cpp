@@ -4,13 +4,13 @@
 
 TEST(Memory, sizeof)
 {
-    EXPECT_EQ(sizeof(Memory<bool, 1>), 12);
-    EXPECT_EQ(sizeof(Memory<float, 1>), 12);
+    EXPECT_EQ(sizeof(Memory<bool, 1>), 8);
+    EXPECT_EQ(sizeof(Memory<float, 1>), 8);
 }
 
 TEST_F(HostCS, Memory_GetProperty)
 {
-    Memory<float, 1> prop{Access::READ_WRITE};
+    Memory<float, 1> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -24,7 +24,7 @@ TEST_F(HostCS, Memory_GetProperty)
 
 TEST_F(HostCS, Memory_SetProperty)
 {
-    Memory<float, 1> prop{Access::READ_WRITE};
+    Memory<float, 1> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -39,7 +39,7 @@ TEST_F(HostCS, Memory_SetProperty)
 
 TEST_F(HostCS, Memory_SetMemory)
 {
-    Memory<float, 1> prop{Access::READ_WRITE};
+    Memory<float, 1> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;
@@ -56,7 +56,7 @@ TEST_F(HostCS, Memory_SetMemory)
 
 TEST_F(HostCS, Memory_GetMemory)
 {
-    Memory<float, 1> prop{Access::READ_WRITE};
+    Memory<float, 1> prop;
     server.insert(0x01, prop);
     prop[0] = 18.8f;
 
@@ -73,7 +73,7 @@ TEST_F(HostCS, Memory_GetMemory)
 
 TEST_F(HostCS, Memory_GetSize)
 {
-    Memory<float, 1> prop{Access::READ_WRITE};
+    Memory<float, 1> prop;
     server.insert(0x01, prop);
 
     RequestBuilder builder;

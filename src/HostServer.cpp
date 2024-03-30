@@ -270,7 +270,7 @@ bool HostServer::_check_access(const Command cmd, const PropertyBase* prop)
     case Command::GET_PROPERTY:
     {
         // 检查读取权限
-        if ((code = _check_read(prop)) != ErrorCode::S_OK)
+        if ((code = prop->check_read(privileged)) != ErrorCode::S_OK)
         {
             send_response(cmd, code, NULL, 0);
             return false;
@@ -281,7 +281,7 @@ bool HostServer::_check_access(const Command cmd, const PropertyBase* prop)
     case Command::SET_PROPERTY:
     {
         // 检查写入权限
-        if ((code = _check_write(prop)) != ErrorCode::S_OK)
+        if ((code = prop->check_write(privileged)) != ErrorCode::S_OK)
         {
             send_response(cmd, code, NULL, 0);
             return false;
@@ -292,31 +292,4 @@ bool HostServer::_check_access(const Command cmd, const PropertyBase* prop)
         break;
     }
     return true;
-}
-
-/**
- * @brief 检查读权限
- *
- * @return ErrorCode 错误码
- */
-ErrorCode HostServer::_check_read(const PropertyBase* prop) const
-{
-    if (prop->access == Access::READ_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
-    if (prop->access == Access::READ_WRITE_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
-    return ErrorCode::S_OK;
-}
-
-/**
- * @brief 检查写权限
- *
- * @return ErrorCode 错误码
- */
-ErrorCode HostServer::_check_write(const PropertyBase* prop) const
-{
-    if (prop->access == Access::READ) return ErrorCode::E_READ_ONLY;
-    if (prop->access == Access::READ_PROTECT && privileged) return ErrorCode::E_READ_ONLY;
-    if (prop->access == Access::READ_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
-    if (prop->access == Access::WRITE_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
-    if (prop->access == Access::READ_WRITE_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
-    return ErrorCode::S_OK;
 }

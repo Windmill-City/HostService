@@ -10,8 +10,8 @@ enum class RangeMode : uint8_t
     Clamp, // 超出范围的数值会被截断到范围以内
 };
 
-template <typename T, RangeMode mode = RangeMode::Hard>
-struct Range : public Property<T>
+template <typename T, RangeMode mode = RangeMode::Hard, Access range = Access::READ_WRITE, Access val = Access::READ_WRITE>
+struct Range : public Property<T, val>
 {
     struct _Range
     {
@@ -19,9 +19,9 @@ struct Range : public Property<T>
         T max;
     };
 
-    Struct<_Range> _range;
+    Struct<_Range, range> _range;
 
-    Range(T value = 0, T min = 0, T max = 0, Access val = Access::READ_WRITE, Access range = Access::READ)
+    Range(T value = 0, T min = 0, T max = 0)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
@@ -31,9 +31,6 @@ struct Range : public Property<T>
         this->max()  = max;
 
         this->clamp();
-
-        this->access  = val;
-        _range.access = range;
     }
 
     /**

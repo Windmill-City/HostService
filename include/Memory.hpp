@@ -1,15 +1,10 @@
 #pragma once
 #include "PropertyBase.hpp"
 
-template <typename T, size_t len>
-struct Memory : public PropertyBase
+template <typename T, size_t len, Access access = Access::READ_WRITE>
+struct Memory : public PropertyAccess<access>
 {
     T _value[len];
-
-    Memory(Access access = Access::READ)
-    {
-        this->access = access;
-    }
 
     /* 隐式类型转换 */
     operator PropertyBase*()

@@ -31,6 +31,4 @@ struct HostServer : public HostBase
                                      uint8_t&            datlen);
     /* 权限检查 */
     bool           _check_access(const Command cmd, const PropertyBase* prop);
-    ErrorCode      _check_read(const PropertyBase* prop) const;
-    ErrorCode      _check_write(const PropertyBase* prop) const;
 };

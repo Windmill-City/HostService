@@ -33,7 +33,6 @@ enum class Access : uint8_t
 
 struct PropertyBase
 {
-    Access            access;
     /**
      * @brief 设置属性值
      *
@@ -75,4 +74,28 @@ struct PropertyBase
      * @return ErrorCode 错误码
      */
     virtual ErrorCode get_size(uint16_t& size);
+
+    virtual ErrorCode check_read(bool privileged) const  = 0;
+    virtual ErrorCode check_write(bool privileged) const = 0;
+};
+
+template <Access access>
+struct PropertyAccess : public PropertyBase
+{
+    virtual ErrorCode check_read(bool privileged) const override
+    {
+        if (access == Access::READ_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
+        if (access == Access::READ_WRITE_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
+        return ErrorCode::S_OK;
+    }
+
+    virtual ErrorCode check_write(bool privileged) const override
+    {
+        if (access == Access::READ) return ErrorCode::E_READ_ONLY;
+        if (access == Access::READ_PROTECT && privileged) return ErrorCode::E_READ_ONLY;
+        if (access == Access::READ_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
+        if (access == Access::WRITE_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
+        if (access == Access::READ_WRITE_PROTECT && !privileged) return ErrorCode::E_NO_PERMISSION;
+        return ErrorCode::S_OK;
+    }
 };

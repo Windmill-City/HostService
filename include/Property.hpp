@@ -2,16 +2,15 @@
 #include "PropertyBase.hpp"
 #include <type_traits>
 
-template <typename T>
-struct Property : public PropertyBase
+template <typename T, Access access = Access::READ_WRITE>
+struct Property : public PropertyAccess<access>
 {
     T _value;
 
-    Property(T value = 0, Access access = Access::READ)
+    Property(T value = 0)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
-        this->access = access;
         _value       = value;
     }
 

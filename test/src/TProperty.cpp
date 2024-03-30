@@ -4,8 +4,8 @@
 
 TEST(Property, sizeof)
 {
-    EXPECT_EQ(sizeof(Property<bool>), 12);
-    EXPECT_EQ(sizeof(Property<float>), 12);
+    EXPECT_EQ(sizeof(Property<bool>), 8);
+    EXPECT_EQ(sizeof(Property<float>), 8);
 }
 
 TEST_F(HostCS, Property_GetProperty)
@@ -24,8 +24,8 @@ TEST_F(HostCS, Property_GetProperty)
 
 TEST_F(HostCS, Property_SetProperty)
 {
-    Property<float> prop_float{0.0f, Access::READ_WRITE};
-    server.insert(0x01, prop_float);
+    Property<float> prop{0.0f};
+    server.insert(0x01, prop);
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -34,13 +34,13 @@ TEST_F(HostCS, Property_SetProperty)
 
     Poll();
 
-    EXPECT_EQ(prop_float, 18.8f);
+    EXPECT_EQ(prop, 18.8f);
 }
 
 TEST_F(HostCS, Property_SetMemory)
 {
-    Property<float> prop_float{0.0f, Access::READ_WRITE};
-    server.insert(0x01, prop_float);
+    Property<float> prop{0.0f};
+    server.insert(0x01, prop);
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -56,8 +56,8 @@ TEST_F(HostCS, Property_SetMemory)
 
 TEST_F(HostCS, Property_GetMemory)
 {
-    Property<float> prop_float{0.0f, Access::READ_WRITE};
-    server.insert(0x01, prop_float);
+    Property<float> prop{0.0f};
+    server.insert(0x01, prop);
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -72,8 +72,8 @@ TEST_F(HostCS, Property_GetMemory)
 
 TEST_F(HostCS, Property_GetSize)
 {
-    Property<float> prop_float{0.0f, Access::READ_WRITE};
-    server.insert(0x01, prop_float);
+    Property<float> prop{0.0f};
+    server.insert(0x01, prop);
 
     RequestBuilder builder;
     builder.id(0x01);
