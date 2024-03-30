@@ -6,6 +6,16 @@ struct Memory : public PropertyBase
 {
     T _value[len];
 
+    Memory()
+        : Memory(Access::READ)
+    {
+    }
+
+    Memory(Access access)
+    {
+        this->access = access;
+    }
+
     /* 隐式类型转换 */
     operator PropertyBase*()
     {
@@ -19,7 +29,7 @@ struct Memory : public PropertyBase
     }
 
     /* 数组运算符 */
-    T& operator[](std::size_t idx)
+    T& operator[](int idx)
     {
         return _value[idx];
     }

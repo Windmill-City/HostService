@@ -54,9 +54,8 @@ bool HostServer::poll()
         if (!_get_memory_param(cmd, prop, &extra, size, offset, datlen)) return false;
 
         uint8_t*  p;
-        uint8_t   size;
-        ErrorCode code = prop->get_mem(offset, &p, size);
-        send_response(cmd, code, p, size);
+        ErrorCode code = prop->get_mem(offset, &p, datlen);
+        send_response(cmd, code, p, datlen);
         return code == ErrorCode::S_OK;
     }
     case Command::SET_MEMORY:
