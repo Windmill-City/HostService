@@ -9,8 +9,14 @@ struct Struct : public PropertyBase
     T _value;
 
     Struct()
+        : Struct(Access::READ)
+    {
+    }
+
+    Struct(Access access)
     {
         static_assert(std::is_class_v<T> && std::is_standard_layout_v<T>);
+        this->access = access;
     }
 
     /* 隐式类型转换 */
@@ -105,4 +111,4 @@ struct Struct : public PropertyBase
         size = sizeof(_value);
         return ErrorCode::S_OK;
     }
-}
+};

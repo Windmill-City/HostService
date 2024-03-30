@@ -10,7 +10,15 @@
             "utility": "cpp",
             "set": "cpp",
             "istream": "cpp",
-            "variant": "cpp"
+            "variant": "cpp",
+            "deque": "cpp",
+            "list": "cpp",
+            "map": "cpp",
+            "unordered_map": "cpp",
+            "vector": "cpp",
+            "xhash": "cpp",
+            "xstring": "cpp",
+            "xtree": "cpp"
         }
     },
 }
