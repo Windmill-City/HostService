@@ -11,7 +11,7 @@ TEST(Memory, sizeof)
 TEST_F(HostCS, Memory_GetProperty)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop);
+    server.insert(0x01, prop.base());
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -25,7 +25,7 @@ TEST_F(HostCS, Memory_GetProperty)
 TEST_F(HostCS, Memory_SetProperty)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop);
+    server.insert(0x01, prop.base());
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -40,7 +40,7 @@ TEST_F(HostCS, Memory_SetProperty)
 TEST_F(HostCS, Memory_SetMemory)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop);
+    server.insert(0x01, prop.base());
 
     RequestBuilder builder;
     builder.id(0x01);
@@ -57,7 +57,7 @@ TEST_F(HostCS, Memory_SetMemory)
 TEST_F(HostCS, Memory_GetMemory)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop);
+    server.insert(0x01, prop.base());
     prop[0] = 18.8f;
 
     RequestBuilder builder;
@@ -74,7 +74,7 @@ TEST_F(HostCS, Memory_GetMemory)
 TEST_F(HostCS, Memory_GetSize)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop);
+    server.insert(0x01, prop.base());
 
     RequestBuilder builder;
     builder.id(0x01);

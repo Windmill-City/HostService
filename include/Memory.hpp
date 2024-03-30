@@ -1,13 +1,21 @@
 #pragma once
 #include "PropertyBase.hpp"
+#include <cstddef>
 
 template <typename T, size_t len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
-    T _value[len];
+    T             _value[len];
 
-    /* 隐式类型转换 */
-    operator PropertyBase*()
+    /**
+     * @brief 返回指向基类的指针
+     *
+     * 由于隐式转换到 PropertyBase* 会引起operator[]运算符的调用歧义
+     * 这里引入额外的方法来获取指向基类的指针
+     *
+     * @return PropertyBase* 指向基类的指针
+     */
+    PropertyBase* base()
     {
         return static_cast<PropertyBase*>(this);
     }
@@ -19,7 +27,7 @@ struct Memory : public PropertyAccess<access>
     }
 
     /* 数组运算符 */
-    T& operator[](int idx)
+    T& operator[](std::size_t idx)
     {
         return _value[idx];
     }
