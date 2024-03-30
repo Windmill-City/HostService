@@ -22,6 +22,30 @@ struct RequestBuilder
     }
 
     /**
+     * @brief 添加地址偏移
+     *
+     * @param offset 地址偏移
+     * @return true 添加成功
+     * @return false 附加参数长度超出最大帧长限制
+     */
+    bool offset(const uint16_t offset)
+    {
+        return add(offset);
+    }
+
+    /**
+     * @brief 添加数据长度
+     *
+     * @param datlen 数据长度
+     * @return true 添加成功
+     * @return false 附加参数长度超出最大帧长限制
+     */
+    bool datlen(const uint8_t datlen)
+    {
+        return add(datlen);
+    }
+
+    /**
      * @brief 添加附加参数
      *
      * @tparam T 参数类型

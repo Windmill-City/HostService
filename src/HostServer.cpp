@@ -22,7 +22,7 @@ bool HostServer::poll()
     {
         // 将收到的数据再发回去
         send_response(cmd, ErrorCode::S_OK, extra, size);
-        break;
+        return true;
     }
     case Command::GET_PROPERTY:
     {
@@ -33,7 +33,7 @@ bool HostServer::poll()
         uint8_t   size;
         ErrorCode code = prop->get(&p, size);
         send_response(cmd, code, p, size);
-        break;
+        return code == ErrorCode::S_OK;
     }
     case Command::SET_PROPERTY:
     {
@@ -57,7 +57,7 @@ bool HostServer::poll()
         uint8_t   size;
         ErrorCode code = prop->get_mem(offset, &p, size);
         send_response(cmd, code, p, size);
-        break;
+        return code == ErrorCode::S_OK;
     }
     case Command::SET_MEMORY:
     {
@@ -74,8 +74,18 @@ bool HostServer::poll()
         send_response(cmd, code, NULL, 0);
         return code == ErrorCode::S_OK;
     }
+    case Command::GET_SIZE:
+    {
+        PropertyBase* prop;
+        if (!_get_property(cmd, &extra, size, prop)) return false;
+
+        uint16_t  size;
+        ErrorCode code = prop->get_size(size);
+        send_response(cmd, code, (uint8_t*)&size, sizeof(size));
+        return code == ErrorCode::S_OK;
     }
-    return true;
+    }
+    return false;
 }
 
 /**
