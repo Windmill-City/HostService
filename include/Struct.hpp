@@ -61,7 +61,7 @@ struct Struct : public PropertyBase
         }
 
         size    = sizeof(_value);
-        p_value = &_value;
+        *p_value = (uint8_t*)&_value;
         return ErrorCode::S_OK;
     }
 
@@ -96,7 +96,7 @@ struct Struct : public PropertyBase
         }
 
         // 返回数据区段
-        *p_value = (uint8_t*)_value + offset;
+        *p_value = (uint8_t*)&_value + offset;
         return ErrorCode::S_OK;
     }
 };

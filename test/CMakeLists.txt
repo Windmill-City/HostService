@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 project(HostServiceTest)
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "x64 Arch is not supported! Use x86/32bit compiler!")
+endif()
+
 # ##############################################################################
 # 依赖
 # ##############################################################################

@@ -1,6 +1,6 @@
 #include "HostBase.hpp"
-
 #include <checksum.h>
+#include <string.h>
 
 #if defined(_MSC_VER)
   #define __REV16(number) (_byteswap_ushort(number))

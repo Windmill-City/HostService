@@ -23,6 +23,8 @@ add_custom_target(
   BYPRODUCTS libcrc/tab/gentab32.inc libcrc/tab/gentab64.inc
 )
 
+# Pre-generated tabs
+file(COPY gentab32.inc gentab64.inc DESTINATION libcrc/tab)
+
 add_library(libcrc STATIC ${SOURCES})
 target_include_directories(libcrc PUBLIC libcrc/include)
-add_dependencies(libcrc generate_tabs)

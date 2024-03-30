@@ -1,6 +1,7 @@
 #pragma once
 #include "Property.hpp"
 #include "Struct.hpp"
+#include <algorithm>
 
 enum class RangeMode : uint8_t
 {
@@ -16,15 +17,20 @@ struct Range : public Property<T>
     T         min;
     T         max;
 
+    Range()
+    {
+        static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
+    }
+
     /**
      * @brief 检查数值是否在范围内
      *
      * @return true 在范围内
      * @return false 不在范围内
      */
-    bool      in_range()
+    bool in_range()
     {
-        return _value >= min && _value <= max;
+        return this->_value >= min && this->_value <= max;
     }
 
     /**
@@ -34,7 +40,7 @@ struct Range : public Property<T>
      */
     auto& clamp()
     {
-        _value = std::clamp(_value, min(), max());
+        this->_value = std::clamp(this->_value, min, max);
         return *this;
     }
 
@@ -42,38 +48,40 @@ struct Range : public Property<T>
     {
         if (mode == RangeMode::Soft)
         {
-            _value = value;
+            this->_value = value;
             return ErrorCode::S_OK;
         }
 
         if (mode == RangeMode::Clamp)
         {
             // 限定到范围内
-            _value = std::clamp(value, min(), max());
+            this->_value = std::clamp(value, min, max);
             return ErrorCode::S_OK;
         }
 
         if (mode == RangeMode::Hard)
         {
             // 阻止超范围的赋值
-            if (value < min()) return ErrorCode::E_OVER_LOW_LIMIT;
-            if (value > max()) return ErrorCode::E_OVER_HIGH_LIMIT;
+            if (value < min) return ErrorCode::E_OVER_LOW_LIMIT;
+            if (value > max) return ErrorCode::E_OVER_HIGH_LIMIT;
 
-            _value = value;
+            this->_value = value;
             return ErrorCode::S_OK;
         }
+
+        return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get(uint8_t** p_value, uint8_t& size) override
     {
-        size    = sizeof(_value);
-        p_value = &_value;
+        size     = sizeof(this->_value);
+        *p_value = (uint8_t*)&this->_value;
         return ErrorCode::S_OK;
     }
 
     virtual ErrorCode set(const uint8_t* p_value, const uint8_t size) override
     {
-        if (size != sizeof(_value))
+        if (size != sizeof(this->_value))
         {
             return ErrorCode::E_INVALID_ARG;
         }

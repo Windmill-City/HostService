@@ -4,4 +4,13 @@
             "path": ".."
         },
     ],
+    "settings": {
+        "files.associations": {
+            "tuple": "cpp",
+            "utility": "cpp",
+            "set": "cpp",
+            "istream": "cpp",
+            "variant": "cpp"
+        }
+    },
 }

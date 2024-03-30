@@ -99,8 +99,8 @@ struct Property : public PropertyBase
 
     virtual ErrorCode get(uint8_t** p_value, uint8_t& size) override
     {
-        size    = sizeof(_value);
-        p_value = &_value;
+        size     = sizeof(_value);
+        *p_value = (uint8_t*)&_value;
         return ErrorCode::S_OK;
     }
 
