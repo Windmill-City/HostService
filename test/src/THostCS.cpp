@@ -1,49 +1,5 @@
 #include "gtest/gtest.h"
-#include <HostClient.hpp>
-#include <HostServer.hpp>
-#include <queue>
-
-struct HostClientImpl : public HostClient
-{
-    std::queue<uint8_t>* Q_Server;
-    std::queue<uint8_t>  Q_Client;
-
-    virtual uint8_t      rx() override
-    {
-        uint8_t res = Q_Client.front();
-        Q_Client.pop();
-        return res;
-    }
-
-    virtual void tx(const uint8_t* buf, const size_t size) override
-    {
-        for (size_t i = 0; i < size; i++)
-        {
-            Q_Server->push(buf[i]);
-        }
-    }
-};
-
-struct HostServerImpl : public HostServer
-{
-    std::queue<uint8_t>  Q_Server;
-    std::queue<uint8_t>* Q_Client;
-
-    virtual uint8_t      rx() override
-    {
-        uint8_t res = Q_Server.front();
-        Q_Server.pop();
-        return res;
-    }
-
-    virtual void tx(const uint8_t* buf, const size_t size) override
-    {
-        for (size_t i = 0; i < size; i++)
-        {
-            Q_Client->push(buf[i]);
-        }
-    }
-};
+#include <HostCS.hpp>
 
 TEST(HostClient, sizeof)
 {
@@ -57,6 +13,15 @@ TEST(HostServer, sizeof)
               UINT8_MAX + sizeof(Request) + sizeof(HostBase) + sizeof(PropertyHolder) + sizeof(bool) + 3);
 }
 
-TEST(HostCS, request)
+TEST_F(HostCS, request)
 {
+    uint8_t        data[] = {0x01, 0x02, 0x03};
+
+    RequestBuilder builder;
+    builder.add(data, sizeof(data));
+    builder.tx(client, Command::ECHO);
+
+    Poll();
+
+    EXPECT_TRUE(memcmp(client._extra, data, sizeof(data)) == 0);
 }

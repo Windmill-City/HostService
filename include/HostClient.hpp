@@ -1,3 +1,4 @@
+#pragma once
 #include <HostBase.hpp>
 
 struct HostClient : public HostBase

@@ -1,5 +1,5 @@
 #pragma once
-#include "HostService.hpp"
+#include "HostClient.hpp"
 
 struct RequestBuilder
 {
@@ -61,10 +61,10 @@ struct RequestBuilder
     /**
      * @brief 发送请求
      *
-     * @param hs HostService
+     * @param hs HostClient 客户端实例
      * @param cmd 请求的命令
      */
-    void tx(HostService& hs, Command cmd)
+    void tx(HostClient& hs, Command cmd)
     {
         hs.send_request(cmd, _buf.data(), _buf.size());
     }
