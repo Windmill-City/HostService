@@ -3,5 +3,6 @@
 
 TEST(Property, sizeof)
 {
-    EXPECT_EQ(sizeof(Property<uint8_t>), 12);
+    EXPECT_EQ(sizeof(Property<bool>), 12);
+    EXPECT_EQ(sizeof(Property<float>), 12);
 }
