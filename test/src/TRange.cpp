@@ -4,10 +4,10 @@
 
 TEST(Range, sizeof)
 {
-    EXPECT_EQ(sizeof(Range<bool>), 28);
+    EXPECT_EQ(sizeof(Range<bool>), 24);
     EXPECT_EQ(sizeof(Range<bool>::_Range), 2);
 
-    EXPECT_EQ(sizeof(Range<float>), 32);
+    EXPECT_EQ(sizeof(Range<float>), 28);
     EXPECT_EQ(sizeof(Range<float>::_Range), 8);
 }
 
