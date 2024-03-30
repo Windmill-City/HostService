@@ -18,7 +18,16 @@
             "vector": "cpp",
             "xhash": "cpp",
             "xstring": "cpp",
-            "xtree": "cpp"
+            "xtree": "cpp",
+            "algorithm": "cpp",
+            "charconv": "cpp",
+            "chrono": "cpp",
+            "exception": "cpp",
+            "format": "cpp",
+            "iterator": "cpp",
+            "optional": "cpp",
+            "span": "cpp",
+            "xutility": "cpp"
         }
     },
 }

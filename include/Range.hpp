@@ -23,8 +23,24 @@ struct Range : public Property<T>
     Struct<_Range> _range;
 
     Range()
+        : Range(0, 0, 0)
+    {
+    }
+
+    Range(T value, T min, T max)
+        : Range(value, min, max, Access::READ)
+    {
+    }
+
+    Range(T value, T min, T max, Access access)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
+
+        this->_value = value;
+        this->access = access;
+        this->min()  = min;
+        this->max()  = max;
+        this->clamp();
     }
 
     /**
