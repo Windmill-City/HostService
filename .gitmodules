@@ -1,0 +1,6 @@
+[submodule "libs/libcrc/libcrc"]
+	path = libs/libcrc/libcrc
+	url = https://github.com/lammertb/libcrc.git
+[submodule "test/gtest"]
+	path = test/gtest
+	url = https://github.com/google/googletest.git
