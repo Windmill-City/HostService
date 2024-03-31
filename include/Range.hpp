@@ -27,7 +27,6 @@ struct Range : public Property<T, val>
     explicit Range(T value = 0, T min = 0, T max = 0)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
-        static_assert(min <= max);
 
         this->_value = value;
 
