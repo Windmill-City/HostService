@@ -20,7 +20,7 @@ struct Extra
         uint8_t  data[];
     };
 
-    struct _Attach
+    struct _Extra
     {
         uint16_t id;
 
@@ -41,7 +41,7 @@ struct Extra
     uint8_t                                         _data;
     // 附加参数缓冲区
     std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
-    _Attach*                                        _attach;
+    _Extra*                                         _extra;
 
     Extra(Type type = Type::ID_ONLY)
         : type(type)
@@ -52,13 +52,13 @@ struct Extra
             _tail = _data = 0;
             break;
         case Type::ID_ONLY:
-            _tail = _data = sizeof(_Attach::id);
+            _tail = _data = sizeof(_Extra::id);
             break;
         case Type::ID_AND_MEMORY:
-            _tail = _data = sizeof(_Attach::id) + sizeof(_Memory);
+            _tail = _data = sizeof(_Extra::id) + sizeof(_Memory);
             break;
         }
-        _attach = (_Attach*)_buf.data();
+        _extra = (_Extra*)_buf.data();
     }
 
     /**
@@ -68,7 +68,7 @@ struct Extra
      */
     uint16_t& id()
     {
-        return _attach->id;
+        return _extra->id;
     }
 
     /**
@@ -78,7 +78,7 @@ struct Extra
      */
     uint16_t& offset()
     {
-        return _attach->uni.mem.offset;
+        return _extra->uni.mem.offset;
     }
 
     /**
@@ -88,7 +88,7 @@ struct Extra
      */
     uint8_t& datlen()
     {
-        return _attach->uni.mem.datlen;
+        return _extra->uni.mem.datlen;
     }
 
     /**
