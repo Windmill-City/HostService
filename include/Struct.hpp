@@ -32,7 +32,7 @@ struct Struct : public PropertyAccess<access>
     }
 
     /* 赋值运算符 */
-    auto& operator=(const T other)
+    auto& operator=(const T& other)
     {
         _value = other;
         return *this;
