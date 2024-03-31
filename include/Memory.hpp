@@ -2,10 +2,36 @@
 #include "PropertyBase.hpp"
 #include <cstddef>
 
-template <typename T, size_t len, Access access = Access::READ_WRITE>
+template <typename T, uint16_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
-    T             _value[len];
+    T _value[_len];
+
+    Memory()
+    {
+        // 确保所有内容都能访问到
+        static_assert(sizeof(_value) < UINT16_MAX + UINT8_MAX);
+    }
+
+    /**
+     * @brief 获取内存区长度
+     *
+     * @return uint16_t 内存区长度
+     */
+    uint16_t len()
+    {
+        return _len;
+    }
+
+    /**
+     * @brief 获取内存区字节长度
+     *
+     * @return uint16_t 字节长度
+     */
+    uint16_t size()
+    {
+        return sizeof(_value);
+    }
 
     /**
      * @brief 返回指向基类的指针

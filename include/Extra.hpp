@@ -130,7 +130,7 @@ struct Extra
 
         if (size + _tail > UINT8_MAX) return false;
 
-        for (size_t i = 0; i < sizeof(value); i++)
+        for (size_t i = 0; i < size; i++)
         {
             _buf[_tail + i] = ((uint8_t*)value)[i];
         }
@@ -147,7 +147,7 @@ struct Extra
     /* 数组运算符 */
     uint8_t& operator[](std::size_t idx)
     {
-        return _buf[idx];
+        return _buf[_data + idx];
     }
 
     /**
@@ -178,6 +178,16 @@ struct Extra
     uint8_t data_size()
     {
         return _tail - _data;
+    }
+
+    /**
+     * @brief 获取缓冲区剩余长度
+     *
+     * @return uint8_t 剩余长度
+     */
+    uint8_t remain()
+    {
+        return UINT8_MAX - _tail;
     }
 
     /**

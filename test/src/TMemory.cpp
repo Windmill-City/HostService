@@ -39,36 +39,96 @@ TEST_F(HostCS, Memory_SetProperty)
 
 TEST_F(HostCS, Memory_SetMemory)
 {
-    Memory<float, 1> prop;
+    Memory<uint8_t, 1024> prop;
     server.insert(0x01, prop.base());
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
-    extra.offset() = 0;
-    extra.datlen() = sizeof(float);
-    extra.add(18.8f); // data
+    extra.offset() = 27;
+    extra.datlen() = extra.remain();
+
+    // 添加255个元素
+    for (size_t i = 0; i < extra.datlen(); i++)
+    {
+        extra.add((uint8_t)i);
+    }
+
     client.send_request(Command::SET_MEMORY, extra);
 
     Poll();
 
-    EXPECT_EQ(prop[0], 18.8f);
+    for (size_t i = 0; i < extra.datlen(); i++)
+    {
+        EXPECT_EQ(prop[i + extra.offset()], i);
+    }
 }
 
 TEST_F(HostCS, Memory_GetMemory)
 {
-    Memory<float, 1> prop;
+    Memory<uint8_t, 1024> prop;
     server.insert(0x01, prop.base());
-    prop[0] = 18.8f;
+
+    for (size_t i = 0; i < prop.len(); i++)
+    {
+        prop[i] = i;
+    }
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
-    extra.offset() = 0;
-    extra.datlen() = sizeof(float);
+    extra.offset() = 368;
+    extra.datlen() = extra.remain();
     client.send_request(Command::GET_MEMORY, extra);
 
     Poll();
 
-    EXPECT_EQ(*(float*)client._extra.data(), 18.8f);
+    for (size_t i = 0; i < extra.datlen(); i++)
+    {
+        EXPECT_EQ(client._extra[i], prop[i + extra.offset()]);
+    }
+}
+
+TEST_F(HostCS, Memory_SetMemory_OutOfRange)
+{
+    Memory<uint8_t, 32> prop;
+    server.insert(0x01, prop.base());
+
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 27;
+    extra.datlen() = extra.remain();
+
+    // 添加255个元素
+    for (size_t i = 0; i < extra.datlen(); i++)
+    {
+        extra.add((uint8_t)i);
+    }
+
+    client.send_request(Command::SET_MEMORY, extra);
+
+    Poll(true);
+
+    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
+}
+
+TEST_F(HostCS, Memory_GetMemory_OutOfRange)
+{
+    Memory<uint8_t, 32> prop;
+    server.insert(0x01, prop.base());
+
+    for (size_t i = 0; i < prop.len(); i++)
+    {
+        prop[i] = i;
+    }
+
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 368;
+    extra.datlen() = extra.remain();
+    client.send_request(Command::GET_MEMORY, extra);
+
+    Poll(true);
+
+    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
 }
 
 TEST_F(HostCS, Memory_GetSize)
