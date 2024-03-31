@@ -15,6 +15,9 @@ TEST(Property, Assign)
 
     EXPECT_EQ(prop_1, true);
     EXPECT_EQ(prop_2, false);
+
+    prop_1 = prop_2;
+    EXPECT_EQ(prop_1, false);
 }
 
 TEST_F(HostCS, Property_GetProperty)
