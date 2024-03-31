@@ -34,7 +34,7 @@ struct Struct : public PropertyAccess<access>
     /* 赋值运算符 */
     auto& operator=(const T& other)
     {
-        _value = other;
+        _assign(other);
         return *this;
     }
 
@@ -42,7 +42,7 @@ struct Struct : public PropertyAccess<access>
     auto& operator=(const Struct<T>& other)
     {
         if (this == &other) return *this;
-        _value = other._value;
+        _assign(other._value);
         return *this;
     }
 
@@ -50,6 +50,12 @@ struct Struct : public PropertyAccess<access>
     T& get()
     {
         return *this;
+    }
+
+    virtual ErrorCode _assign(T& value)
+    {
+        _value = value;
+        return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get(Extra& extra) override
@@ -65,7 +71,7 @@ struct Struct : public PropertyAccess<access>
             return ErrorCode::E_INVALID_ARG;
         }
 
-        _value = *(T*)extra.data();
+        _assign(*(T*)extra.data());
         return ErrorCode::S_OK;
     }
 
