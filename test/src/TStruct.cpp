@@ -55,9 +55,9 @@ TEST_F(HostCS, Struct_SetMemory)
     extra.add(18.8f); // data
     client.send_request(Command::SET_MEMORY, extra);
 
-    Poll();
+    Poll(true);
 
-    EXPECT_FLOAT_EQ(prop.get().val, 18.8f);
+    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_IMPLEMENT);
 }
 
 TEST_F(HostCS, Struct_GetMemory)
@@ -72,9 +72,9 @@ TEST_F(HostCS, Struct_GetMemory)
     extra.datlen() = sizeof(float);
     client.send_request(Command::GET_MEMORY, extra);
 
-    Poll();
+    Poll(true);
 
-    EXPECT_FLOAT_EQ(*(float*)client._extra.data(), 18.8f);
+    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_IMPLEMENT);
 }
 
 TEST_F(HostCS, Struct_GetSize)

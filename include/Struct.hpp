@@ -69,31 +69,6 @@ struct Struct : public PropertyAccess<access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode set_mem(Extra& extra) override
-    {
-        uint16_t offset = extra.offset();
-        uint8_t  datlen = extra.datlen();
-        // 检查是否超出内存区范围
-        if (sizeof(_value) < offset + datlen) return ErrorCode::E_OUT_OF_INDEX;
-
-        memcpy((uint8_t*)&_value + offset, extra.data(), datlen);
-        return ErrorCode::S_OK;
-    }
-
-    virtual ErrorCode get_mem(Extra& extra) override
-    {
-        uint16_t offset = extra.offset();
-        uint8_t  datlen = extra.datlen();
-        // 检查是否超出内存区范围
-        if (sizeof(_value) < offset + datlen)
-        {
-            return ErrorCode::E_OUT_OF_INDEX;
-        }
-
-        if (!extra.add((uint8_t*)&_value + offset, datlen)) return ErrorCode::E_OUT_OF_BUFFER;
-        return ErrorCode::S_OK;
-    }
-
     virtual ErrorCode get_size(Extra& extra) override
     {
         extra.add((uint16_t)sizeof(_value));
