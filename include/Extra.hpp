@@ -34,7 +34,7 @@ struct Extra
 #pragma pack()
 
     // 附加参数类型
-    Type                                            type;
+    Type                                            _type;
     // 缓冲区长度
     uint8_t                                         _tail;
     // 缓冲区数据索引
@@ -43,10 +43,10 @@ struct Extra
     std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
     _Extra*                                         _extra;
 
-    Extra(Type type = Type::ID_ONLY)
-        : type(type)
+    Extra(Type _type = Type::ID_ONLY)
+        : _type(_type)
     {
-        switch (type)
+        switch (_type)
         {
         case Type::RAW:
             _tail = _data = 0;
@@ -208,7 +208,7 @@ struct Extra
         }
         // 指定数据区指针索引
         _data = sizeof(id());
-        type  = Type::ID_ONLY;
+        _type = Type::ID_ONLY;
         return true;
     }
 
@@ -224,7 +224,7 @@ struct Extra
         if (data_size() < sizeof(Extra::_Memory)) return false;
         // 指定数据区指针索引
         _data += sizeof(Extra::_Memory);
-        type = Type::ID_AND_MEMORY;
+        _type = Type::ID_AND_MEMORY;
         return true;
     }
 
@@ -235,6 +235,6 @@ struct Extra
     void reset()
     {
         _tail = _data = 0;
-        type          = Type::RAW;
+        _type         = Type::RAW;
     }
 };
