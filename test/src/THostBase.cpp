@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include <Extra.hpp>
 #include <HostBase.hpp>
 #include <queue>
 
@@ -30,6 +31,11 @@ struct HostBaseImpl : public HostBase
 TEST(HostBase, sizeof)
 {
     EXPECT_EQ(sizeof(HostBase), 8);
+}
+
+TEST(Extra, sizeof)
+{
+    EXPECT_EQ(sizeof(Extra), 264);
 }
 
 TEST(HostBase, tx_rx)
