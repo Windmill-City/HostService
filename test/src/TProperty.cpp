@@ -8,6 +8,15 @@ TEST(Property, sizeof)
     EXPECT_EQ(sizeof(Property<float>), 8);
 }
 
+TEST(Property, Assign)
+{
+    Property<bool> prop_1 = true;
+    Property<bool> prop_2 = false;
+
+    EXPECT_EQ(prop_1, true);
+    EXPECT_EQ(prop_2, false);
+}
+
 TEST_F(HostCS, Property_GetProperty)
 {
     Property<float> prop{18.8f};

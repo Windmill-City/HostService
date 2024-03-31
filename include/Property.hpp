@@ -7,7 +7,7 @@ struct Property : public PropertyAccess<access>
 {
     T _value;
 
-    explicit Property(T value = 0)
+    Property(T value = 0)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
