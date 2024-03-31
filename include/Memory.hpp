@@ -85,7 +85,7 @@ struct Memory : public PropertyAccess<access>
             return ErrorCode::E_OUT_OF_INDEX;
         }
 
-        extra.add((uint8_t*)_value + offset, datlen);
+        if (!extra.add((uint8_t*)&_value + offset, datlen)) return ErrorCode::E_OBJECT_SIZE_TOO_LARGE;
         return ErrorCode::S_OK;
     }
 
