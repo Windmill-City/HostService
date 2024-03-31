@@ -37,13 +37,13 @@ TEST(Property, Calc)
 
     float v;
     v = prop_1 + 2;
-    EXPECT_EQ(prop_1 += 2.f, v);
+    EXPECT_EQ(prop_1 += 2, v);
     v = prop_1 - 2;
-    EXPECT_EQ(prop_1 -= 2.f, v);
+    EXPECT_EQ(prop_1 -= 2, v);
     v = prop_1 * 2;
-    EXPECT_EQ(prop_1 *= 2.f, v);
+    EXPECT_EQ(prop_1 *= 2, v);
     v = prop_1 / 2;
-    EXPECT_EQ(prop_1 /= 2.f, v);
+    EXPECT_EQ(prop_1 /= 2, v);
 }
 
 TEST_F(HostCS, Property_GetProperty)
