@@ -3,17 +3,17 @@
 
 enum class ErrorCode : uint8_t
 {
-    S_OK = 0,                // 执行成功
-    E_NO_IMPLEMENT,          // 方法未实现
-    E_INVALID_ARG,           // 参数有误
-    E_ID_NOT_EXIST,          // Id不存在
-    E_NO_PERMISSION,         // 没有权限
-    E_READ_ONLY,             // 只读变量
-    E_OUT_OF_INDEX,          // 内存访问越界
-    E_OVER_HIGH_LIMIT,       // 超出上限
-    E_OVER_LOW_LIMIT,        // 超出下限
-    E_ILLEGAL_STATE,         // 非法状态
-    E_OBJECT_SIZE_TOO_LARGE, // 对象大小超出帧长限制
+    S_OK = 0,          // 执行成功
+    E_NO_IMPLEMENT,    // 方法未实现
+    E_INVALID_ARG,     // 参数有误
+    E_ID_NOT_EXIST,    // Id不存在
+    E_NO_PERMISSION,   // 没有权限
+    E_OUT_OF_BUFFER,   // 超出帧长限制
+    E_READ_ONLY,       // 只读变量
+    E_OUT_OF_INDEX,    // 内存访问越界
+    E_OVER_HIGH_LIMIT, // 超出上限
+    E_OVER_LOW_LIMIT,  // 超出下限
+    E_ILLEGAL_STATE,   // 非法状态
 };
 
 enum class Access : uint8_t

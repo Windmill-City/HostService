@@ -21,7 +21,7 @@ enum class Command : uint8_t
      * CMD,E_INVALID_ARG,属性Id
      * CMD,E_ID_NOT_EXIST,属性Id
      * CMD,E_NO_PERMISSION,属性Id
-     * CMD,E_OBJECT_SIZE_TOO_LARGE,属性Id
+     * CMD,E_OUT_OF_BUFFER,属性Id
      */
     GET_PROPERTY,
     /**
@@ -51,7 +51,7 @@ enum class Command : uint8_t
      * CMD,E_ID_NOT_EXIST,内存Id,地址偏移,数据长度
      * CMD,E_NO_PERMISSION,内存Id,地址偏移,数据长度
      * CMD,E_OUT_OF_INDEX,内存Id,地址偏移,数据长度
-     * CMD,E_OBJECT_SIZE_TOO_LARGE,内存Id,地址偏移,数据长度
+     * CMD,E_OUT_OF_BUFFER,内存Id,地址偏移,数据长度
      */
     GET_MEMORY,
     /**

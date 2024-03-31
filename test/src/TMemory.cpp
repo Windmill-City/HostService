@@ -115,11 +115,6 @@ TEST_F(HostCS, Memory_GetMemory_OutOfRange)
     Memory<uint8_t, 32> prop;
     server.insert(0x01, prop.base());
 
-    for (size_t i = 0; i < prop.len(); i++)
-    {
-        prop[i] = i;
-    }
-
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
     extra.offset() = 368;
@@ -129,6 +124,22 @@ TEST_F(HostCS, Memory_GetMemory_OutOfRange)
     Poll(true);
 
     EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
+}
+
+TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
+{
+    Memory<uint8_t, 1024> prop;
+    server.insert(0x01, prop.base());
+
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 422;
+    extra.datlen() = 255; // 加上Id和内存参数, 超出最大帧长限制
+    client.send_request(Command::GET_MEMORY, extra);
+
+    Poll(true);
+
+    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_BUFFER);
 }
 
 TEST_F(HostCS, Memory_GetSize)

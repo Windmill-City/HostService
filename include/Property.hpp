@@ -101,7 +101,7 @@ struct Property : public PropertyAccess<access>
 
     virtual ErrorCode get(Extra& extra) override
     {
-        if (!extra.add(_value)) return ErrorCode::E_OBJECT_SIZE_TOO_LARGE;
+        if (!extra.add(_value)) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
 
