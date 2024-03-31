@@ -8,7 +8,7 @@ enum class Command : uint8_t
      *
      * 请求: CMD,任意N字节数据(N>=0)
      * 应答:
-     * CMD,S_OK,请求中的数据
+     * CMD,S_OK,请求中的附加参数
      */
     ECHO = 0,
     /**
@@ -17,9 +17,11 @@ enum class Command : uint8_t
      * 请求: CMD,属性Id
      * 应答:
      * CMD,S_OK,属性值
-     * CMD,E_NO_PERMISSION
-     * CMD,E_ID_NOT_EXIST
+     * CMD,E_NO_IMPLEMENT
      * CMD,E_INVALID_ARG
+     * CMD,E_ID_NOT_EXIST,
+     * CMD,E_NO_PERMISSION
+     * CMD,E_OBJECT_SIZE_TOO_LARGE
      */
     GET_PROPERTY,
     /**
@@ -28,23 +30,29 @@ enum class Command : uint8_t
      * 请求: CMD,属性Id,属性值
      * 应答:
      * CMD,S_OK
-     * CMD,E_READ_ONLY
+     * CMD,E_NO_IMPLEMENT
+     * CMD,E_INVALID_ARG
+     * CMD,E_ID_NOT_EXIST,
+     * CMD,E_NO_PERMISSION
+     * CMD,E_READ_ONLY,
      * CMD,E_OVER_HIGH_LIMIT
      * CMD,E_OVER_LOW_LIMIT
      * CMD,E_ILLEGAL_STATE
-     * CMD,E_ID_NOT_EXIST
      */
     SET_PROPERTY,
     /**
      * @brief 写入内存
      *
-     * 请求: CMD,内存Id,地址偏移,N字节数据
+     * 请求: CMD,内存Id,地址偏移,数据长度,N字节数据
      * 应答:
      * CMD,S_OK
-     * CMD,E_READ_ONLY
+     * CMD,E_NO_IMPLEMENT
+     * CMD,E_INVALID_ARG
+     * CMD,E_ID_NOT_EXIST,
+     * CMD,E_NO_PERMISSION
+     * CMD,E_READ_ONLY,
      * CMD,E_OUT_OF_INDEX
      * CMD,E_ILLEGAL_STATE
-     * CMD,E_ID_NOT_EXIST
      */
     SET_MEMORY,
     /**
@@ -53,9 +61,11 @@ enum class Command : uint8_t
      * 请求: CMD,内存Id,地址偏移,数据长度
      * 应答:
      * CMD,S_OK,内存Id,地址偏移,数据长度
+     * CMD,E_NO_IMPLEMENT
+     * CMD,E_INVALID_ARG
+     * CMD,E_ID_NOT_EXIST,
      * CMD,E_NO_PERMISSION
      * CMD,E_OUT_OF_INDEX
-     * CMD,E_ID_NOT_EXIST
      */
     GET_MEMORY,
     /**
@@ -64,8 +74,9 @@ enum class Command : uint8_t
      * 请求: CMD,属性Id
      * 应答:
      * CMD,S_OK,属性长度
+     * CMD,E_INVALID_ARG
+     * CMD,E_ID_NOT_EXIST,
      * CMD,E_NO_PERMISSION
-     * CMD,E_ID_NOT_EXIST
      */
     GET_SIZE,
 };
