@@ -6,32 +6,62 @@
 enum class RangeMode : uint8_t
 {
     Hard,  // 超出范围的赋值 不会 生效
-    Soft,  // 超出范围的数值 会 生效
-    Clamp, // 超出范围的数值会被截断到范围以内
+    Soft,  // 超出范围的赋值 会 生效
+    Clamp, // 超出范围的赋值会被截断到范围以内
+};
+
+template <typename T>
+struct _Range
+{
+    T min;
+    T max;
+};
+
+template <typename T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
+struct BoundedRange : public Struct<_Range<T>, access>
+{
+    BoundedRange(T min = AbsMin, T max = AbsMax)
+    {
+        this->get().min = AbsMin;
+        this->get().max = AbsMax;
+        _assign({min, max});
+    }
+
+    virtual ErrorCode _assign(const _Range<T>& value) override
+    {
+        if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
+        if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
+        if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
+
+        this->_value = value;
+        return ErrorCode::S_OK;
+    }
+
+    /* 赋值运算符 */
+    template <typename K>
+    auto& operator=(const _Range<K> other)
+    {
+        _assign(other);
+        return *this;
+    }
 };
 
 template <typename T,
+          int       AbsMin,
+          int       AbsMax,
           RangeMode mode  = RangeMode::Hard,
           Access    range = Access::READ_WRITE,
           Access    val   = Access::READ_WRITE>
-struct Range : public Property<T, val>
+struct RangedProperty : public Property<T, val>
 {
-    struct _Range
-    {
-        T min;
-        T max;
-    };
+    BoundedRange<T, AbsMin, AbsMax, range> _range;
 
-    Struct<_Range, range> _range;
-
-    explicit Range(T value = 0, T min = 0, T max = 0)
+    explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
+        _range       = {min, max};
         this->_value = value;
-
-        this->min()  = min;
-        this->max()  = max;
 
         if (mode == RangeMode::Hard || mode == RangeMode::Clamp) this->clamp();
     }
@@ -41,7 +71,7 @@ struct Range : public Property<T, val>
      *
      * @return T& 最小值的引用
      */
-    T& min()
+    T min()
     {
         return _range.get().min;
     }
@@ -51,7 +81,7 @@ struct Range : public Property<T, val>
      *
      * @return T& 最大值的引用
      */
-    T& max()
+    T max()
     {
         return _range.get().max;
     }
@@ -107,7 +137,7 @@ struct Range : public Property<T, val>
     }
 
     /* 赋值运算符 */
-    template<typename K>
+    template <typename K>
     auto& operator=(const K other)
     {
         _assign(other);

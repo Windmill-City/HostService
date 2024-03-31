@@ -2,20 +2,17 @@
 #include <HostCS.hpp>
 #include <Range.hpp>
 
-TEST(Range, sizeof)
+TEST(RangedProperty, sizeof)
 {
-    EXPECT_EQ(sizeof(Range<bool>), 16);
-    EXPECT_EQ(sizeof(Range<bool>::_Range), 2);
-
-    EXPECT_EQ(sizeof(Range<float>), 20);
-    EXPECT_EQ(sizeof(Range<float>::_Range), 8);
+    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 20);
+    EXPECT_EQ(sizeof(_Range<float>), 8);
 }
 
-TEST(Range, Mode)
+TEST(RangedProperty, Mode)
 {
-    Range<int, RangeMode::Hard>  hard{100, 0, 10};
-    Range<int, RangeMode::Soft>  soft{100, 0, 10};
-    Range<int, RangeMode::Clamp> clamp{-100, 0, 10};
+    RangedProperty<int, 0, 10, RangeMode::Hard>  hard{100};
+    RangedProperty<int, 0, 10, RangeMode::Soft>  soft{100};
+    RangedProperty<int, 0, 10, RangeMode::Clamp> clamp{-100};
 
     // hard 和 clamp 在初始化时会进行clamp
     EXPECT_EQ(hard, 10);
@@ -53,9 +50,18 @@ TEST(Range, Mode)
     EXPECT_EQ(clamp = -100, 0);
 }
 
+TEST(BoundedRange, BoundTest)
+{
+    BoundedRange<float, 0, 0.1> range;
+
+    range = {-100, 100};
+    EXPECT_FLOAT_EQ(range.get().min, 0);
+    EXPECT_FLOAT_EQ(range.get().max, 0.1);
+}
+
 TEST_F(HostCS, Range_GetProperty)
 {
-    Range<float> prop{18.8f, 0.0f, 25.f};
+    RangedProperty<float, 0, 25> prop{18.8f};
     server.insert(0x01, prop);
 
     Extra extra;
@@ -69,7 +75,7 @@ TEST_F(HostCS, Range_GetProperty)
 
 TEST_F(HostCS, Range_SetProperty)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f};
+    RangedProperty<float, 0, 25> prop{0.0f};
     server.insert(0x01, prop);
 
     Extra extra;
@@ -84,7 +90,7 @@ TEST_F(HostCS, Range_SetProperty)
 
 TEST_F(HostCS, Range_SetMemory)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f};
+    RangedProperty<float, 0, 25> prop{0.0f};
     server.insert(0x01, prop);
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
@@ -101,7 +107,7 @@ TEST_F(HostCS, Range_SetMemory)
 
 TEST_F(HostCS, Range_GetMemory)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f};
+    RangedProperty<float, 0, 25> prop{0.0f};
     server.insert(0x01, prop);
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
@@ -117,7 +123,7 @@ TEST_F(HostCS, Range_GetMemory)
 
 TEST_F(HostCS, Range_GetSize)
 {
-    Range<float> prop{0.0f, 0.0f, 25.f};
+    RangedProperty<float, 0, 25> prop{0.0f};
     server.insert(0x01, prop);
 
     Extra extra;

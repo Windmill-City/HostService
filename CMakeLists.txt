@@ -7,7 +7,7 @@ project(HostService)
 # 使用UTF-8编码
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_HOST_SERVICE_TEST "Build HostService Test" OFF)

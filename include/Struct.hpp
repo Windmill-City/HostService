@@ -52,7 +52,7 @@ struct Struct : public PropertyAccess<access>
         return *this;
     }
 
-    virtual ErrorCode _assign(T& value)
+    virtual ErrorCode _assign(const T& value)
     {
         _value = value;
         return ErrorCode::S_OK;
