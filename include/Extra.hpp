@@ -17,6 +17,7 @@ struct Extra
     {
         uint16_t offset;
         uint8_t  datlen;
+        uint8_t  data[];
     };
 
     struct _Attach
