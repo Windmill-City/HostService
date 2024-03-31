@@ -18,9 +18,9 @@ struct _Range
 };
 
 template <typename T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
-struct BoundedRange : public Struct<_Range<T>, access>
+struct Range : public Struct<_Range<T>, access>
 {
-    BoundedRange(T min = AbsMin, T max = AbsMax)
+    Range(T min = AbsMin, T max = AbsMax)
     {
         this->get().min = AbsMin;
         this->get().max = AbsMax;
@@ -54,7 +54,7 @@ template <typename T,
           Access    val   = Access::READ_WRITE>
 struct RangedProperty : public Property<T, val>
 {
-    BoundedRange<T, AbsMin, AbsMax, range> _range;
+    Range<T, AbsMin, AbsMax, range> _range;
 
     explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
     {

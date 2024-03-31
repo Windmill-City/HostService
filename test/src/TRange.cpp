@@ -50,9 +50,9 @@ TEST(RangedProperty, Mode)
     EXPECT_EQ(clamp = -100, 0);
 }
 
-TEST(BoundedRange, BoundTest)
+TEST(Range, BoundTest)
 {
-    BoundedRange<float, 0, 0.1> range;
+    Range<float, 0, 0.1> range;
 
     range = {-100, 100};
     EXPECT_FLOAT_EQ(range.get().min, 0);
