@@ -3,25 +3,24 @@
 
 TEST(HostClient, sizeof)
 {
-    EXPECT_EQ(sizeof(HostClient), UINT8_MAX + sizeof(Response) + sizeof(HostBase) + 3);
+    EXPECT_EQ(sizeof(HostClient), 284);
 }
 
 TEST(HostServer, sizeof)
 {
     HostServerImpl hs;
-    EXPECT_EQ(sizeof(HostServer),
-              UINT8_MAX + sizeof(Request) + sizeof(HostBase) + sizeof(PropertyHolder) + sizeof(bool) + 3);
+    EXPECT_EQ(sizeof(HostServer), 296);
 }
 
 TEST_F(HostCS, request)
 {
-    uint8_t        data[] = {0x01, 0x02, 0x03};
+    uint8_t data[] = {0x01, 0x02, 0x03};
 
-    RequestBuilder builder;
-    builder.add(data, sizeof(data));
-    builder.tx(client, Command::ECHO);
+    Extra   extra{Extra::Type::RAW};
+    extra.add(data, sizeof(data));
+    client.send_request(Command::ECHO, extra);
 
     Poll();
 
-    EXPECT_TRUE(memcmp(client._extra, data, sizeof(data)) == 0);
+    EXPECT_TRUE(memcmp(client._extra.data(), data, sizeof(data)) == 0);
 }

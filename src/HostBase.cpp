@@ -16,7 +16,7 @@
  * @param head 帧头
  * @param h_size 帧头长度
  * @param extra 附加参数
- * @param size 参数长度
+ * @param size 附加参数长度
  * @param tx 数据接收方法
  */
 void HostBase::_encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint8_t size)

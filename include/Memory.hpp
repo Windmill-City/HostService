@@ -38,33 +38,34 @@ struct Memory : public PropertyAccess<access>
         return _value[idx];
     }
 
-    virtual ErrorCode set_mem(const uint16_t offset, const uint8_t* p_value, const uint8_t datlen) override
+    virtual ErrorCode set_mem(Extra& extra) override
     {
+        uint16_t offset = extra.offset();
+        uint8_t  datlen = extra.datlen();
         // 检查是否超出内存区范围
         if (sizeof(_value) < offset + datlen) return ErrorCode::E_OUT_OF_INDEX;
 
-        // 写入指定区段
-        memcpy((uint8_t*)_value + offset, p_value, datlen);
+        memcpy((uint8_t*)_value + offset, extra.data(), datlen);
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_mem(const uint16_t offset, uint8_t** p_value, uint8_t& datlen)
+    virtual ErrorCode get_mem(Extra& extra) override
     {
+        uint16_t offset = extra.offset();
+        uint8_t  datlen = extra.datlen();
         // 检查是否超出内存区范围
         if (sizeof(_value) < offset + datlen)
         {
-            datlen = 0;
             return ErrorCode::E_OUT_OF_INDEX;
         }
 
-        // 返回数据区段
-        *p_value = (uint8_t*)_value + offset;
+        extra.add((uint8_t*)_value + offset, datlen);
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(uint16_t& size) override
+    virtual ErrorCode get_size(Extra& extra) override
     {
-        size = sizeof(_value);
+        extra.add((uint16_t)sizeof(_value));
         return ErrorCode::S_OK;
     }
 };

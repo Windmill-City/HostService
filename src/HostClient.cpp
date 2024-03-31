@@ -11,10 +11,30 @@
 bool HostClient::poll()
 {
     Command   cmd;
-    uint8_t*  extra;
+    Extra&    extra = _extra;
     ErrorCode err;
     uint8_t   size;
-    if (!recv_response(cmd, err, &extra, size)) return false;
+    if (!recv_response(cmd, err, extra)) return false;
+
+    switch (cmd)
+    {
+    case Command::ECHO:
+        // 无需解码
+        break;
+    case Command::GET_SIZE:
+    case Command::GET_PROPERTY:
+    case Command::SET_PROPERTY:
+        // 解码Id
+        if (!extra.decode_id()) return false;
+        break;
+    case Command::GET_MEMORY:
+    case Command::SET_MEMORY:
+        // 解码Id
+        if (!extra.decode_id()) return false;
+        // 解码内存参数
+        if (!extra.decode_mem()) return false;
+        break;
+    }
     return true;
 }
 
@@ -25,31 +45,27 @@ bool HostClient::poll()
  * @param extra 附加参数
  * @param size 参数长度
  */
-void HostClient::send_request(const Command cmd, const uint8_t* extra, const uint8_t size)
+void HostClient::send_request(const Command cmd, Extra& extra)
 {
     Request req;
     req.address = address;
     req.cmd     = cmd;
-    req.size    = size;
-    _encode((uint8_t*)&req, sizeof(req), extra, size);
+    req.size    = extra.size();
+    _encode((uint8_t*)&req, sizeof(req), &extra, req.size);
 }
 
 /**
  * @brief 接收响应
  *
  * @param cmd [out]响应的命令
- * @param extra [out]附加参数数组的指针, 调用者无需释放此指针
- * @param size [out]参数长度
+ * @param extra [out]附加参数
  * @return true 成功接收一帧
  * @return false 没有接收一帧
- *
- * 注意: 接收响应和接收请求共用一个缓冲区
  */
-bool HostClient::recv_response(Command& cmd, ErrorCode& err, uint8_t** extra, uint8_t& size)
+bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 {
-    if (extra) *extra = _extra;
-    size = 0;
-    return _decode_rep(cmd, err, *extra, size);
+    extra.reset();
+    return _decode_rep(cmd, err, extra);
 }
 
 /**
@@ -58,19 +74,18 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, uint8_t** extra, ui
  * @param cmd 响应的指令
  * @param err 错误码
  * @param extra 附加参数
- * @param size 附加参数长度
- * @param rx 数据接收方法
  * @return true 成功接收一帧
  * @return false 没有接收一帧
  */
-bool HostClient::_decode_rep(Command& cmd, ErrorCode& err, uint8_t* extra, uint8_t& size)
+bool HostClient::_decode_rep(Command& cmd, ErrorCode& err, Extra& extra)
 {
     // 解码帧头
     if (!_decode_head((uint8_t*)&_rep, sizeof(_rep))) return false;
 
-    cmd  = _rep.cmd;
-    size = _rep.size;
-    err  = _rep.error;
+    uint8_t& size = extra.size();
+    cmd           = _rep.cmd;
+    size          = _rep.size;
+    err           = _rep.error;
 
     // 数据为空, 跳过接收
     if (size == 0) return true;
@@ -81,7 +96,7 @@ bool HostClient::_decode_rep(Command& cmd, ErrorCode& err, uint8_t* extra, uint8
         extra[i] = rx();
     }
     // 验证数据
-    if (crc_ccitt_ffff(extra, size + sizeof(Chksum)) != 0) return false;
+    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
 
     return true;
 }

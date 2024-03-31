@@ -11,76 +11,66 @@
  */
 bool HostServer::poll()
 {
-    Command  cmd;
-    uint8_t* extra;
-    uint8_t  size;
-    if (!recv_request(cmd, &extra, size)) return false;
+    Command cmd;
+    Extra&  extra = _extra;
+    if (!recv_request(cmd, extra)) return false;
 
     switch (cmd)
     {
     case Command::ECHO:
     {
         // 将收到的数据再发回去
-        send_response(cmd, ErrorCode::S_OK, extra, size);
+        send_response(cmd, ErrorCode::S_OK, extra);
         return true;
     }
     case Command::GET_PROPERTY:
     {
         PropertyBase* prop;
-        if (!_get_property(cmd, &extra, size, prop)) return false;
+        if (!_get_property(cmd, extra, &prop)) return false;
+        extra.truncate(); // 截断多余数据
 
-        uint8_t*  p;
-        uint8_t   size;
-        ErrorCode code = prop->get(&p, size);
-        send_response(cmd, code, p, size);
+        ErrorCode code = prop->get(extra);
+        send_response(cmd, code, extra);
         return code == ErrorCode::S_OK;
     }
     case Command::SET_PROPERTY:
     {
         PropertyBase* prop;
-        if (!_get_property(cmd, &extra, size, prop)) return false;
+        if (!_get_property(cmd, extra, &prop)) return false;
 
-        ErrorCode code = prop->set(extra, size);
-        send_response(cmd, code, NULL, 0);
+        ErrorCode code = prop->set(extra);
+        send_response(cmd, code, extra);
         return code == ErrorCode::S_OK;
     }
     case Command::GET_MEMORY:
     {
         PropertyBase* prop;
-        if (!_get_property(cmd, &extra, size, prop)) return false;
+        if (!_get_property(cmd, extra, &prop)) return false;
+        if (!_get_memory(cmd, prop, extra)) return false;
+        extra.truncate(); // 截断多余数据
 
-        uint16_t offset;
-        uint8_t  datlen;
-        if (!_get_memory_param(cmd, prop, &extra, size, offset, datlen)) return false;
-
-        uint8_t*  p;
-        ErrorCode code = prop->get_mem(offset, &p, datlen);
-        send_response(cmd, code, p, datlen);
+        ErrorCode code = prop->get_mem(extra);
+        send_response(cmd, code, extra);
         return code == ErrorCode::S_OK;
     }
     case Command::SET_MEMORY:
     {
         PropertyBase* prop;
-        if (!_get_property(cmd, &extra, size, prop)) return false;
+        if (!_get_property(cmd, extra, &prop)) return false;
+        if (!_get_memory(cmd, prop, extra)) return false;
 
-        // 获取内存访问参数
-        uint16_t offset;
-        uint8_t  datlen;
-        if (!_get_memory_param(cmd, prop, &extra, size, offset, datlen)) return false;
-
-        // 设置属性值, 并发送返回码
-        ErrorCode code = prop->set_mem(offset, extra, datlen);
-        send_response(cmd, code, NULL, 0);
+        ErrorCode code = prop->set_mem(extra);
+        send_response(cmd, code, extra);
         return code == ErrorCode::S_OK;
     }
     case Command::GET_SIZE:
     {
         PropertyBase* prop;
-        if (!_get_property(cmd, &extra, size, prop)) return false;
+        if (!_get_property(cmd, extra, &prop)) return false;
+        extra.truncate(); // 截断多余的数据
 
-        uint16_t  size;
-        ErrorCode code = prop->get_size(size);
-        send_response(cmd, code, (uint8_t*)&size, sizeof(size));
+        ErrorCode code = prop->get_size(extra);
+        send_response(cmd, code, extra);
         return code == ErrorCode::S_OK;
     }
     }
@@ -106,18 +96,14 @@ bool HostServer::insert(uint16_t id, PropertyBase* prop)
  * @brief 接收请求
  *
  * @param cmd [out]接收到的命令
- * @param extra [out]附加参数数组的指针, 调用者无需释放此指针
- * @param size [out]参数长度
+ * @param extra [out]附加参数
  * @return true 成功接收一帧
  * @return false 没有接收一帧
- *
- * 注意: 接收响应和接收请求共用一个缓冲区
  */
-bool HostServer::recv_request(Command& cmd, uint8_t** extra, uint8_t& size)
+bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
-    if (extra) *extra = _extra;
-    size = 0;
-    return _decode_req(cmd, *extra, size);
+    extra.reset();
+    return _decode_req(cmd, extra);
 }
 
 /**
@@ -126,16 +112,17 @@ bool HostServer::recv_request(Command& cmd, uint8_t** extra, uint8_t& size)
  * @param cmd 响应的指令
  * @param err 错误码
  * @param extra 附加参数
- * @param size 参数长度
  */
-void HostServer::send_response(const Command cmd, const ErrorCode err, const uint8_t* extra, const uint8_t size)
+void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& extra)
 {
+    // 如果指令执行过程中有错误, 则截断数据区, 减少不必要的数据传输
+    if (err != ErrorCode::S_OK) extra.truncate();
     Response rep;
     rep.address = address;
     rep.cmd     = cmd;
     rep.error   = err;
-    rep.size    = size;
-    _encode((uint8_t*)&rep, sizeof(rep), extra, size);
+    rep.size    = extra.size();
+    _encode((uint8_t*)&rep, sizeof(rep), &extra, rep.size);
 }
 
 /**
@@ -143,18 +130,17 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, const uin
  *
  * @param cmd 请求的指令
  * @param extra 附加参数
- * @param size 附加参数长度
- * @param rx 数据接收方法
  * @return true 成功接收一帧
  * @return false 没有接收一帧
  */
-bool HostServer::_decode_req(Command& cmd, uint8_t* extra, uint8_t& size)
+bool HostServer::_decode_req(Command& cmd, Extra& extra)
 {
     // 解码帧头
     if (!_decode_head((uint8_t*)&_req, sizeof(_req))) return false;
 
-    cmd  = _req.cmd;
-    size = _req.size;
+    uint8_t& size = extra.size();
+    cmd           = _req.cmd;
+    size          = _req.size;
 
     // 数据为空, 跳过接收
     if (size == 0) return true;
@@ -165,7 +151,7 @@ bool HostServer::_decode_req(Command& cmd, uint8_t* extra, uint8_t& size)
         extra[i] = rx();
     }
     // 验证数据
-    if (crc_ccitt_ffff(extra, size + sizeof(Chksum)) != 0) return false;
+    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
 
     return true;
 }
@@ -175,35 +161,34 @@ bool HostServer::_decode_req(Command& cmd, uint8_t* extra, uint8_t& size)
  *
  * @param cmd 请求的指令
  * @param extra 附加参数
- * @param size 参数长度
  * @param prop 接收prop属性指针的变量
  * @return true 成功获取变量
  * @return false 获取变量失败
  */
-bool HostServer::_get_property(Command cmd, uint8_t** extra, uint8_t& size, PropertyBase*& prop)
+bool HostServer::_get_property(Command cmd, Extra& extra, PropertyBase** prop)
 {
-    uint16_t id;
-    // 检查长度是否过短
-    if (size < sizeof(id))
+    // 解码Id
+    if (!extra.decode_id())
     {
-        send_response(cmd, ErrorCode::E_INVALID_ARG, NULL, 0);
+        send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
         return false;
     }
-    // 读取id
-    id = *(uint16_t*)*extra;
-    size -= sizeof(id);
-    *extra += sizeof(id);
-
     // 通过id从map中取出属性值
-    auto it = _props.find(id);
+    auto it = _props.find(extra.id());
     if (it == _props.end())
     {
-        send_response(cmd, ErrorCode::E_ID_NOT_EXIST, NULL, 0);
+        send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
         return false;
     }
-    prop = (*it).second;
+    *prop = (*it).second;
     // 检查访问权限
-    return _check_access(cmd, prop);
+    ErrorCode code;
+    if ((code = _check_access(cmd, *prop)) != ErrorCode::S_OK)
+    {
+        send_response(cmd, code, extra);
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -218,37 +203,21 @@ bool HostServer::_get_property(Command cmd, uint8_t** extra, uint8_t& size, Prop
  * @return true 成功获取变量
  * @return false 获取变量失败
  */
-bool HostServer::_get_memory_param(const Command       cmd,
-                                   const PropertyBase* prop,
-                                   uint8_t**           extra,
-                                   uint8_t&            size,
-                                   uint16_t&           offset,
-                                   uint8_t&            datlen)
+bool HostServer::_get_memory(const Command cmd, const PropertyBase* prop, Extra& extra)
 {
     // 检查数据长度是否过短
-    if (size < sizeof(offset) + sizeof(datlen))
+    if (!extra.decode_mem())
     {
-        send_response(cmd, ErrorCode::E_INVALID_ARG, NULL, 0);
+        send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
         return false;
     }
 
-    // 写入偏移
-    offset = *(uint16_t*)(*extra);
-    *extra += sizeof(offset);
-    size -= sizeof(offset);
-
-    // 写入长度
-    datlen = **extra;
-    *extra += sizeof(datlen);
-    size -= sizeof(datlen);
-
-    // datlen用于防止漏传offset造成的内存意外写入
-    if (cmd == Command::SET_MEMORY && size != datlen)
+    // datlen用于防止因漏传offset, 而造成的内存意外写入
+    if (cmd == Command::SET_MEMORY && extra.data_size() != extra.datlen())
     {
-        send_response(cmd, ErrorCode::E_INVALID_ARG, NULL, 0);
+        send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
         return false;
     }
-
     return true;
 }
 
@@ -257,10 +226,9 @@ bool HostServer::_get_memory_param(const Command       cmd,
  *
  * @param cmd 需要检查的指令
  * @param prop 访问的变量
- * @return true 有权限
- * @return false 无权限
+ * @return ErrorCode 错误码
  */
-bool HostServer::_check_access(const Command cmd, const PropertyBase* prop)
+ErrorCode HostServer::_check_access(const Command cmd, const PropertyBase* prop)
 {
     ErrorCode code;
     switch (cmd)
@@ -268,28 +236,12 @@ bool HostServer::_check_access(const Command cmd, const PropertyBase* prop)
     case Command::GET_SIZE:
     case Command::GET_MEMORY:
     case Command::GET_PROPERTY:
-    {
-        // 检查读取权限
-        if ((code = prop->check_read(privileged)) != ErrorCode::S_OK)
-        {
-            send_response(cmd, code, NULL, 0);
-            return false;
-        }
-        break;
-    }
+        return prop->check_read(privileged);
     case Command::SET_MEMORY:
     case Command::SET_PROPERTY:
-    {
-        // 检查写入权限
-        if ((code = prop->check_write(privileged)) != ErrorCode::S_OK)
-        {
-            send_response(cmd, code, NULL, 0);
-            return false;
-        }
-        break;
-    }
+        return prop->check_write(privileged);
     default:
         break;
     }
-    return true;
+    return ErrorCode::S_OK;
 }

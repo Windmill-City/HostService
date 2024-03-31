@@ -16,12 +16,12 @@ enum class Command : uint8_t
      *
      * 请求: CMD,属性Id
      * 应答:
-     * CMD,S_OK,属性值
-     * CMD,E_NO_IMPLEMENT
-     * CMD,E_INVALID_ARG
-     * CMD,E_ID_NOT_EXIST,
-     * CMD,E_NO_PERMISSION
-     * CMD,E_OBJECT_SIZE_TOO_LARGE
+     * CMD,S_OK,属性Id,属性值
+     * CMD,E_NO_IMPLEMENT,属性Id
+     * CMD,E_INVALID_ARG,属性Id
+     * CMD,E_ID_NOT_EXIST,属性Id
+     * CMD,E_NO_PERMISSION,属性Id
+     * CMD,E_OBJECT_SIZE_TOO_LARGE,属性Id
      */
     GET_PROPERTY,
     /**
@@ -29,15 +29,15 @@ enum class Command : uint8_t
      *
      * 请求: CMD,属性Id,属性值
      * 应答:
-     * CMD,S_OK
-     * CMD,E_NO_IMPLEMENT
-     * CMD,E_INVALID_ARG
-     * CMD,E_ID_NOT_EXIST,
-     * CMD,E_NO_PERMISSION
-     * CMD,E_READ_ONLY,
-     * CMD,E_OVER_HIGH_LIMIT
-     * CMD,E_OVER_LOW_LIMIT
-     * CMD,E_ILLEGAL_STATE
+     * CMD,S_OK,属性Id
+     * CMD,E_NO_IMPLEMENT,属性Id
+     * CMD,E_INVALID_ARG,属性Id
+     * CMD,E_ID_NOT_EXIST,属性Id
+     * CMD,E_NO_PERMISSION,属性Id
+     * CMD,E_READ_ONLY,属性Id
+     * CMD,E_OVER_HIGH_LIMIT,属性Id
+     * CMD,E_OVER_LOW_LIMIT,属性Id
+     * CMD,E_ILLEGAL_STATE,属性Id
      */
     SET_PROPERTY,
     /**
@@ -45,12 +45,12 @@ enum class Command : uint8_t
      *
      * 请求: CMD,内存Id,地址偏移,数据长度
      * 应答:
-     * CMD,S_OK,内存Id,地址偏移,数据长度
-     * CMD,E_NO_IMPLEMENT
-     * CMD,E_INVALID_ARG
-     * CMD,E_ID_NOT_EXIST,
-     * CMD,E_NO_PERMISSION
-     * CMD,E_OUT_OF_INDEX
+     * CMD,S_OK,内存Id,地址偏移,数据长度,N字节数据
+     * CMD,E_NO_IMPLEMENT,内存Id,地址偏移,数据长度
+     * CMD,E_INVALID_ARG,内存Id,地址偏移,数据长度
+     * CMD,E_ID_NOT_EXIST,内存Id,地址偏移,数据长度
+     * CMD,E_NO_PERMISSION,内存Id,地址偏移,数据长度
+     * CMD,E_OUT_OF_INDEX,内存Id,地址偏移,数据长度
      */
     GET_MEMORY,
     /**
@@ -58,14 +58,14 @@ enum class Command : uint8_t
      *
      * 请求: CMD,内存Id,地址偏移,数据长度,N字节数据
      * 应答:
-     * CMD,S_OK
-     * CMD,E_NO_IMPLEMENT
-     * CMD,E_INVALID_ARG
-     * CMD,E_ID_NOT_EXIST,
-     * CMD,E_NO_PERMISSION
-     * CMD,E_READ_ONLY,
-     * CMD,E_OUT_OF_INDEX
-     * CMD,E_ILLEGAL_STATE
+     * CMD,S_OK,内存Id,地址偏移,数据长度
+     * CMD,E_NO_IMPLEMENT,内存Id,地址偏移,数据长度
+     * CMD,E_INVALID_ARG,内存Id,地址偏移,数据长度
+     * CMD,E_ID_NOT_EXIST,内存Id,地址偏移,数据长度
+     * CMD,E_NO_PERMISSION,内存Id,地址偏移,数据长度
+     * CMD,E_READ_ONLY,内存Id,地址偏移,数据长度
+     * CMD,E_OUT_OF_INDEX,内存Id,地址偏移,数据长度
+     * CMD,E_ILLEGAL_STATE,内存Id,地址偏移,数据长度
      */
     SET_MEMORY,
     /**
@@ -73,10 +73,10 @@ enum class Command : uint8_t
      *
      * 请求: CMD,属性Id
      * 应答:
-     * CMD,S_OK,属性长度
-     * CMD,E_INVALID_ARG
-     * CMD,E_ID_NOT_EXIST,
-     * CMD,E_NO_PERMISSION
+     * CMD,S_OK,属性Id,属性长度
+     * CMD,E_INVALID_ARG,属性Id
+     * CMD,E_ID_NOT_EXIST,属性Id
+     * CMD,E_NO_PERMISSION,属性Id
      */
     GET_SIZE,
 };

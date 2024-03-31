@@ -19,13 +19,13 @@ TEST_F(HostCS, Struct_GetProperty)
     server.insert(0x01, prop);
     prop.get().val = 18.8f;
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::GET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
 
-    EXPECT_FLOAT_EQ(*(float*)client._extra, 18.8f);
+    EXPECT_FLOAT_EQ(*(float*)client._extra.data(), 18.8f);
 }
 
 TEST_F(HostCS, Struct_SetProperty)
@@ -33,10 +33,10 @@ TEST_F(HostCS, Struct_SetProperty)
     Struct<FloatSt> prop;
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.add(18.8f);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    extra.add(18.8f);
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll();
 
@@ -48,12 +48,12 @@ TEST_F(HostCS, Struct_SetMemory)
     Struct<FloatSt> prop;
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.offset(0);
-    builder.datlen(sizeof(float));
-    builder.add(18.8f); // data
-    builder.tx(client, Command::SET_MEMORY);
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 0;
+    extra.datlen() = sizeof(float);
+    extra.add(18.8f); // data
+    client.send_request(Command::SET_MEMORY, extra);
 
     Poll();
 
@@ -66,15 +66,15 @@ TEST_F(HostCS, Struct_GetMemory)
     server.insert(0x01, prop);
     prop.get().val = 18.8f;
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.offset(0);
-    builder.datlen(sizeof(float));
-    builder.tx(client, Command::GET_MEMORY);
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 0;
+    extra.datlen() = sizeof(float);
+    client.send_request(Command::GET_MEMORY, extra);
 
     Poll();
 
-    EXPECT_FLOAT_EQ(*(float*)client._extra, 18.8f);
+    EXPECT_FLOAT_EQ(*(float*)client._extra.data(), 18.8f);
 }
 
 TEST_F(HostCS, Struct_GetSize)
@@ -82,11 +82,11 @@ TEST_F(HostCS, Struct_GetSize)
     Struct<FloatSt> prop;
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::GET_SIZE);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::GET_SIZE, extra);
 
     Poll();
 
-    EXPECT_EQ(*(uint16_t*)client._extra, sizeof(float));
+    EXPECT_EQ(*(uint16_t*)client._extra.data(), sizeof(float));
 }

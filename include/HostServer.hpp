@@ -1,3 +1,4 @@
+#include <Extra.hpp>
 #include <HostBase.hpp>
 
 struct HostServer : public HostBase
@@ -7,7 +8,7 @@ struct HostServer : public HostBase
     // 帧头缓冲区
     Request        _req;
     // 附加参数缓冲区
-    uint8_t        _extra[UINT8_MAX];
+    Extra          _extra;
     // 属性值
     PropertyHolder _props;
 
@@ -16,19 +17,14 @@ struct HostServer : public HostBase
     /* 添加属性值 */
     bool           insert(uint16_t id, PropertyBase* prop);
     /* 接收请求帧 */
-    bool           recv_request(Command& cmd, uint8_t** extra, uint8_t& size);
+    bool           recv_request(Command& cmd, Extra& extra);
     /* 发送响应帧 */
-    void           send_response(const Command cmd, const ErrorCode err, const uint8_t* extra, const uint8_t size);
+    void           send_response(const Command cmd, const ErrorCode err, Extra& extra);
     /* 帧解码 */
-    bool           _decode_req(Command& cmd, uint8_t* extra, uint8_t& sizex);
+    bool           _decode_req(Command& cmd, Extra& extra);
     /* 帧参数解析 */
-    bool           _get_property(const Command cmd, uint8_t** extra, uint8_t& size, PropertyBase*& prop);
-    bool           _get_memory_param(const Command       cmd,
-                                     const PropertyBase* prop,
-                                     uint8_t**           extra,
-                                     uint8_t&            size,
-                                     uint16_t&           offset,
-                                     uint8_t&            datlen);
+    bool           _get_property(const Command cmd, Extra& extra, PropertyBase** prop);
+    bool           _get_memory(const Command cmd, const PropertyBase* prop, Extra& extra);
     /* 权限检查 */
-    bool           _check_access(const Command cmd, const PropertyBase* prop);
+    ErrorCode      _check_access(const Command cmd, const PropertyBase* prop);
 };

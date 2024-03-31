@@ -10,16 +10,16 @@ TEST(Property, sizeof)
 
 TEST_F(HostCS, Property_GetProperty)
 {
-    Property<bool> prop_bool = true;
-    server.insert(0x01, prop_bool);
+    Property<float> prop{18.8f};
+    server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::GET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
 
-    EXPECT_EQ(*(bool*)client._extra, true);
+    EXPECT_EQ(*(float*)client._extra.data(), 18.8f);
 }
 
 TEST_F(HostCS, Property_SetProperty)
@@ -27,10 +27,10 @@ TEST_F(HostCS, Property_SetProperty)
     Property<float> prop{0.0f};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.add(18.8f);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    extra.add(18.8f);
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll();
 
@@ -42,12 +42,12 @@ TEST_F(HostCS, Property_SetMemory)
     Property<float> prop{0.0f};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.offset(0);
-    builder.datlen(sizeof(float));
-    builder.add(18.8f); // data
-    builder.tx(client, Command::SET_MEMORY);
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 0;
+    extra.datlen() = sizeof(float);
+    extra.add(18.8f); // data
+    client.send_request(Command::SET_MEMORY, extra);
 
     Poll(true);
 
@@ -59,11 +59,11 @@ TEST_F(HostCS, Property_GetMemory)
     Property<float> prop{0.0f};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.offset(0);
-    builder.datlen(sizeof(float));
-    builder.tx(client, Command::GET_MEMORY);
+    Extra extra{Extra::Type::ID_AND_MEMORY};
+    extra.id()     = 0x01;
+    extra.offset() = 0;
+    extra.datlen() = sizeof(float);
+    client.send_request(Command::GET_MEMORY, extra);
 
     Poll(true);
 
@@ -75,11 +75,11 @@ TEST_F(HostCS, Property_GetSize)
     Property<float> prop{0.0f};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::GET_SIZE);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::GET_SIZE, extra);
 
     Poll();
 
-    EXPECT_EQ(*(uint16_t*)client._extra, sizeof(float));
+    EXPECT_EQ(*(uint16_t*)client._extra.data(), sizeof(float));
 }

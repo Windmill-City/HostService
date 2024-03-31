@@ -4,12 +4,12 @@
 
 TEST_F(HostCS, Write_Read)
 {
-    Property<bool,Access::READ> prop{true};
+    Property<bool, Access::READ> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -18,12 +18,12 @@ TEST_F(HostCS, Write_Read)
 
 TEST_F(HostCS, Write_Read_Protect_NotPrivileged)
 {
-    Property<bool,Access::READ_PROTECT> prop{true};
+    Property<bool, Access::READ_PROTECT> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -33,12 +33,12 @@ TEST_F(HostCS, Write_Read_Protect_NotPrivileged)
 TEST_F(HostCS, Write_Read_Protect_Privileged)
 {
     server.privileged = true;
-    Property<bool,Access::READ_PROTECT> prop{true};
+    Property<bool, Access::READ_PROTECT> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -47,12 +47,12 @@ TEST_F(HostCS, Write_Read_Protect_Privileged)
 
 TEST_F(HostCS, Write_Read_Write_Protect_NotPrivileged)
 {
-    Property<bool,Access::READ_WRITE_PROTECT> prop{true};
+    Property<bool, Access::READ_WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -62,12 +62,12 @@ TEST_F(HostCS, Write_Read_Write_Protect_NotPrivileged)
 TEST_F(HostCS, Write_Read_Write_Protect_Privileged)
 {
     server.privileged = true;
-    Property<bool,Access::READ_WRITE_PROTECT> prop{true};
+    Property<bool, Access::READ_WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -76,12 +76,12 @@ TEST_F(HostCS, Write_Read_Write_Protect_Privileged)
 
 TEST_F(HostCS, Write_Write_Protect_NotPrivileged)
 {
-    Property<bool,Access::WRITE_PROTECT> prop{true};
+    Property<bool, Access::WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -91,12 +91,12 @@ TEST_F(HostCS, Write_Write_Protect_NotPrivileged)
 TEST_F(HostCS, Write_Write_Protect_Privileged)
 {
     server.privileged = true;
-    Property<bool,Access::WRITE_PROTECT> prop{true};
+    Property<bool, Access::WRITE_PROTECT> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 
@@ -105,12 +105,12 @@ TEST_F(HostCS, Write_Write_Protect_Privileged)
 
 TEST_F(HostCS, Write_Read_Write)
 {
-    Property<bool,Access::READ_WRITE> prop{true};
+    Property<bool, Access::READ_WRITE> prop{true};
     server.insert(0x01, prop);
 
-    RequestBuilder builder;
-    builder.id(0x01);
-    builder.tx(client, Command::SET_PROPERTY);
+    Extra extra;
+    extra.id() = 0x01;
+    client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
 

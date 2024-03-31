@@ -99,27 +99,26 @@ struct Property : public PropertyAccess<access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get(uint8_t** p_value, uint8_t& size) override
+    virtual ErrorCode get(Extra& extra) override
     {
-        size     = sizeof(_value);
-        *p_value = (uint8_t*)&_value;
+        extra.add(_value);
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode set(const uint8_t* p_value, const uint8_t size) override
+    virtual ErrorCode set(Extra& extra) override
     {
-        if (size != sizeof(_value))
+        if (extra.data_size() != sizeof(_value))
         {
             return ErrorCode::E_INVALID_ARG;
         }
 
-        _assign(*(T*)p_value);
+        _assign(*(T*)extra.data());
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(uint16_t& size) override
+    virtual ErrorCode get_size(Extra& extra) override
     {
-        size = sizeof(_value);
+        extra.add((uint16_t)sizeof(_value));
         return ErrorCode::S_OK;
     }
 };

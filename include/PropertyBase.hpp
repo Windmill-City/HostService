@@ -31,49 +31,45 @@ enum class Access : uint8_t
     READ_WRITE_PROTECT,
 };
 
+struct Extra;
+
 struct PropertyBase
 {
     /**
      * @brief 设置属性值
      *
-     * @param p_value [in]附加参数的指针
-     * @param size [in]参数的长度
+     * @param extra [in]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode set(const uint8_t* p_value, const uint8_t size);
+    virtual ErrorCode set(Extra& extra);
     /**
      * @brief 设置属性值(内存)
      *
-     * @param offset [in]地址偏移
-     * @param p_value [in]附加参数的指针
-     * @param size [in]参数的长度
+     * @param extra [in]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode set_mem(const uint16_t offset, const uint8_t* p_value, const uint8_t datlen);
+    virtual ErrorCode set_mem(Extra& extra);
     /**
      * @brief 读取属性值
      *
-     * @param p_value [out]数据的指针
-     * @param size [out]数据的长度
+     * @param extra [in/out]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get(uint8_t** p_value, uint8_t& size);
+    virtual ErrorCode get(Extra& extra);
     /**
      * @brief 读取属性值(内存)
      *
-     * @param offset [in]地址偏移
-     * @param p_value [out]数据的指针
-     * @param size [in/out]数据的长度
+     * @param extra [in/out]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get_mem(const uint16_t offset, uint8_t** p_value, uint8_t& datlen);
+    virtual ErrorCode get_mem(Extra& extra);
     /**
      * @brief 获取属性长度
      *
-     * @param size 属性长度
+     * @param extra [out]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get_size(uint16_t& size);
+    virtual ErrorCode get_size(Extra& extra);
 
     virtual ErrorCode check_read(bool privileged) const  = 0;
     virtual ErrorCode check_write(bool privileged) const = 0;
