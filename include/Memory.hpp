@@ -2,7 +2,7 @@
 #include "PropertyBase.hpp"
 #include <cstddef>
 
-template <typename T, uint16_t _len, Access access = Access::READ_WRITE>
+template <typename T, size_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
     T _value[_len];
@@ -14,11 +14,11 @@ struct Memory : public PropertyAccess<access>
     }
 
     /**
-     * @brief 获取内存区长度
+     * @brief 获取数组长度
      *
-     * @return uint16_t 内存区长度
+     * @return size_t 数组长度
      */
-    uint16_t len()
+    size_t len()
     {
         return _len;
     }
