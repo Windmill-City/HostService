@@ -25,10 +25,10 @@ TEST(Property, Calc)
     Property<float> prop_1 = 5;
     Property<float> prop_2 = 7;
 
-    EXPECT_EQ(prop_1 + 8.f, 5 + 8.f);
-    EXPECT_EQ(prop_1 - 8.f, 5 - 8.f);
-    EXPECT_EQ(prop_1 * 8.f, 5 * 8.f);
-    EXPECT_EQ(prop_1 / 8.f, 5 / 8.f);
+    EXPECT_EQ(prop_1 + 8, 5 + 8.f);
+    EXPECT_EQ(prop_1 - 8, 5 - 8.f);
+    EXPECT_EQ(prop_1 * 8, 5 * 8.f);
+    EXPECT_EQ(prop_1 / 8, 5 / 8.f);
 
     EXPECT_EQ(prop_1 + prop_2, 5 + 7.f);
     EXPECT_EQ(prop_1 - prop_2, 5 - 7.f);
@@ -36,14 +36,14 @@ TEST(Property, Calc)
     EXPECT_EQ(prop_1 / prop_2, 5 / 7.f);
 
     float v;
-    v = prop_1 + 1.f;
-    EXPECT_EQ(prop_1 += 1.f, v);
-    v = prop_1 - 1.f;
-    EXPECT_EQ(prop_1 -= 1.f, v);
-    v = prop_1 * 1.f;
-    EXPECT_EQ(prop_1 *= 1.f, v);
-    v = prop_1 / 1.f;
-    EXPECT_EQ(prop_1 /= 1.f, v);
+    v = prop_1 + 2;
+    EXPECT_EQ(prop_1 += 2.f, v);
+    v = prop_1 - 2;
+    EXPECT_EQ(prop_1 -= 2.f, v);
+    v = prop_1 * 2;
+    EXPECT_EQ(prop_1 *= 2.f, v);
+    v = prop_1 / 2;
+    EXPECT_EQ(prop_1 /= 2.f, v);
 }
 
 TEST_F(HostCS, Property_GetProperty)

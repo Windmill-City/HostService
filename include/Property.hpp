@@ -27,14 +27,16 @@ struct Property : public PropertyAccess<access>
     }
 
     /* 赋值运算符 */
-    auto& operator=(const T other)
+    template <typename K>
+    auto& operator=(const K other)
     {
         _assign(other);
         return *this;
     }
 
     /* 赋值运算符 */
-    auto& operator=(const Property<T>& other)
+    template <typename K>
+    auto& operator=(const Property<K>& other)
     {
         if (this == &other) return *this;
         _assign(other._value);
@@ -48,46 +50,54 @@ struct Property : public PropertyAccess<access>
     }
 
     /* 四则运算 */
-    T operator+(const T rhs)
+    template <typename K>
+    T operator+(const K rhs)
     {
         return this->_value + rhs;
     }
 
-    T operator-(const T rhs)
+    template <typename K>
+    T operator-(const K rhs)
     {
         return this->_value - rhs;
     }
 
-    T operator*(const T rhs)
+    template <typename K>
+    T operator*(const K rhs)
     {
         return this->_value * rhs;
     }
 
-    T operator/(const T rhs)
+    template <typename K>
+    T operator/(const K rhs)
     {
         return this->_value / rhs;
     }
 
     /* 二元运算符 */
-    auto& operator+=(const T rhs)
+    template <typename K>
+    auto& operator+=(const K rhs)
     {
         _assign(this->_value + rhs);
         return *this;
     }
 
-    auto& operator-=(const T rhs)
+    template <typename K>
+    auto& operator-=(const K rhs)
     {
         _assign(this->_value - rhs);
         return *this;
     }
 
-    auto& operator*=(const T rhs)
+    template <typename K>
+    auto& operator*=(const K rhs)
     {
         _assign(this->_value * rhs);
         return *this;
     }
 
-    auto& operator/=(const T rhs)
+    template <typename K>
+    auto& operator/=(const K rhs)
     {
         _assign(this->_value / rhs);
         return *this;

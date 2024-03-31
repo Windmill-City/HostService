@@ -107,7 +107,8 @@ struct Range : public Property<T, val>
     }
 
     /* 赋值运算符 */
-    auto& operator=(const T other)
+    template<typename K>
+    auto& operator=(const K other)
     {
         _assign(other);
         return *this;
