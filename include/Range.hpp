@@ -17,7 +17,7 @@ struct _Range
     T max;
 };
 
-template <typename T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
+template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
 struct Range : public Struct<_Range<T>, access>
 {
     Range(T min = AbsMin, T max = AbsMax)
@@ -52,14 +52,13 @@ template <typename T,
           RangeMode mode  = RangeMode::Hard,
           Access    range = Access::READ_WRITE,
           Access    val   = Access::READ_WRITE>
+requires std::is_arithmetic_v<T> || std::is_enum_v<T>
 struct RangedProperty : public Property<T, val>
 {
     Range<T, AbsMin, AbsMax, range> _range;
 
     explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
     {
-        static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
-
         _range       = {min, max};
         this->_value = value;
 

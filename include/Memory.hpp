@@ -2,7 +2,10 @@
 #include "PropertyBase.hpp"
 #include <cstddef>
 
-template <typename T, size_t _len, Access access = Access::READ_WRITE>
+template <typename T>
+concept _Memory = std::is_standard_layout_v<T>;
+
+template <_Memory T, size_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
     T _value[_len];
