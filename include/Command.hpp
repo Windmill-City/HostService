@@ -41,6 +41,19 @@ enum class Command : uint8_t
      */
     SET_PROPERTY,
     /**
+     * @brief 读取内存
+     *
+     * 请求: CMD,内存Id,地址偏移,数据长度
+     * 应答:
+     * CMD,S_OK,内存Id,地址偏移,数据长度
+     * CMD,E_NO_IMPLEMENT
+     * CMD,E_INVALID_ARG
+     * CMD,E_ID_NOT_EXIST,
+     * CMD,E_NO_PERMISSION
+     * CMD,E_OUT_OF_INDEX
+     */
+    GET_MEMORY,
+    /**
      * @brief 写入内存
      *
      * 请求: CMD,内存Id,地址偏移,数据长度,N字节数据
@@ -55,19 +68,6 @@ enum class Command : uint8_t
      * CMD,E_ILLEGAL_STATE
      */
     SET_MEMORY,
-    /**
-     * @brief 读取内存
-     *
-     * 请求: CMD,内存Id,地址偏移,数据长度
-     * 应答:
-     * CMD,S_OK,内存Id,地址偏移,数据长度
-     * CMD,E_NO_IMPLEMENT
-     * CMD,E_INVALID_ARG
-     * CMD,E_ID_NOT_EXIST,
-     * CMD,E_NO_PERMISSION
-     * CMD,E_OUT_OF_INDEX
-     */
-    GET_MEMORY,
     /**
      * @brief 获取属性值长度
      *
