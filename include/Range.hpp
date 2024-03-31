@@ -10,7 +10,10 @@ enum class RangeMode : uint8_t
     Clamp, // 超出范围的数值会被截断到范围以内
 };
 
-template <typename T, RangeMode mode = RangeMode::Hard, Access range = Access::READ_WRITE, Access val = Access::READ_WRITE>
+template <typename T,
+          RangeMode mode  = RangeMode::Hard,
+          Access    range = Access::READ_WRITE,
+          Access    val   = Access::READ_WRITE>
 struct Range : public Property<T, val>
 {
     struct _Range
@@ -21,7 +24,7 @@ struct Range : public Property<T, val>
 
     Struct<_Range, range> _range;
 
-    Range(T value = 0, T min = 0, T max = 0)
+    explicit Range(T value = 0, T min = 0, T max = 0)
     {
         static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
 
@@ -30,7 +33,7 @@ struct Range : public Property<T, val>
         this->min()  = min;
         this->max()  = max;
 
-        this->clamp();
+        if (mode == RangeMode::Hard || mode == RangeMode::Clamp) this->clamp();
     }
 
     /**
@@ -101,5 +104,12 @@ struct Range : public Property<T, val>
         }
 
         return ErrorCode::S_OK;
+    }
+
+    /* 赋值运算符 */
+    auto& operator=(const T other)
+    {
+        _assign(other);
+        return *this;
     }
 };

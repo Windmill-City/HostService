@@ -11,6 +11,48 @@ TEST(Range, sizeof)
     EXPECT_EQ(sizeof(Range<float>::_Range), 8);
 }
 
+TEST(Range, Mode)
+{
+    Range<int, RangeMode::Hard>  hard{100, 0, 10};
+    Range<int, RangeMode::Soft>  soft{100, 0, 10};
+    Range<int, RangeMode::Clamp> clamp{-100, 0, 10};
+
+    // hard 和 clamp 在初始化时会进行clamp
+    EXPECT_EQ(hard, 10);
+    EXPECT_EQ(clamp, 0);
+    // soft 不会进行clamp
+    EXPECT_EQ(soft, 100);
+
+    // 测试边界能否赋值
+    hard = 10;
+    EXPECT_EQ(hard, 10);
+    hard = 0;
+    EXPECT_EQ(hard, 0);
+
+    // 测试不同模式能否赋值
+    hard = soft = 10;
+    EXPECT_EQ(hard, soft);
+
+    // 测试是否拦截赋值
+    hard = 100;
+    EXPECT_EQ(hard, 10);
+
+    // 测试是否允许赋值
+    soft = 100;
+    EXPECT_EQ(soft, 100);
+    // 测试in_range
+    EXPECT_FALSE(soft.in_range());
+
+    // 测试in_range
+    soft = 7;
+    EXPECT_EQ(soft, 7);
+    EXPECT_TRUE(soft.in_range());
+
+    // 测试clamp是否正常
+    EXPECT_EQ(clamp = 100, 10);
+    EXPECT_EQ(clamp = -100, 0);
+}
+
 TEST_F(HostCS, Range_GetProperty)
 {
     Range<float> prop{18.8f, 0.0f, 25.f};
