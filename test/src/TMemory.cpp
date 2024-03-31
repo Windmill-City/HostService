@@ -11,7 +11,7 @@ TEST(Memory, sizeof)
 TEST_F(HostCS, Memory_GetProperty)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra;
     extra.id() = 0x01;
@@ -25,7 +25,7 @@ TEST_F(HostCS, Memory_GetProperty)
 TEST_F(HostCS, Memory_SetProperty)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra;
     extra.id() = 0x01;
@@ -40,7 +40,7 @@ TEST_F(HostCS, Memory_SetProperty)
 TEST_F(HostCS, Memory_SetMemory)
 {
     Memory<uint8_t, 1024> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
@@ -66,7 +66,7 @@ TEST_F(HostCS, Memory_SetMemory)
 TEST_F(HostCS, Memory_GetMemory)
 {
     Memory<uint8_t, 1024> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     for (size_t i = 0; i < prop.len(); i++)
     {
@@ -90,7 +90,7 @@ TEST_F(HostCS, Memory_GetMemory)
 TEST_F(HostCS, Memory_SetMemory_OutOfRange)
 {
     Memory<uint8_t, 32> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
@@ -113,7 +113,7 @@ TEST_F(HostCS, Memory_SetMemory_OutOfRange)
 TEST_F(HostCS, Memory_GetMemory_OutOfRange)
 {
     Memory<uint8_t, 32> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
@@ -129,7 +129,7 @@ TEST_F(HostCS, Memory_GetMemory_OutOfRange)
 TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
 {
     Memory<uint8_t, 1024> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;
@@ -145,7 +145,7 @@ TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
 TEST_F(HostCS, Memory_GetSize)
 {
     Memory<float, 1> prop;
-    server.insert(0x01, prop.base());
+    server.insert(0x01, prop);
 
     Extra extra;
     extra.id() = 0x01;

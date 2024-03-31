@@ -33,21 +33,8 @@ struct Memory : public PropertyAccess<access>
         return sizeof(_value);
     }
 
-    /**
-     * @brief 返回指向基类的指针
-     *
-     * 由于隐式转换到 PropertyBase* 会引起operator[]运算符的调用歧义
-     * 这里引入额外的方法来获取指向基类的指针
-     *
-     * @return PropertyBase* 指向基类的指针
-     */
-    PropertyBase* base()
-    {
-        return static_cast<PropertyBase*>(this);
-    }
-
     /* 显式类型转换 */
-    explicit operator PropertyBase*()
+    operator PropertyBase*()
     {
         return static_cast<PropertyBase*>(this);
     }
@@ -59,7 +46,8 @@ struct Memory : public PropertyAccess<access>
     }
 
     /* 数组运算符 */
-    T& operator[](std::size_t idx)
+    template <typename K>
+    T& operator[](K idx)
     {
         return _value[idx];
     }
