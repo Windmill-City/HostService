@@ -71,8 +71,7 @@ struct Struct : public PropertyAccess<access>
             return ErrorCode::E_INVALID_ARG;
         }
 
-        _assign(*(T*)extra.data());
-        return ErrorCode::S_OK;
+        return _assign(*(T*)extra.data());
     }
 
     virtual ErrorCode get_size(Extra& extra) override
