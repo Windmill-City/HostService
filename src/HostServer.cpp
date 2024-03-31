@@ -197,9 +197,6 @@ bool HostServer::_get_property(Command cmd, Extra& extra, PropertyBase** prop)
  * @param cmd 请求的指令
  * @param prop 内存属性值
  * @param extra 附加参数
- * @param size 参数长度
- * @param offset 地址偏移
- * @param datlen 数据长度
  * @return true 成功获取变量
  * @return false 获取变量失败
  */
