@@ -202,12 +202,12 @@ struct Extra
     bool decode_id()
     {
         // 检查长度是否过短
-        if (size() < sizeof(id()))
+        if (data_size() < sizeof(id()))
         {
             return false;
         }
         // 指定数据区指针索引
-        _data = sizeof(id());
+        _data += sizeof(id());
         _type = Type::ID_ONLY;
         return true;
     }
