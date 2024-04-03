@@ -44,31 +44,6 @@ struct Property : public PropertyAccess<access>
         return (T*)&_value;
     }
 
-    /* 四则运算 */
-    template <typename K>
-    T operator+(const K rhs)
-    {
-        return this->_value + rhs;
-    }
-
-    template <typename K>
-    T operator-(const K rhs)
-    {
-        return this->_value - rhs;
-    }
-
-    template <typename K>
-    T operator*(const K rhs)
-    {
-        return this->_value * rhs;
-    }
-
-    template <typename K>
-    T operator/(const K rhs)
-    {
-        return this->_value / rhs;
-    }
-
     /* 二元运算符 */
     template <typename K>
     auto& operator+=(const K rhs)
