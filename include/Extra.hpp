@@ -2,6 +2,10 @@
 #include "HostBase.hpp"
 #include <array>
 
+// 只允许标准布局类型和非指针类型
+template <typename T>
+concept Data = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
+
 struct Extra
 {
     enum class Type
@@ -97,14 +101,12 @@ struct Extra
      * @return true 添加成功
      * @return false 附加参数长度超出最大帧长限制
      */
-    template <typename T>
+    template <Data T>
     bool add(const T value)
     {
-        // 只允许标准布局类型和非指针类型
-        static_assert(std::is_standard_layout_v<T> && !std::is_pointer_v<T>);
-
+        // 检查是否超长
         if (sizeof(value) + _tail > UINT8_MAX) return false;
-
+        // 复制数据
         memcpy(&_buf[_tail], (uint8_t*)&value, sizeof(value));
         _tail += sizeof(value);
         return true;
@@ -119,13 +121,12 @@ struct Extra
      * @return true 添加成功
      * @return false 附加参数长度超过最大帧长限制
      */
-    template <typename T>
+    template <Data T>
     bool add(const T* value, const uint8_t size)
     {
-        // 只允许标准布局类型和非指针类型
-        static_assert(std::is_standard_layout_v<T> && !std::is_pointer_v<T>);
-
+        // 检查是否超长
         if (size + _tail > UINT8_MAX) return false;
+        // 复制数据
         memcpy(&_buf[_tail], (uint8_t*)value, size);
         _tail += size;
         return true;
