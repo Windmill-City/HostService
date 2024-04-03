@@ -10,6 +10,11 @@ enum class RangeMode : uint8_t
     Clamp, // 超出范围的赋值会被截断到范围以内
 };
 
+/**
+ * @brief 存放范围属性的结构体
+ *
+ * @tparam T 属性的类型
+ */
 template <typename T>
 struct _Range
 {
@@ -17,6 +22,14 @@ struct _Range
     T max;
 };
 
+/**
+ * @brief 范围属性
+ *
+ * @tparam T 属性类型
+ * @tparam AbsMin 绝对最小值
+ * @tparam AbsMax 绝对最大值
+ * @tparam access 访问级别
+ */
 template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
 struct Range : public Struct<_Range<T>, access>
 {
@@ -67,6 +80,16 @@ struct Range : public Struct<_Range<T>, access>
     }
 };
 
+/**
+ * @brief 带范围限制的属性值
+ *
+ * @tparam T 属性值类型
+ * @tparam AbsMin 绝对最小值
+ * @tparam AbsMax 绝对最大值
+ * @tparam mode 限制模式
+ * @tparam range 范围的访问级
+ * @tparam val 属性值的访问级
+ */
 template <typename T,
           int       AbsMin,
           int       AbsMax,
