@@ -45,7 +45,7 @@ struct Struct : public PropertyAccess<access>
     }
 
     /* getter */
-    T& get()
+    virtual T& get()
     {
         return *this;
     }

@@ -27,6 +27,20 @@ struct Range : public Struct<_Range<T>, access>
         _assign({min, max});
     }
 
+    /* 赋值运算符 */
+    template <typename K>
+    auto& operator=(const _Range<K> other)
+    {
+        _assign(other);
+        return *this;
+    }
+
+    /* getter */
+    virtual _Range<T>& get() override
+    {
+        return this->_value;
+    }
+
     virtual ErrorCode _assign(const _Range<T>& value) override
     {
         if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
@@ -37,12 +51,18 @@ struct Range : public Struct<_Range<T>, access>
         return ErrorCode::S_OK;
     }
 
-    /* 赋值运算符 */
-    template <typename K>
-    auto& operator=(const _Range<K> other)
+    virtual ErrorCode get(Extra& extra) override
     {
-        _assign(other);
-        return *this;
+        extra.add(AbsMin);
+        extra.add(AbsMax);
+        return static_cast<Struct<_Range<T>>*>(this)->get(extra);
+    }
+
+    virtual ErrorCode get_size(Extra& extra) override
+    {
+        // 包含当前范围和绝对最大范围
+        extra.add((uint16_t)(sizeof(this->_value) * 2));
+        return ErrorCode::S_OK;
     }
 };
 
@@ -52,7 +72,7 @@ template <typename T,
           RangeMode mode  = RangeMode::Hard,
           Access    range = Access::READ_WRITE,
           Access    val   = Access::READ_WRITE>
-requires std::is_arithmetic_v<T> || std::is_enum_v<T>
+    requires std::is_arithmetic_v<T> || std::is_enum_v<T>
 struct RangedProperty : public Property<T, val>
 {
     Range<T, AbsMin, AbsMax, range> _range;
