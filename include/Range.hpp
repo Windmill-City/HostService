@@ -53,9 +53,10 @@ struct Range : public Struct<_Range<T>, access>
 
     virtual ErrorCode get(Extra& extra) override
     {
+        extra.add(this->_value);
         extra.add(AbsMin);
         extra.add(AbsMax);
-        return static_cast<Struct<_Range<T>>*>(this)->get(extra);
+        return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get_size(Extra& extra) override
