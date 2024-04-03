@@ -85,10 +85,10 @@ bool HostServer::poll()
  * @return true 添加成功
  * @return false Id重复
  */
-bool HostServer::insert(uint16_t id, PropertyBase* prop)
+bool HostServer::insert(uint16_t id, PropertyBase& prop)
 {
     bool ok;
-    std::tie(std::ignore, ok) = _props.emplace(id, prop);
+    std::tie(std::ignore, ok) = _props.emplace(id, &prop);
     return ok;
 }
 

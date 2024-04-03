@@ -21,12 +21,6 @@ struct Property : public PropertyAccess<access>
         return _value;
     }
 
-    /* 隐式类型转换 */
-    operator PropertyBase*()
-    {
-        return static_cast<PropertyBase*>(this);
-    }
-
     /* 赋值运算符 */
     template <typename K>
     auto& operator=(const K other)

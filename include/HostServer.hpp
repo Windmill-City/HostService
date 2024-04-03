@@ -15,7 +15,7 @@ struct HostServer : public HostBase
     /* 轮询请求 */
     virtual bool   poll() override;
     /* 添加属性值 */
-    bool           insert(uint16_t id, PropertyBase* prop);
+    bool           insert(uint16_t id, PropertyBase& prop);
     /* 接收请求帧 */
     bool           recv_request(Command& cmd, Extra& extra);
     /* 发送响应帧 */

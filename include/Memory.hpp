@@ -36,12 +36,6 @@ struct Memory : public PropertyAccess<access>
         return sizeof(_value);
     }
 
-    /* 隐式类型转换 */
-    operator PropertyBase*()
-    {
-        return static_cast<PropertyBase*>(this);
-    }
-
     /* 地址运算符 */
     T* operator&()
     {

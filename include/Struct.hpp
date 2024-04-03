@@ -12,12 +12,6 @@ struct Struct : public PropertyAccess<access>
     T _value;
 
     /* 隐式类型转换 */
-    operator PropertyBase*()
-    {
-        return static_cast<PropertyBase*>(this);
-    }
-
-    /* 隐式类型转换 */
     operator T&()
     {
         return _value;
