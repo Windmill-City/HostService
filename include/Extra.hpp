@@ -105,10 +105,7 @@ struct Extra
 
         if (sizeof(value) + _tail > UINT8_MAX) return false;
 
-        for (size_t i = 0; i < sizeof(value); i++)
-        {
-            _buf[_tail + i] = ((uint8_t*)&value)[i];
-        }
+        memcpy(&_buf[_tail], (uint8_t*)&value, sizeof(value));
         _tail += sizeof(value);
         return true;
     }
@@ -129,11 +126,7 @@ struct Extra
         static_assert(std::is_standard_layout_v<T> && !std::is_pointer_v<T>);
 
         if (size + _tail > UINT8_MAX) return false;
-
-        for (size_t i = 0; i < size; i++)
-        {
-            _buf[_tail + i] = ((uint8_t*)value)[i];
-        }
+        memcpy(&_buf[_tail], (uint8_t*)value, size);
         _tail += size;
         return true;
     }
