@@ -8,6 +8,10 @@ concept Data = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
 
 struct Extra
 {
+    /**
+     * @brief 附加参数类型
+     *
+     */
     enum class Type
     {
         RAW = 0,
@@ -17,6 +21,10 @@ struct Extra
 
 #pragma pack(1)
 
+    /**
+     * @brief 内存访问参数
+     *
+     */
     struct _Memory
     {
         uint16_t offset;
@@ -24,6 +32,10 @@ struct Extra
         uint8_t  data[];
     };
 
+    /**
+     * @brief 命令的附加参数
+     *
+     */
     struct _Extra
     {
         uint16_t id;
@@ -39,13 +51,18 @@ struct Extra
 
     // 缓冲区长度
     uint8_t                                         _tail;
-    // 缓冲区数据索引
+    // 数据区起始偏移
     uint8_t                                         _data;
-    // 附加参数缓冲区
+    // 缓冲区
     std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
-    // 附加参数指针
+    // 访问缓冲区参数的指针
     _Extra*                                         _extra;
 
+    /**
+     * @brief 创建附加参数列表
+     *
+     * @param _type 附加参数类型
+     */
     Extra(Type _type = Type::ID_ONLY)
     {
         switch (_type)
@@ -76,7 +93,7 @@ struct Extra
     /**
      * @brief 获取内存偏移的引用
      *
-     * @return uint16_t& 偏移的引用
+     * @return uint16_t& 偏移的引用(单位: 字节)
      */
     uint16_t& offset()
     {
@@ -86,7 +103,7 @@ struct Extra
     /**
      * @brief 获取内存数据长度的引用
      *
-     * @return uint16_t& 长度的引用
+     * @return uint16_t& 长度的引用(单位: 字节)
      */
     uint8_t& datlen()
     {
@@ -94,7 +111,7 @@ struct Extra
     }
 
     /**
-     * @brief 添加数据
+     * @brief 向数据区添加数据值
      *
      * @tparam T 数据类型
      * @param value 数据值
@@ -113,7 +130,7 @@ struct Extra
     }
 
     /**
-     * @brief 添加数组类型的数据
+     * @brief 向数据区添加数组类型的数据
      *
      * @tparam T 数组类型
      * @param value 数组指针
@@ -132,26 +149,25 @@ struct Extra
         return true;
     }
 
-    /* 指针运算符 */
+    /**
+     * @brief 获取数据区的首地址
+     *
+     * @return uint8_t* 数据区首地址
+     */
     uint8_t* operator&()
     {
         return _buf.data();
     }
 
-    /* 数组运算符 */
-    uint8_t& operator[](std::size_t idx)
+    /**
+     * @brief 以数组下标的方式访问数据区内容
+     *
+     * @param idx 下标
+     * @return uint8_t& 内容
+     */
+    uint8_t& operator[](size_t idx)
     {
         return _buf[_data + idx];
-    }
-
-    /**
-     * @brief 获取缓冲区大小的引用
-     *
-     * @return uint8_t 缓冲区大小的引用
-     */
-    uint8_t& size()
-    {
-        return _tail;
     }
 
     /**
@@ -196,6 +212,25 @@ struct Extra
     }
 
     /**
+     * @brief 获取缓冲区大小的引用
+     *
+     * @return uint8_t 缓冲区大小的引用
+     */
+    uint8_t& size()
+    {
+        return _tail;
+    }
+
+    /**
+     * @brief 复位缓冲区
+     *
+     */
+    void reset()
+    {
+        _tail = _data = 0;
+    }
+
+    /**
      * @brief 尝试从缓冲区中解码出id
      *
      * @return true 成功解码
@@ -204,11 +239,8 @@ struct Extra
     bool decode_id()
     {
         // 检查长度是否过短
-        if (data_size() < sizeof(id()))
-        {
-            return false;
-        }
-        // 指定数据区指针索引
+        if (data_size() < sizeof(id())) return false;
+        // 指定数据区指针
         _data += sizeof(id());
         return true;
     }
@@ -223,17 +255,27 @@ struct Extra
     {
         // 检查长度是否过短
         if (data_size() < sizeof(Extra::_Memory)) return false;
-        // 指定数据区指针索引
+        // 指定数据区指针
         _data += sizeof(Extra::_Memory);
         return true;
     }
 
     /**
-     * @brief 复位缓冲区
+     * @brief 尝试从缓冲区中解码数据值
      *
+     * @tparam T 数据值类型
+     * @param value 数据值的引用
+     * @return true 成功解码
+     * @return false 缓冲区长度不足
      */
-    void reset()
+    template <Data T>
+    bool decode(T& value)
     {
-        _tail = _data = 0;
+        // 检查长度是否过短
+        if (data_size() < sizeof(T)) return false;
+        value = *(T*)&_buf[_data];
+        // 更新数据区指针
+        _data += sizeof(T);
+        return true;
     }
 };
