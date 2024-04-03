@@ -28,7 +28,7 @@ struct _Range
  * 设置命令:
  * Min,Max
  * 读取命令:
- * Min,Max,AbsMin,AbsMax
+ * Min,Max,AbsMin,AbsMax(GetSize返回的是读取命令的长度)
  *
  * @tparam T 属性类型
  * @tparam AbsMin 绝对最小值
