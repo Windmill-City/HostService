@@ -27,7 +27,7 @@ struct Memory : public PropertyAccess<access>
     }
 
     /**
-     * @brief 获取内存区字节长度
+     * @brief 获取数组字节长度
      *
      * @return uint16_t 字节长度
      */
@@ -36,15 +36,23 @@ struct Memory : public PropertyAccess<access>
         return sizeof(_value);
     }
 
-    /* 地址运算符 */
+    /**
+     * @brief 获取数组首地址
+     *
+     * @return T*
+     */
     T* operator&()
     {
         return (T*)_value;
     }
 
-    /* 数组运算符 */
-    template <typename K>
-    T& operator[](K idx)
+    /**
+     * @brief 以数组下标的方式访问数组内容
+     *
+     * @param idx 下标
+     * @return T& 内容
+     */
+    T& operator[](size_t idx)
     {
         return _value[idx];
     }
