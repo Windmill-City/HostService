@@ -24,6 +24,11 @@ struct _Range
 
 /**
  * @brief 范围属性
+ * 
+ * 设置命令:
+ * Min,Max
+ * 读取命令:
+ * Min,Max,AbsMin,AbsMax
  *
  * @tparam T 属性类型
  * @tparam AbsMin 绝对最小值
