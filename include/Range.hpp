@@ -193,6 +193,8 @@ struct RangedProperty : public Property<T, val>
      * @brief 设置属性值
      *
      * 支持不同类型的数值赋值
+     * 
+     * 注意: 此方法线程安全
      *
      * @tparam K 数值类型
      * @param other 要设置的属性值
@@ -209,6 +211,8 @@ struct RangedProperty : public Property<T, val>
      * @brief 设置属性值
      *
      * 支持不同类型的RangedProperty的赋值
+     * 
+     * 注意: 此方法线程安全
      *
      * @tparam K 数值类型
      * @param other 要设置的属性值
