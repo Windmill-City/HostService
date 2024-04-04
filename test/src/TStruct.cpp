@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include <HostCS.hpp>
 #include <Struct.hpp>
+#include <String.hpp>
 
 struct FloatSt
 {
