@@ -128,7 +128,7 @@ struct RangedProperty : public Property<T, val>
 {
     Range<T, AbsMin, AbsMax, range> _range;
 
-    RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
+    explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
     {
         _range = {min, max};
         safe_set(value);
@@ -179,9 +179,25 @@ struct RangedProperty : public Property<T, val>
     /**
      * @brief 设置属性值
      * 
+     * 支持不同类型的数值赋值
+     *
+     * @tparam K 数值类型
+     * @param other 要设置的属性值
+     * @return auto& 自身的引用
+     */
+    template <Number K>
+    auto& operator=(const K other)
+    {
+        safe_set(other);
+        return *this;
+    }
+
+    /**
+     * @brief 设置属性值
+     * 
      * 支持不同类型的RangedProperty的赋值
      *
-     * @tparam K 参数类型
+     * @tparam K 数值类型
      * @param other 要设置的属性值
      * @return auto& 自身的引用
      */

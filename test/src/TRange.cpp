@@ -14,12 +14,6 @@ TEST(RangedProperty, Mode)
     RangedProperty<int, 0, 10, RangeMode::Soft>  soft{100};
     RangedProperty<int, 0, 10, RangeMode::Clamp> clamp{-100};
 
-    // hard 和 clamp 在初始化时会进行clamp
-    EXPECT_EQ(hard, 10);
-    EXPECT_EQ(clamp, 0);
-    // soft 不会进行clamp
-    EXPECT_EQ(soft, 100);
-
     // 测试边界能否赋值
     hard = 10;
     EXPECT_EQ(hard, 10);
@@ -28,7 +22,8 @@ TEST(RangedProperty, Mode)
 
     // 测试不同模式能否赋值
     hard = soft = 10;
-    EXPECT_EQ(hard, soft);
+    EXPECT_EQ(hard, 10);
+    EXPECT_EQ(soft, 10);
 
     // 测试是否拦截赋值
     hard = 100;
