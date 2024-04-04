@@ -50,27 +50,33 @@ struct Range : public Struct<_Range<T>, access>
     }
 
     /**
-     * @brief 获取最小值
+     * @brief 获取最小值的引用
      *
-     * @return T& 最小值
+     * 注意: 访问引用需要加锁
+     *
+     * @return T& 最小值的引用
      */
-    T min()
+    T& min()
     {
-        return this->safe_get().min;
+        return this->_value.min;
     }
 
     /**
-     * @brief 获取最大值
+     * @brief 获取最大值的引用
      *
-     * @return T& 最大值
+     * 注意: 访问引用需要加锁
+     *
+     * @return T& 最大值的引用
      */
-    T max()
+    T& max()
     {
-        return this->safe_get().max;
+        return this->_value.max;
     }
 
     /**
      * @brief 检查数值是否在范围内
+     *
+     * 注意: 此方法需要加锁
      *
      * @param value 要检查的数值
      * @return true 在范围内
@@ -132,21 +138,25 @@ struct RangedProperty : public Property<T, val>
     }
 
     /**
-     * @brief 获取最小值
+     * @brief 获取最小值的引用
      *
-     * @return T& 最小值
+     * 注意: 访问引用需要加锁
+     *
+     * @return T& 最小值的引用
      */
-    T min()
+    T& min()
     {
         return _range.min();
     }
 
     /**
-     * @brief 获取最大值
+     * @brief 获取最大值的引用
      *
-     * @return T& 最大值
+     * 注意: 访问引用需要加锁
+     *
+     * @return T& 最大值的引用
      */
-    T max()
+    T& max()
     {
         return _range.max();
     }
@@ -154,22 +164,28 @@ struct RangedProperty : public Property<T, val>
     /**
      * @brief 检查数值是否在范围内
      *
+     * 注意: 此方法线程安全
+     *
      * @return true 在范围内
      * @return false 不在范围内
      */
     bool in_range()
     {
+        std::lock_guard lock(PropertyBase::mutex);
         return _range.in_range(this->_value);
     }
 
     /**
      * @brief 将数值限定到范围内
      *
-     * @return 自身引用
+     * 注意: 此方法线程安全
+     *
+     * @return 自身的引用
      */
     auto& clamp()
     {
-        safe_set(std::clamp(this->_value, min(), max()));
+        std::lock_guard lock(PropertyBase::mutex);
+        this->_value = std::clamp(this->_value, min(), max());
         return *this;
     }
 
@@ -217,15 +233,15 @@ struct RangedProperty : public Property<T, val>
         if (mode == RangeMode::Clamp)
         {
             // 限定到范围内
-            this->_value = std::clamp(value, _range.ref().min, _range.ref().max);
+            this->_value = std::clamp(value, min(), max());
             return ErrorCode::S_OK;
         }
 
         if (mode == RangeMode::Hard)
         {
             // 阻止超范围的赋值
-            if (value < _range.ref().min) return ErrorCode::E_OVER_LOW_LIMIT;
-            if (value > _range.ref().max) return ErrorCode::E_OVER_HIGH_LIMIT;
+            if (value < min()) return ErrorCode::E_OVER_LOW_LIMIT;
+            if (value > max()) return ErrorCode::E_OVER_HIGH_LIMIT;
 
             this->_value = value;
             return ErrorCode::S_OK;
