@@ -28,9 +28,9 @@ struct _Range
  * 属性值的读写是线程安全的
  *
  * 设置命令:
- * Min,Max
+ * Min,Max(GetSize返回的是写入命令的长度)
  * 读取命令:
- * Min,Max,AbsMin,AbsMax(GetSize返回的是读取命令的长度)
+ * Min,Max,AbsMin,AbsMax
  *
  * @tparam T 数值类型
  * @tparam AbsMin 绝对最小值
@@ -94,13 +94,6 @@ struct Range : public Struct<_Range<T>, access>
         extra.add(this->safe_get());
         extra.add(AbsMin);
         extra.add(AbsMax);
-        return ErrorCode::S_OK;
-    }
-
-    virtual ErrorCode get_size(Extra& extra) override
-    {
-        // 包含当前范围和绝对最大范围
-        extra.add((uint16_t)(sizeof(this->_value) * 2));
         return ErrorCode::S_OK;
     }
 };
