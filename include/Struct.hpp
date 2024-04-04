@@ -6,6 +6,14 @@
 template <typename T>
 concept _Struct = std::is_class_v<T> && std::is_standard_layout_v<T>;
 
+/**
+ * @brief 创建结构体属性值
+ * 
+ * 属性值的读写是线程安全的
+ *
+ * @tparam T 结构体类型
+ * @tparam access 访问级别
+ */
 template <_Struct T, Access access = Access::READ_WRITE>
 struct Struct : public PropertyAccess<access>
 {

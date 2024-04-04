@@ -2,10 +2,20 @@
 #include "PropertyBase.hpp"
 #include <cstddef>
 
+// 只允许标准布局类型
 template <typename T>
-concept _MemoryData = std::is_standard_layout_v<T>;
+concept MemoryData = std::is_standard_layout_v<T>;
 
-template <_MemoryData T, size_t _len, Access access = Access::READ_WRITE>
+/**
+ * @brief 在内存中创建定长数组
+ * 
+ * 注意: 数组的读写分块进行, 需要额外的机制来保障数据的完整性
+ *
+ * @tparam T 标准布局类型
+ * @tparam _len 数组长度
+ * @tparam access 访问级别
+ */
+template <MemoryData T, size_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
     Memory()

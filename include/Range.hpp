@@ -23,14 +23,16 @@ struct _Range
 };
 
 /**
- * @brief 范围属性
+ * @brief 创建范围属性值
+ * 
+ * 属性值的读写是线程安全的
  *
  * 设置命令:
  * Min,Max
  * 读取命令:
  * Min,Max,AbsMin,AbsMax(GetSize返回的是读取命令的长度)
  *
- * @tparam T 属性类型
+ * @tparam T 数值类型
  * @tparam AbsMin 绝对最小值
  * @tparam AbsMax 绝对最大值
  * @tparam access 访问级别
@@ -105,6 +107,8 @@ struct Range : public Struct<_Range<T>, access>
 
 /**
  * @brief 带范围限制的属性值
+ * 
+ * 属性值的读写是线程安全的
  *
  * @tparam T 属性值类型
  * @tparam AbsMin 绝对最小值

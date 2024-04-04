@@ -5,6 +5,14 @@
 template <typename T>
 concept Number = std::is_arithmetic_v<T>;
 
+/**
+ * @brief 创建一个属性值
+ * 
+ * 属性值的读写是线程安全的
+ *
+ * @tparam T 数值类型
+ * @tparam access 访问级别
+ */
 template <Number T, Access access = Access::READ_WRITE>
 struct Property : public PropertyAccess<access>
 {

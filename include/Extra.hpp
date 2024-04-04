@@ -105,7 +105,7 @@ struct Extra
     /**
      * @brief 向数据区添加数据值
      *
-     * @tparam T 数据类型
+     * @tparam T 非指针类型
      * @param value 数据值
      * @return true 添加成功
      * @return false 附加参数长度超出最大帧长限制
@@ -124,7 +124,7 @@ struct Extra
     /**
      * @brief 向数据区添加数组类型的数据
      *
-     * @tparam T 数组类型
+     * @tparam T 非指针类型
      * @param value 数组指针
      * @param size 数组字节长度
      * @return true 添加成功
@@ -255,7 +255,7 @@ struct Extra
     /**
      * @brief 尝试从缓冲区中解码数据值
      *
-     * @tparam T 数据值类型
+     * @tparam T 非指针类型
      * @param value 数据值的引用
      * @return true 成功解码
      * @return false 缓冲区长度不足
