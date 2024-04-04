@@ -123,7 +123,7 @@ struct RangedProperty : public Property<T, val>
 {
     Range<T, AbsMin, AbsMax, range> _range;
 
-    explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
+    explicit RangedProperty(T value = (AbsMin + AbsMax) / 2, T min = AbsMin, T max = AbsMax)
     {
         _range = {min, max};
         safe_set((AbsMax + AbsMin) / 2); // 默认属性值初始化为中间值
