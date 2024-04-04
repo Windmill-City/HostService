@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include <stdint.h>
 
 enum class ErrorCode : uint8_t
@@ -36,54 +37,60 @@ struct Extra;
 struct PropertyBase
 {
     /**
+     * @brief 全局属性互斥量
+     * 
+     * 注意: 在读写属性值时必须先取得此互斥量
+     */
+    static std::mutex mutex;
+    /**
      * @brief 设置属性值
      *
      * @param extra [in]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode set(Extra& extra);
+    virtual ErrorCode       set(Extra& extra);
     /**
      * @brief 设置属性值(内存)
      *
      * @param extra [in]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode set_mem(Extra& extra);
+    virtual ErrorCode       set_mem(Extra& extra);
     /**
      * @brief 读取属性值
      *
      * @param extra [in/out]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get(Extra& extra);
+    virtual ErrorCode       get(Extra& extra);
     /**
      * @brief 读取属性值(内存)
      *
      * @param extra [in/out]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get_mem(Extra& extra);
+    virtual ErrorCode       get_mem(Extra& extra);
     /**
      * @brief 获取属性长度
      *
      * @param extra [out]附加参数
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get_size(Extra& extra);
+    virtual ErrorCode       get_size(Extra& extra);
     /**
      * @brief 检查读取权限
      *
      * @param privileged 是否在特权模式
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode check_read(bool privileged) const  = 0;
+    virtual ErrorCode       check_read(bool privileged) const  = 0;
     /**
      * @brief 检查写入权限
      *
      * @param privileged 是否在特权模式
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode check_write(bool privileged) const = 0;
+    virtual ErrorCode       check_write(bool privileged) const = 0;
 };
 
 template <Access access>

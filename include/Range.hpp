@@ -87,6 +87,7 @@ struct Range : public Struct<_Range<T>, access>
         if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
         if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
 
+        std::lock_guard lock(PropertyBase::mutex);
         this->_value = value;
         return ErrorCode::S_OK;
     }
@@ -206,6 +207,7 @@ struct RangedProperty : public Property<T, val>
 
     virtual ErrorCode safe_set(T value) override
     {
+        std::lock_guard lock(PropertyBase::mutex);
         if (mode == RangeMode::Soft)
         {
             this->_value = value;
@@ -215,15 +217,15 @@ struct RangedProperty : public Property<T, val>
         if (mode == RangeMode::Clamp)
         {
             // 限定到范围内
-            this->_value = std::clamp(value, min(), max());
+            this->_value = std::clamp(value, _range.ref().min, _range.ref().max);
             return ErrorCode::S_OK;
         }
 
         if (mode == RangeMode::Hard)
         {
             // 阻止超范围的赋值
-            if (value < min()) return ErrorCode::E_OVER_LOW_LIMIT;
-            if (value > max()) return ErrorCode::E_OVER_HIGH_LIMIT;
+            if (value < _range.ref().min) return ErrorCode::E_OVER_LOW_LIMIT;
+            if (value > _range.ref().max) return ErrorCode::E_OVER_HIGH_LIMIT;
 
             this->_value = value;
             return ErrorCode::S_OK;

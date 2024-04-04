@@ -1,6 +1,8 @@
 #include "PropertyBase.hpp"
 
-ErrorCode PropertyBase::set(Extra& extra)
+std::mutex PropertyBase::mutex;
+
+ErrorCode         PropertyBase::set(Extra& extra)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
