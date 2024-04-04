@@ -44,8 +44,8 @@ struct Range : public Struct<_Range<T>, access>
 {
     Range(T min = AbsMin, T max = AbsMax)
     {
-        this->ref().min = AbsMin;
-        this->ref().max = AbsMax;
+        this->min() = AbsMin;
+        this->max() = AbsMax;
         safe_set({min, max});
     }
 
