@@ -126,7 +126,8 @@ struct RangedProperty : public Property<T, val>
     explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
     {
         _range = {min, max};
-        safe_set(value);
+        safe_set(AbsMin); // 默认属性值初始化为最小值
+        safe_set(value);  // 此处赋值可能失败
     }
 
     /**
