@@ -19,6 +19,7 @@ struct Extra
         ID_AND_MEMORY,
     };
 
+  protected:
 #pragma pack(1)
 
     /**
@@ -48,16 +49,7 @@ struct Extra
     };
 
 #pragma pack()
-
-    // 缓冲区长度
-    uint8_t                                         _tail;
-    // 数据区起始偏移
-    uint8_t                                         _data;
-    // 缓冲区
-    std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
-    // 访问缓冲区参数的指针
-    _Extra*                                         _extra;
-
+  public:
     /**
      * @brief 创建附加参数列表
      *
@@ -185,7 +177,7 @@ struct Extra
      *
      * @return uint8_t 数据区长度
      */
-    uint8_t data_size()
+    uint8_t data_size() const
     {
         return _tail - _data;
     }
@@ -195,7 +187,7 @@ struct Extra
      *
      * @return uint8_t 剩余长度
      */
-    uint8_t remain()
+    uint8_t remain() const
     {
         return UINT8_MAX - _tail;
     }
@@ -278,4 +270,14 @@ struct Extra
         _data += sizeof(T);
         return true;
     }
+
+  protected:
+    // 缓冲区长度
+    uint8_t                                         _tail;
+    // 数据区起始偏移
+    uint8_t                                         _data;
+    // 缓冲区
+    std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
+    // 访问缓冲区参数的指针
+    _Extra*                                         _extra;
 };

@@ -3,13 +3,11 @@
 #include <cstddef>
 
 template <typename T>
-concept _Memory = std::is_standard_layout_v<T>;
+concept _MemoryData = std::is_standard_layout_v<T>;
 
-template <_Memory T, size_t _len, Access access = Access::READ_WRITE>
+template <_MemoryData T, size_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
-    T _value[_len];
-
     Memory()
     {
         // 确保所有内容都能访问到
@@ -21,7 +19,7 @@ struct Memory : public PropertyAccess<access>
      *
      * @return size_t 数组长度
      */
-    size_t len()
+    size_t len() const
     {
         return _len;
     }
@@ -31,7 +29,7 @@ struct Memory : public PropertyAccess<access>
      *
      * @return uint16_t 字节长度
      */
-    uint16_t size()
+    uint16_t size() const
     {
         return sizeof(_value);
     }
@@ -43,7 +41,7 @@ struct Memory : public PropertyAccess<access>
      */
     T* operator&()
     {
-        return (T*)_value;
+        return _value;
     }
 
     /**
@@ -87,4 +85,7 @@ struct Memory : public PropertyAccess<access>
         extra.add((uint16_t)sizeof(_value));
         return ErrorCode::S_OK;
     }
+
+  protected:
+    T _value[_len];
 };

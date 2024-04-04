@@ -70,8 +70,19 @@ struct PropertyBase
      * @return ErrorCode 错误码
      */
     virtual ErrorCode get_size(Extra& extra);
-
+    /**
+     * @brief 检查读取权限
+     *
+     * @param privileged 是否在特权模式
+     * @return ErrorCode 错误码
+     */
     virtual ErrorCode check_read(bool privileged) const  = 0;
+    /**
+     * @brief 检查写入权限
+     *
+     * @param privileged 是否在特权模式
+     * @return ErrorCode 错误码
+     */
     virtual ErrorCode check_write(bool privileged) const = 0;
 };
 

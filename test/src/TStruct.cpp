@@ -17,7 +17,7 @@ TEST_F(HostCS, Struct_GetProperty)
 {
     Struct<FloatSt> prop;
     server.insert(0x01, prop);
-    prop.get().val = 18.8f;
+    prop.ref().val = 18.8f;
 
     Extra extra;
     extra.id() = 0x01;
@@ -40,7 +40,7 @@ TEST_F(HostCS, Struct_SetProperty)
 
     Poll();
 
-    EXPECT_FLOAT_EQ(prop.get().val, 18.8f);
+    EXPECT_FLOAT_EQ(prop.ref().val, 18.8f);
 }
 
 TEST_F(HostCS, Struct_SetMemory)
@@ -64,7 +64,7 @@ TEST_F(HostCS, Struct_GetMemory)
 {
     Struct<FloatSt> prop;
     server.insert(0x01, prop);
-    prop.get().val = 18.8f;
+    prop.ref().val = 18.8f;
 
     Extra extra{Extra::Type::ID_AND_MEMORY};
     extra.id()     = 0x01;

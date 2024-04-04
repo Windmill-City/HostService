@@ -24,7 +24,7 @@ struct _Range
 
 /**
  * @brief 范围属性
- * 
+ *
  * 设置命令:
  * Min,Max
  * 读取命令:
@@ -40,26 +40,44 @@ struct Range : public Struct<_Range<T>, access>
 {
     Range(T min = AbsMin, T max = AbsMax)
     {
-        this->get().min = AbsMin;
-        this->get().max = AbsMax;
-        _assign({min, max});
+        this->ref().min = AbsMin;
+        this->ref().max = AbsMax;
+        safe_set({min, max});
     }
 
-    /* 赋值运算符 */
-    template <typename K>
-    auto& operator=(const _Range<K> other)
+    /**
+     * @brief 获取最小值
+     *
+     * @return T& 最小值
+     */
+    T min()
     {
-        _assign(other);
-        return *this;
+        return this->safe_get().min;
     }
 
-    /* getter */
-    virtual _Range<T>& get() override
+    /**
+     * @brief 获取最大值
+     *
+     * @return T& 最大值
+     */
+    T max()
     {
-        return this->_value;
+        return this->safe_get().max;
     }
 
-    virtual ErrorCode _assign(const _Range<T>& value) override
+    /**
+     * @brief 检查数值是否在范围内
+     *
+     * @param value 要检查的数值
+     * @return true 在范围内
+     * @return false 不在范围内
+     */
+    bool in_range(T value)
+    {
+        return value >= min() && value <= max();
+    }
+
+    virtual ErrorCode safe_set(const _Range<T> value) override
     {
         if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
         if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
@@ -71,7 +89,7 @@ struct Range : public Struct<_Range<T>, access>
 
     virtual ErrorCode get(Extra& extra) override
     {
-        extra.add(this->_value);
+        extra.add(this->safe_get());
         extra.add(AbsMin);
         extra.add(AbsMax);
         return ErrorCode::S_OK;
@@ -106,32 +124,30 @@ struct RangedProperty : public Property<T, val>
 {
     Range<T, AbsMin, AbsMax, range> _range;
 
-    explicit RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
+    RangedProperty(T value = 0, T min = AbsMin, T max = AbsMax)
     {
-        _range       = {min, max};
-        this->_value = value;
-
-        if (mode == RangeMode::Hard || mode == RangeMode::Clamp) this->clamp();
+        _range = {min, max};
+        safe_set(value);
     }
 
     /**
-     * @brief 获取最小值的引用
+     * @brief 获取最小值
      *
-     * @return T& 最小值的引用
+     * @return T& 最小值
      */
     T min()
     {
-        return _range.get().min;
+        return _range.min();
     }
 
     /**
-     * @brief 获取最大值的引用
+     * @brief 获取最大值
      *
-     * @return T& 最大值的引用
+     * @return T& 最大值
      */
     T max()
     {
-        return _range.get().max;
+        return _range.max();
     }
 
     /**
@@ -142,7 +158,7 @@ struct RangedProperty : public Property<T, val>
      */
     bool in_range()
     {
-        return this->_value >= min() && this->_value <= max();
+        return _range.in_range(this->_value);
     }
 
     /**
@@ -152,11 +168,27 @@ struct RangedProperty : public Property<T, val>
      */
     auto& clamp()
     {
-        this->_value = std::clamp(this->_value, min(), max());
+        safe_set(std::clamp(this->_value, min(), max()));
         return *this;
     }
 
-    virtual ErrorCode _assign(T value) override
+    /**
+     * @brief 设置属性值
+     * 
+     * 支持不同类型的RangedProperty的赋值
+     *
+     * @tparam K 参数类型
+     * @param other 要设置的属性值
+     * @return auto& 自身的引用
+     */
+    template <Number K>
+    auto& operator=(const Property<K>& other)
+    {
+        safe_set(other);
+        return *this;
+    }
+
+    virtual ErrorCode safe_set(T value) override
     {
         if (mode == RangeMode::Soft)
         {
@@ -181,14 +213,6 @@ struct RangedProperty : public Property<T, val>
             return ErrorCode::S_OK;
         }
 
-        return ErrorCode::S_OK;
-    }
-
-    /* 赋值运算符 */
-    template <typename K>
-    auto& operator=(const K other)
-    {
-        _assign(other);
-        return *this;
+        return ErrorCode::E_NO_IMPLEMENT;
     }
 };

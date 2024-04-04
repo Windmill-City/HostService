@@ -55,8 +55,8 @@ TEST(Range, BoundTest)
     Range<float, 0, 0.1> range;
 
     range = {-100, 100};
-    EXPECT_FLOAT_EQ(range.get().min, 0);
-    EXPECT_FLOAT_EQ(range.get().max, 0.1);
+    EXPECT_FLOAT_EQ(range.min(), 0);
+    EXPECT_FLOAT_EQ(range.max(), 0.1);
 }
 
 TEST_F(HostCS, Range_GetProperty)

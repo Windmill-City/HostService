@@ -9,61 +9,91 @@ concept _Struct = std::is_class_v<T> && std::is_standard_layout_v<T>;
 template <_Struct T, Access access = Access::READ_WRITE>
 struct Struct : public PropertyAccess<access>
 {
-    T _value;
-
-    /* 隐式类型转换 */
-    operator T&()
+    /**
+     * @brief 线程安全的读取
+     *
+     * @return T 读取的值
+     */
+    virtual T safe_get() const
     {
         return _value;
     }
 
-    /* 地址运算符 */
-    T* operator&()
-    {
-        return &_value;
-    }
-
-    /* 赋值运算符 */
-    auto& operator=(const T& other)
-    {
-        _assign(other);
-        return *this;
-    }
-
-    /* 赋值运算符 */
-    auto& operator=(const Struct<T>& other)
-    {
-        if (this == &other) return *this;
-        _assign(other._value);
-        return *this;
-    }
-
-    /* getter */
-    virtual T& get()
-    {
-        return *this;
-    }
-
-    virtual ErrorCode _assign(const T& value)
+    /**
+     * @brief 线程安全的写入
+     *
+     * @param value 要写入的值
+     * @return ErrorCode 错误码
+     */
+    virtual ErrorCode safe_set(const T value)
     {
         _value = value;
         return ErrorCode::S_OK;
     }
 
+    /**
+     * @brief 读取属性值
+     *
+     * 线程安全的读取
+     *
+     * @return T 属性值
+     */
+    operator T() const
+    {
+        return safe_get();
+    }
+
+    /**
+     * @brief 获取属性的引用
+     *
+     * 注意: 通过引用访问需要加锁
+     *
+     * @return T& 属性值引用
+     */
+    T& ref()
+    {
+        return _value;
+    }
+
+    /**
+     * @brief 获取属性的地址
+     *
+     * 注意: 通过地址访问需要加锁
+     *
+     * @return T* 属性地址
+     */
+    T* operator&()
+    {
+        return &_value;
+    }
+
+    /**
+     * @brief 写入属性值
+     *
+     * 线程安全的写入
+     *
+     * @param other 要写的值
+     * @return auto& 自身的引用
+     */
+    auto& operator=(const T other)
+    {
+        safe_set(other);
+        return *this;
+    }
+
     virtual ErrorCode get(Extra& extra) override
     {
-        if (!extra.add(_value)) return ErrorCode::E_OUT_OF_BUFFER;
+        if (!extra.add(safe_get())) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
 
     virtual ErrorCode set(Extra& extra) override
     {
-        if (extra.data_size() != sizeof(_value))
-        {
-            return ErrorCode::E_INVALID_ARG;
-        }
+        T value;
+        if (!extra.decode(value)) return ErrorCode::E_INVALID_ARG;
 
-        return _assign(*(T*)extra.data());
+        safe_set(value);
+        return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get_size(Extra& extra) override
@@ -71,4 +101,7 @@ struct Struct : public PropertyAccess<access>
         extra.add((uint16_t)sizeof(_value));
         return ErrorCode::S_OK;
     }
+
+  protected:
+    T _value;
 };
