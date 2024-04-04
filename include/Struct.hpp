@@ -82,6 +82,8 @@ struct String
  *
  * 属性值的读写是线程安全的
  *
+ * 注意: 你不能在中断函数中读写属性值
+ *
  * @tparam T 结构体类型
  * @tparam access 访问级别
  */

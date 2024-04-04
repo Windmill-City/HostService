@@ -7,8 +7,10 @@ concept Number = std::is_arithmetic_v<T>;
 
 /**
  * @brief 创建一个属性值
- * 
+ *
  * 属性值的读写是线程安全的
+ *
+ * 注意: 你不能在中断函数中读写属性值
  *
  * @tparam T 数值类型
  * @tparam access 访问级别

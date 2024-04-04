@@ -24,8 +24,10 @@ struct _Range
 
 /**
  * @brief 创建范围属性值
- * 
+ *
  * 属性值的读写是线程安全的
+ *
+ * 注意: 你不能在中断函数中读写属性值
  *
  * 设置命令:
  * Min,Max(GetSize返回的是写入命令的长度)
@@ -100,7 +102,7 @@ struct Range : public Struct<_Range<T>, access>
 
 /**
  * @brief 带范围限制的属性值
- * 
+ *
  * 属性值的读写是线程安全的
  *
  * @tparam T 属性值类型
@@ -171,7 +173,7 @@ struct RangedProperty : public Property<T, val>
 
     /**
      * @brief 设置属性值
-     * 
+     *
      * 支持不同类型的数值赋值
      *
      * @tparam K 数值类型
@@ -187,7 +189,7 @@ struct RangedProperty : public Property<T, val>
 
     /**
      * @brief 设置属性值
-     * 
+     *
      * 支持不同类型的RangedProperty的赋值
      *
      * @tparam K 数值类型
