@@ -41,7 +41,7 @@ struct PropertyBase
      * 
      * 注意: 在读写属性值时必须先取得此互斥量
      */
-    static std::mutex mutex;
+    static std::recursive_mutex mutex;
     /**
      * @brief 设置属性值
      *

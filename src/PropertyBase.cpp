@@ -1,8 +1,8 @@
 #include "PropertyBase.hpp"
 
-std::mutex PropertyBase::mutex;
+std::recursive_mutex PropertyBase::mutex;
 
-ErrorCode         PropertyBase::set(Extra& extra)
+ErrorCode            PropertyBase::set(Extra& extra)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
