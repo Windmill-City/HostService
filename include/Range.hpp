@@ -44,6 +44,7 @@ struct Range : public Struct<_Range<T>, access>
 {
     Range(T min = AbsMin, T max = AbsMax)
     {
+        std::lock_guard lock(PropertyBase::mutex);
         this->min() = AbsMin;
         this->max() = AbsMax;
         safe_set({min, max});
@@ -76,7 +77,7 @@ struct Range : public Struct<_Range<T>, access>
     /**
      * @brief 检查数值是否在范围内
      *
-     * 注意: 此方法需要加锁
+     * 注意: 此方法线程安全
      *
      * @param value 要检查的数值
      * @return true 在范围内
@@ -84,6 +85,7 @@ struct Range : public Struct<_Range<T>, access>
      */
     bool in_range(T value)
     {
+        std::lock_guard lock(PropertyBase::mutex);
         return value >= min() && value <= max();
     }
 
@@ -193,7 +195,7 @@ struct RangedProperty : public Property<T, val>
      * @brief 设置属性值
      *
      * 支持不同类型的数值赋值
-     * 
+     *
      * 注意: 此方法线程安全
      *
      * @tparam K 数值类型
@@ -211,7 +213,7 @@ struct RangedProperty : public Property<T, val>
      * @brief 设置属性值
      *
      * 支持不同类型的RangedProperty的赋值
-     * 
+     *
      * 注意: 此方法线程安全
      *
      * @tparam K 数值类型
