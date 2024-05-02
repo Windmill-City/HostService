@@ -114,12 +114,11 @@ struct Extra
      */
     bool decrypt(const AES& aes)
     {
-        size_t tag_len = aes.Key.size();
-        if (tag_len > size()) return false;
-        seek(tag_len);
+        if (_tag_len > size()) return false;
+        seek(_tag_len);
 
         size_t   data_len = remain();
-        uint8_t* _data    = &_buf[tag_len];
+        uint8_t* _data    = &_buf[_tag_len];
         uint8_t* _tag     = &_buf[0];
         return UAES_CCM_SimpleDecrypt(aes.Key.data(),
                                       aes.Key.size(),
@@ -131,24 +130,23 @@ struct Extra
                                       _data,
                                       data_len,
                                       _tag,
-                                      tag_len);
+                                      _tag_len);
     }
 
     /**
      * @brief 加密缓冲区数据
      *
      * @note 缓冲区前部需要预留数据校验码的空位
-     * 
+     *
      * @param aes AES加密数据
      */
     void encrypt(const AES& aes)
     {
-        size_t tag_len = aes.Key.size();
-        if (tag_len > size()) return;
-        seek(tag_len);
+        if (_tag_len > size()) return;
+        seek(_tag_len);
 
         size_t   data_len = remain();
-        uint8_t* _data    = &_buf[tag_len];
+        uint8_t* _data    = &_buf[_tag_len];
         uint8_t* _tag     = &_buf[0];
         UAES_CCM_SimpleEncrypt(aes.Key.data(),
                                aes.Key.size(),
@@ -160,7 +158,7 @@ struct Extra
                                _data,
                                data_len,
                                _tag,
-                               tag_len);
+                               _tag_len);
     }
 
     /**
@@ -171,6 +169,16 @@ struct Extra
     void seek(uint8_t offset)
     {
         _data = offset;
+        if (_tail < _data) _tail = _data;
+    }
+
+    /**
+     * @brief 预留校验位的长度
+     *
+     */
+    void reserve_tag()
+    {
+        seek(_tag_len);
     }
 
     /**
@@ -255,10 +263,12 @@ struct Extra
     }
 
   protected:
+    // 校验位长度
+    static const uint8_t                            _tag_len = 16;
     // 缓冲区长度
-    uint8_t                                         _tail = 0;
+    uint8_t                                         _tail    = 0;
     // 未解码数据的偏移
-    uint8_t                                         _data = 0;
+    uint8_t                                         _data    = 0;
     // 缓冲区
     std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
 };

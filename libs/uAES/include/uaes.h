@@ -28,23 +28,28 @@
 #ifndef UAES_H_
 #define UAES_H_
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 
 #ifndef UAES_ENABLE_ALL
-#define UAES_ENABLE_ALL 1
+  #define UAES_ENABLE_ALL 1
 #endif
 
 #ifndef UAES_ENABLE_128
-#define UAES_ENABLE_128 UAES_ENABLE_ALL
+  #define UAES_ENABLE_128 UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_192
-#define UAES_ENABLE_192 UAES_ENABLE_ALL
+  #define UAES_ENABLE_192 UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_256
-#define UAES_ENABLE_256 UAES_ENABLE_ALL
+  #define UAES_ENABLE_256 UAES_ENABLE_ALL
 #endif
 
 /*
@@ -76,7 +81,7 @@
  *
  */
 #ifndef UAES_KEY_CONFIG
-#define UAES_KEY_CONFIG 0
+  #define UAES_KEY_CONFIG 0
 #endif
 
 /*
@@ -107,7 +112,7 @@
  * Refer to tests/benchmark_result.md for a complete comparison.
  */
 #ifndef UAES_SBOX_CONFIG
-#define UAES_SBOX_CONFIG 0
+  #define UAES_SBOX_CONFIG 0
 #endif
 
 /*
@@ -137,81 +142,84 @@
  * with different options on your own environment.
  */
 #ifndef UAES_32BIT_CONFIG
-#define UAES_32BIT_CONFIG 0
+  #define UAES_32BIT_CONFIG 0
 #endif
 
 #ifndef UAES_ENABLE_ECB
-#define UAES_ENABLE_ECB UAES_ENABLE_ALL
+  #define UAES_ENABLE_ECB UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_CBC
-#define UAES_ENABLE_CBC UAES_ENABLE_ALL
+  #define UAES_ENABLE_CBC UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_CFB
-#define UAES_ENABLE_CFB UAES_ENABLE_ALL
+  #define UAES_ENABLE_CFB UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_CFB1
-#define UAES_ENABLE_CFB1 UAES_ENABLE_ALL
+  #define UAES_ENABLE_CFB1 UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_OFB
-#define UAES_ENABLE_OFB UAES_ENABLE_ALL
+  #define UAES_ENABLE_OFB UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_CTR
-#define UAES_ENABLE_CTR UAES_ENABLE_ALL
+  #define UAES_ENABLE_CTR UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_CCM
-#define UAES_ENABLE_CCM UAES_ENABLE_ALL
+  #define UAES_ENABLE_CCM UAES_ENABLE_ALL
 #endif
 
 #ifndef UAES_ENABLE_GCM
-#define UAES_ENABLE_GCM UAES_ENABLE_ALL
+  #define UAES_ENABLE_GCM UAES_ENABLE_ALL
 #endif
 
 #if (UAES_ENABLE_CCM != 0) || (UAES_ENABLE_GCM != 0)
-#include <stdbool.h>
+  #include <stdbool.h>
 #endif
 
 #if UAES_ENABLE_256
-#define UAES_MAX_KEY_SIZE 256u
+  #define UAES_MAX_KEY_SIZE 256u
 #elif UAES_ENABLE_192
-#define UAES_MAX_KEY_SIZE 192u
+  #define UAES_MAX_KEY_SIZE 192u
 #elif UAES_ENABLE_128
-#define UAES_MAX_KEY_SIZE 128u
+  #define UAES_MAX_KEY_SIZE 128u
 #else
-#error "No key size specified."
+  #error "No key size specified."
 #endif
 
 #if UAES_32BIT_CONFIG == 0
-typedef struct {
+typedef struct
+{
     // The number of 32-bit word of AES key.
     // It is 4 for AES128, 6 for AES192, and 8 for AES256.
     uint8_t keysize_word;
-#if UAES_KEY_CONFIG == 0
+  #if UAES_KEY_CONFIG == 0
     uint8_t key[UAES_MAX_KEY_SIZE / 8u];
-#else
+  #else
     uint8_t key[((UAES_MAX_KEY_SIZE / 32u) + 7u) * 16u];
-#endif
+  #endif
 } UAES_AES_Ctx_t;
 #else
-typedef struct {
+typedef struct
+{
     // The number of 32-bit word of AES key.
     // It is 4 for AES128, 6 for AES192, and 8 for AES256.
     uint8_t keysize_word;
-#if UAES_KEY_CONFIG == 0
+  #if UAES_KEY_CONFIG == 0
     uint32_t key[UAES_MAX_KEY_SIZE / 32u];
-#else
+  #else
     uint32_t key[((UAES_MAX_KEY_SIZE / 32u) + 7u) * 4u];
-#endif
+  #endif
 } UAES_AES_Ctx_t;
 #endif // UAES_32BIT_CONFIG == 0
 
 #if UAES_ENABLE_ECB
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
 } UAES_ECB_Ctx_t;
 
@@ -224,9 +232,7 @@ typedef struct {
  * @param key The key to use.
  * @param key_len The length of the key in bytes. It must be 16, 24, or 32.
  */
-extern void UAES_ECB_Init(UAES_ECB_Ctx_t *ctx,
-                          const uint8_t *key,
-                          size_t key_len);
+extern void UAES_ECB_Init(UAES_ECB_Ctx_t* ctx, const uint8_t* key, size_t key_len);
 
 /**
  * @brief Encrypt the data using ECB mode.
@@ -242,10 +248,7 @@ extern void UAES_ECB_Init(UAES_ECB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_ECB_Encrypt(const UAES_ECB_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_ECB_Encrypt(const UAES_ECB_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for encrypting data using ECB mode.
@@ -258,11 +261,8 @@ extern void UAES_ECB_Encrypt(const UAES_ECB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param data_len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_ECB_SimpleEncrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void
+UAES_ECB_SimpleEncrypt(const uint8_t* key, size_t key_len, const uint8_t* input, uint8_t* output, size_t data_len);
 
 /**
  * @brief Decrypt a 16-byte block of data using ECB mode.
@@ -274,10 +274,7 @@ extern void UAES_ECB_SimpleEncrypt(const uint8_t *key,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_ECB_Decrypt(const UAES_ECB_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_ECB_Decrypt(const UAES_ECB_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for decrypting data using ECB mode.
@@ -290,18 +287,16 @@ extern void UAES_ECB_Decrypt(const UAES_ECB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param data_len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_ECB_SimpleDecrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void
+UAES_ECB_SimpleDecrypt(const uint8_t* key, size_t key_len, const uint8_t* input, uint8_t* output, size_t data_len);
 
 #endif // UES_ENABLE_ECB
 
 #if UAES_ENABLE_CBC
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t iv[16u];
+    uint8_t        iv[16u];
 } UAES_CBC_Ctx_t;
 
 /**
@@ -330,10 +325,7 @@ typedef struct {
  * @param key_len The length of the key in bytes. It must be 16, 24, or 32.
  * @param iv The 16-byte IV to use. It should be unpredictable and NEVER reused.
  */
-extern void UAES_CBC_Init(UAES_CBC_Ctx_t *ctx,
-                          const uint8_t *key,
-                          size_t key_len,
-                          const uint8_t *iv);
+extern void UAES_CBC_Init(UAES_CBC_Ctx_t* ctx, const uint8_t* key, size_t key_len, const uint8_t* iv);
 
 /**
  * @brief Encrypt data using AES CBC mode.
@@ -351,10 +343,7 @@ extern void UAES_CBC_Init(UAES_CBC_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_CBC_Encrypt(UAES_CBC_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CBC_Encrypt(UAES_CBC_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief The Simple function for encrypting data using CBC mode.
@@ -368,12 +357,12 @@ extern void UAES_CBC_Encrypt(UAES_CBC_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param data_len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_CBC_SimpleEncrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_CBC_SimpleEncrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 
 /**
  * @brief Decrypt data using AES CBC mode.
@@ -382,10 +371,7 @@ extern void UAES_CBC_SimpleEncrypt(const uint8_t *key,
  * @param output The buffer to write the decrypted data to.
  * @param len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_CBC_Decrypt(UAES_CBC_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CBC_Decrypt(UAES_CBC_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for decrypting data using CBC mode.
@@ -399,22 +385,23 @@ extern void UAES_CBC_Decrypt(UAES_CBC_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param data_len The length of the data in bytes, must be a multiple of 16.
  */
-extern void UAES_CBC_SimpleDecrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_CBC_SimpleDecrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 
 #endif // UAES_ENABLE_CBC
 
 #if UAES_ENABLE_CFB
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t byte_pos;
-    uint8_t segment_bytes;
-    uint8_t input_block[16u];
-    uint8_t cipher_block[16u];
+    uint8_t        byte_pos;
+    uint8_t        segment_bytes;
+    uint8_t        input_block[16u];
+    uint8_t        cipher_block[16u];
 } UAES_CFB_Ctx_t;
 
 /**
@@ -458,11 +445,8 @@ typedef struct {
  * @param key_len The length of the key in bytes. It must be 16, 24, or 32.
  * @param iv The 16-byte IV to use. It should be unpredictable and never reused.
  */
-extern void UAES_CFB_Init(UAES_CFB_Ctx_t *ctx,
-                          uint8_t segment_size,
-                          const uint8_t *key,
-                          size_t key_len,
-                          const uint8_t *iv);
+extern void
+UAES_CFB_Init(UAES_CFB_Ctx_t* ctx, uint8_t segment_size, const uint8_t* key, size_t key_len, const uint8_t* iv);
 /**
  * @brief Encrypt data using AES CFB mode.
  *
@@ -484,10 +468,7 @@ extern void UAES_CFB_Init(UAES_CFB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_CFB_Encrypt(UAES_CFB_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CFB_Encrypt(UAES_CFB_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for encrypting data using CFB mode.
@@ -502,13 +483,13 @@ extern void UAES_CFB_Encrypt(UAES_CFB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param data_len The length of the data in bytes.
  */
-extern void UAES_CFB_SimpleEncrypt(uint8_t segment_size,
-                                   const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_CFB_SimpleEncrypt(uint8_t        segment_size,
+                                   const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 
 /**
  * @brief Decrypt data using AES CFB mode.
@@ -520,10 +501,7 @@ extern void UAES_CFB_SimpleEncrypt(uint8_t segment_size,
  * @param output The buffer to write the decrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_CFB_Decrypt(UAES_CFB_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CFB_Decrypt(UAES_CFB_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for decrypting data using CFB mode.
@@ -538,19 +516,20 @@ extern void UAES_CFB_Decrypt(UAES_CFB_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param data_len The length of the data in bytes.
  */
-extern void UAES_CFB_SimpleDecrypt(uint8_t segment_size,
-                                   const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_CFB_SimpleDecrypt(uint8_t        segment_size,
+                                   const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 #endif // UAES_ENABLE_CFB
 
 #if UAES_ENABLE_CFB1
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t input_block[16u];
+    uint8_t        input_block[16u];
 } UAES_CFB1_Ctx_t;
 
 /**
@@ -577,10 +556,7 @@ typedef struct {
  * @param key_len The length of the key in bytes. It must be 16, 24, or 32.
  * @param iv The 16-byte IV to use. It should be unpredictable and NEVER reused.
  */
-extern void UAES_CFB1_Init(UAES_CFB1_Ctx_t *ctx,
-                           const uint8_t *key,
-                           size_t key_len,
-                           const uint8_t *iv);
+extern void UAES_CFB1_Init(UAES_CFB1_Ctx_t* ctx, const uint8_t* key, size_t key_len, const uint8_t* iv);
 /**
  * @brief Encrypt data using AES CFB1 mode.
  *
@@ -611,10 +587,7 @@ extern void UAES_CFB1_Init(UAES_CFB1_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param bit_len The length of the data in bits.
  */
-extern void UAES_CFB1_Encrypt(UAES_CFB1_Ctx_t *ctx,
-                              const uint8_t *input,
-                              uint8_t *output,
-                              size_t bit_len);
+extern void UAES_CFB1_Encrypt(UAES_CFB1_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t bit_len);
 
 /**
  * @brief Simple function for encrypting data using CFB1 mode.
@@ -628,12 +601,12 @@ extern void UAES_CFB1_Encrypt(UAES_CFB1_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param bit_len The length of the data in bits.
  */
-extern void UAES_CFB1_SimpleEncrypt(const uint8_t *key,
-                                    size_t key_len,
-                                    const uint8_t *iv,
-                                    const uint8_t *input,
-                                    uint8_t *output,
-                                    size_t bit_len);
+extern void UAES_CFB1_SimpleEncrypt(const uint8_t* key,
+                                    size_t         key_len,
+                                    const uint8_t* iv,
+                                    const uint8_t* input,
+                                    uint8_t*       output,
+                                    size_t         bit_len);
 
 /**
  * @brief Decrypt data using AES CFB1 mode.
@@ -645,10 +618,7 @@ extern void UAES_CFB1_SimpleEncrypt(const uint8_t *key,
  * @param output The buffer to write the decrypted data to.
  * @param bit_len The length of the data in bits.
  */
-extern void UAES_CFB1_Decrypt(UAES_CFB1_Ctx_t *ctx,
-                              const uint8_t *input,
-                              uint8_t *output,
-                              size_t bit_len);
+extern void UAES_CFB1_Decrypt(UAES_CFB1_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t bit_len);
 
 /**
  * @brief Simple function for decrypting data using CFB1 mode.
@@ -662,19 +632,20 @@ extern void UAES_CFB1_Decrypt(UAES_CFB1_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param bit_len The length of the data in bits.
  */
-extern void UAES_CFB1_SimpleDecrypt(const uint8_t *key,
-                                    size_t key_len,
-                                    const uint8_t *iv,
-                                    const uint8_t *input,
-                                    uint8_t *output,
-                                    size_t bit_len);
+extern void UAES_CFB1_SimpleDecrypt(const uint8_t* key,
+                                    size_t         key_len,
+                                    const uint8_t* iv,
+                                    const uint8_t* input,
+                                    uint8_t*       output,
+                                    size_t         bit_len);
 #endif // UAES_ENABLE_CFB1
 
 #if UAES_ENABLE_OFB
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t byte_pos;
-    uint8_t cipher_stream[16u];
+    uint8_t        byte_pos;
+    uint8_t        cipher_stream[16u];
 } UAES_OFB_Ctx_t;
 
 /**
@@ -697,10 +668,7 @@ typedef struct {
  * @param key_len The length of the key in bytes. It must be 16, 24, or 32.
  * @param iv The 16-byte IV to use. It should NEVER be reused.
  */
-extern void UAES_OFB_Init(UAES_OFB_Ctx_t *ctx,
-                          const uint8_t *key,
-                          size_t key_len,
-                          const uint8_t *iv);
+extern void UAES_OFB_Init(UAES_OFB_Ctx_t* ctx, const uint8_t* key, size_t key_len, const uint8_t* iv);
 /**
  * @brief Encrypt data using AES OFB mode.
  *
@@ -722,10 +690,7 @@ extern void UAES_OFB_Init(UAES_OFB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_OFB_Encrypt(UAES_OFB_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_OFB_Encrypt(UAES_OFB_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for encrypting data using OFB mode.
@@ -739,12 +704,12 @@ extern void UAES_OFB_Encrypt(UAES_OFB_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param data_len The length of the data in bytes.
  */
-extern void UAES_OFB_SimpleEncrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_OFB_SimpleEncrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 
 /**
  * @brief Decrypt data using AES OFB mode.
@@ -756,10 +721,7 @@ extern void UAES_OFB_SimpleEncrypt(const uint8_t *key,
  * @param output The buffer to write the decrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_OFB_Decrypt(UAES_OFB_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_OFB_Decrypt(UAES_OFB_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for decrypting data using OFB mode.
@@ -773,19 +735,20 @@ extern void UAES_OFB_Decrypt(UAES_OFB_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param data_len The length of the data in bytes.
  */
-extern void UAES_OFB_SimpleDecrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_OFB_SimpleDecrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 #endif // UAES_ENABLE_OFB
 
 #if UAES_ENABLE_CTR
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t byte_pos;
-    uint8_t counter[16u];
+    uint8_t        byte_pos;
+    uint8_t        counter[16u];
 } UAES_CTR_Ctx_t;
 
 /**
@@ -808,11 +771,8 @@ typedef struct {
  * @param nonce The nonce to use. A same nonce/key pair must not be reused.
  * @param nonce_len The length of the nonce in bytes. It must be between 0~15.
  */
-extern void UAES_CTR_Init(UAES_CTR_Ctx_t *ctx,
-                          const uint8_t *key,
-                          size_t key_len,
-                          const uint8_t *nonce,
-                          size_t nonce_len);
+extern void
+UAES_CTR_Init(UAES_CTR_Ctx_t* ctx, const uint8_t* key, size_t key_len, const uint8_t* nonce, size_t nonce_len);
 
 /**
  * @brief Encrypt data using AES CTR mode.
@@ -834,10 +794,7 @@ extern void UAES_CTR_Init(UAES_CTR_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_CTR_Encrypt(UAES_CTR_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CTR_Encrypt(UAES_CTR_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for encrypting data using CTR mode.
@@ -852,13 +809,13 @@ extern void UAES_CTR_Encrypt(UAES_CTR_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param data_len The length of the data in bytes.
  */
-extern void UAES_CTR_SimpleEncrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *nonce,
-                                   size_t nonce_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_CTR_SimpleEncrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* nonce,
+                                   size_t         nonce_len,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 
 /**
  * @brief Decrypt data using AES CTR mode.
@@ -872,10 +829,7 @@ extern void UAES_CTR_SimpleEncrypt(const uint8_t *key,
  * @param output The buffer to write the decrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_CTR_Decrypt(UAES_CTR_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CTR_Decrypt(UAES_CTR_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Simple function for decrypting data using CTR mode.
@@ -890,24 +844,25 @@ extern void UAES_CTR_Decrypt(UAES_CTR_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param data_len The length of the data in bytes.
  */
-extern void UAES_CTR_SimpleDecrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *nonce,
-                                   size_t nonce_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len);
+extern void UAES_CTR_SimpleDecrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* nonce,
+                                   size_t         nonce_len,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len);
 
 #endif // UAES_ENABLE_CTR
 
 #if UAES_ENABLE_CCM
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t byte_pos;
-    uint8_t nonce_len;
-    uint8_t aad_byte_pos;
-    uint8_t cbc_buf[16u];
-    uint8_t counter[16u];
+    uint8_t        byte_pos;
+    uint8_t        nonce_len;
+    uint8_t        aad_byte_pos;
+    uint8_t        cbc_buf[16u];
+    uint8_t        counter[16u];
 } UAES_CCM_Ctx_t;
 
 /**
@@ -948,14 +903,14 @@ typedef struct {
  * @param tag_len The length of the authentication tag in bytes. It must be even
  * and between 4~16.
  */
-extern void UAES_CCM_Init(UAES_CCM_Ctx_t *ctx,
-                          const uint8_t *key,
-                          size_t key_len,
-                          const uint8_t *nonce,
-                          uint8_t nonce_len,
-                          size_t aad_len,
-                          size_t data_len,
-                          uint8_t tag_len);
+extern void UAES_CCM_Init(UAES_CCM_Ctx_t* ctx,
+                          const uint8_t*  key,
+                          size_t          key_len,
+                          const uint8_t*  nonce,
+                          uint8_t         nonce_len,
+                          size_t          aad_len,
+                          size_t          data_len,
+                          uint8_t         tag_len);
 
 /**
  * @brief Add AAD (Additional Authenticate Data).
@@ -970,9 +925,7 @@ extern void UAES_CCM_Init(UAES_CCM_Ctx_t *ctx,
  * @param aad The AAD to add.
  * @param len The length of the AAD in bytes.
  */
-extern void UAES_CCM_AddAad(UAES_CCM_Ctx_t *ctx,
-                            const uint8_t *aad,
-                            size_t len);
+extern void UAES_CCM_AddAad(UAES_CCM_Ctx_t* ctx, const uint8_t* aad, size_t len);
 
 /**
  * @brief Encrypt data using AES CCM mode.
@@ -991,10 +944,7 @@ extern void UAES_CCM_AddAad(UAES_CCM_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_CCM_Encrypt(UAES_CCM_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CCM_Encrypt(UAES_CCM_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Decrypt data using AES CCM mode.
@@ -1006,10 +956,7 @@ extern void UAES_CCM_Encrypt(UAES_CCM_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_CCM_Decrypt(UAES_CCM_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_CCM_Decrypt(UAES_CCM_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Generate the authentication tag.
@@ -1023,9 +970,7 @@ extern void UAES_CCM_Decrypt(UAES_CCM_Ctx_t *ctx,
  * @param tag_len The length of the tag in bytes, must be the same as the
  * tag_len given in UAES_CCM_Init.
  */
-extern void UAES_CCM_GenerateTag(const UAES_CCM_Ctx_t *ctx,
-                                 uint8_t *tag,
-                                 uint8_t tag_len);
+extern void UAES_CCM_GenerateTag(const UAES_CCM_Ctx_t* ctx, uint8_t* tag, uint8_t tag_len);
 
 /**
  * @brief Verify the authentication tag.
@@ -1035,9 +980,7 @@ extern void UAES_CCM_GenerateTag(const UAES_CCM_Ctx_t *ctx,
  * tag_len given in UAES_CCM_Init.
  * @return true if the tag matches, false otherwise.
  */
-extern bool UAES_CCM_VerifyTag(const UAES_CCM_Ctx_t *ctx,
-                               const uint8_t *tag,
-                               uint8_t tag_len);
+extern bool UAES_CCM_VerifyTag(const UAES_CCM_Ctx_t* ctx, const uint8_t* tag, uint8_t tag_len);
 
 /**
  * @brief Simple function for encrypting and generating tag using CCM mode.
@@ -1057,17 +1000,17 @@ extern bool UAES_CCM_VerifyTag(const UAES_CCM_Ctx_t *ctx,
  * @param tag The buffer to write the tag to.
  * @param tag_len The length of the tag in bytes, must be the same as the
  */
-extern void UAES_CCM_SimpleEncrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *nonce,
-                                   uint8_t nonce_len,
-                                   const uint8_t *aad,
-                                   size_t aad_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len,
-                                   uint8_t *tag,
-                                   uint8_t tag_len);
+extern void UAES_CCM_SimpleEncrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* nonce,
+                                   uint8_t        nonce_len,
+                                   const uint8_t* aad,
+                                   size_t         aad_len,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len,
+                                   uint8_t*       tag,
+                                   uint8_t        tag_len);
 
 /**
  * @brief Simple function for decrypting and verifying tag using CCM mode.
@@ -1088,28 +1031,29 @@ extern void UAES_CCM_SimpleEncrypt(const uint8_t *key,
  * @param tag_len The length of the tag in bytes, must be the same as the
  * @return true if the tag matches, false otherwise.
  */
-extern bool UAES_CCM_SimpleDecrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *nonce,
-                                   uint8_t nonce_len,
-                                   const uint8_t *aad,
-                                   size_t aad_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len,
-                                   const uint8_t *tag,
-                                   uint8_t tag_len);
+extern bool UAES_CCM_SimpleDecrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* nonce,
+                                   uint8_t        nonce_len,
+                                   const uint8_t* aad,
+                                   size_t         aad_len,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len,
+                                   const uint8_t* tag,
+                                   uint8_t        tag_len);
 
 #endif // UAES_ENABLE_CCM
 
 #if UAES_ENABLE_GCM
-typedef struct {
+typedef struct
+{
     UAES_AES_Ctx_t aes_ctx;
-    uint8_t counter[16];
-    size_t data_len;
-    size_t aad_len;
-    uint32_t hash_key[4u];
-    uint8_t hash_buf[16u];
+    uint8_t        counter[16];
+    size_t         data_len;
+    size_t         aad_len;
+    uint32_t       hash_key[4u];
+    uint8_t        hash_buf[16u];
 } UAES_GCM_Ctx_t;
 
 /**
@@ -1131,11 +1075,7 @@ typedef struct {
  * @param iv The initialization vector to use.
  * @param iv_len The length of the initialization vector in bytes.
  */
-extern void UAES_GCM_Init(UAES_GCM_Ctx_t *ctx,
-                          const uint8_t *key,
-                          size_t key_len,
-                          const uint8_t *iv,
-                          size_t iv_len);
+extern void UAES_GCM_Init(UAES_GCM_Ctx_t* ctx, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len);
 
 /**
  * @brief Add AAD (Additional Authenticate Data).
@@ -1150,9 +1090,7 @@ extern void UAES_GCM_Init(UAES_GCM_Ctx_t *ctx,
  * @param aad The AAD to add.
  * @param len The length of the AAD in bytes.
  */
-extern void UAES_GCM_AddAad(UAES_GCM_Ctx_t *ctx,
-                            const uint8_t *aad,
-                            size_t len);
+extern void UAES_GCM_AddAad(UAES_GCM_Ctx_t* ctx, const uint8_t* aad, size_t len);
 
 /**
  * @brief Encrypt data using AES GCM mode.
@@ -1166,10 +1104,7 @@ extern void UAES_GCM_AddAad(UAES_GCM_Ctx_t *ctx,
  * @param output The buffer to write the encrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_GCM_Encrypt(UAES_GCM_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_GCM_Encrypt(UAES_GCM_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Decrypt data using AES GCM mode.
@@ -1181,10 +1116,7 @@ extern void UAES_GCM_Encrypt(UAES_GCM_Ctx_t *ctx,
  * @param output The buffer to write the decrypted data to.
  * @param len The length of the data in bytes.
  */
-extern void UAES_GCM_Decrypt(UAES_GCM_Ctx_t *ctx,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             size_t len);
+extern void UAES_GCM_Decrypt(UAES_GCM_Ctx_t* ctx, const uint8_t* input, uint8_t* output, size_t len);
 
 /**
  * @brief Generate the authentication tag.
@@ -1195,9 +1127,7 @@ extern void UAES_GCM_Decrypt(UAES_GCM_Ctx_t *ctx,
  * @param tag The buffer to write the tag to.
  * @param tag_len The length of the tag in bytes.
  */
-extern void UAES_GCM_GenerateTag(const UAES_GCM_Ctx_t *ctx,
-                                 uint8_t *tag,
-                                 size_t tag_len);
+extern void UAES_GCM_GenerateTag(const UAES_GCM_Ctx_t* ctx, uint8_t* tag, size_t tag_len);
 
 /**
  * @brief Verify the authentication tag.
@@ -1210,9 +1140,7 @@ extern void UAES_GCM_GenerateTag(const UAES_GCM_Ctx_t *ctx,
  * @param tag_len The length of the tag in bytes.
  * @return true if the tag matches, false otherwise.
  */
-extern bool UAES_GCM_VerifyTag(const UAES_GCM_Ctx_t *ctx,
-                               const uint8_t *tag,
-                               size_t tag_len);
+extern bool UAES_GCM_VerifyTag(const UAES_GCM_Ctx_t* ctx, const uint8_t* tag, size_t tag_len);
 
 /**
  * @brief Simple function for encrypting and generating tag using GCM mode.
@@ -1228,17 +1156,17 @@ extern bool UAES_GCM_VerifyTag(const UAES_GCM_Ctx_t *ctx,
  * @param tag The buffer to write the tag to.
  * @param tag_len The length of the tag in bytes.
  */
-extern void UAES_GCM_SimpleEncrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   size_t iv_len,
-                                   const uint8_t *aad,
-                                   size_t aad_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len,
-                                   uint8_t *tag,
-                                   size_t tag_len);
+extern void UAES_GCM_SimpleEncrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   size_t         iv_len,
+                                   const uint8_t* aad,
+                                   size_t         aad_len,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len,
+                                   uint8_t*       tag,
+                                   size_t         tag_len);
 
 /**
  * @brief Simple function for decrypting and verifying tag using GCM mode.
@@ -1258,18 +1186,22 @@ extern void UAES_GCM_SimpleEncrypt(const uint8_t *key,
  * @param tag_len The length of the tag in bytes.
  * @return true if the tag matches, false otherwise.
  */
-extern bool UAES_GCM_SimpleDecrypt(const uint8_t *key,
-                                   size_t key_len,
-                                   const uint8_t *iv,
-                                   size_t iv_len,
-                                   const uint8_t *aad,
-                                   size_t aad_len,
-                                   const uint8_t *input,
-                                   uint8_t *output,
-                                   size_t data_len,
-                                   const uint8_t *tag,
-                                   size_t tag_len);
+extern bool UAES_GCM_SimpleDecrypt(const uint8_t* key,
+                                   size_t         key_len,
+                                   const uint8_t* iv,
+                                   size_t         iv_len,
+                                   const uint8_t* aad,
+                                   size_t         aad_len,
+                                   const uint8_t* input,
+                                   uint8_t*       output,
+                                   size_t         data_len,
+                                   const uint8_t* tag,
+                                   size_t         tag_len);
 
 #endif // UAES_ENABLE_GCM
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // UAES_H_
