@@ -27,7 +27,6 @@ struct Struct : public PropertyAccess<access>
      */
     virtual T safe_get() const
     {
-        std::lock_guard lock(PropertyBase::mutex);
         return _value;
     }
 
@@ -39,7 +38,6 @@ struct Struct : public PropertyAccess<access>
      */
     virtual ErrorCode safe_set(const T value)
     {
-        std::lock_guard lock(PropertyBase::mutex);
         _value = value;
         return ErrorCode::S_OK;
     }

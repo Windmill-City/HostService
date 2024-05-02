@@ -115,7 +115,7 @@ struct Extra
     {
         size_t tag_len = aes.Key.size();
         if (tag_len > size()) return false;
-        this->_data       = tag_len;
+        seek(tag_len);
 
         size_t   data_len = remain();
         uint8_t* _data    = &_buf[tag_len];

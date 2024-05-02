@@ -44,7 +44,6 @@ struct Range : public Struct<_Range<T>, access>
 {
     Range(T min = AbsMin, T max = AbsMax)
     {
-        std::lock_guard lock(PropertyBase::mutex);
         this->min() = AbsMin;
         this->max() = AbsMax;
         safe_set({min, max});
@@ -85,7 +84,6 @@ struct Range : public Struct<_Range<T>, access>
      */
     bool in_range(T value)
     {
-        std::lock_guard lock(PropertyBase::mutex);
         return value >= min() && value <= max();
     }
 
@@ -95,7 +93,6 @@ struct Range : public Struct<_Range<T>, access>
         if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
         if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
 
-        std::lock_guard lock(PropertyBase::mutex);
         this->_value = value;
         return ErrorCode::S_OK;
     }
@@ -173,7 +170,6 @@ struct RangedProperty : public Property<T, val>
      */
     bool in_range()
     {
-        std::lock_guard lock(PropertyBase::mutex);
         return _range.in_range(this->_value);
     }
 
@@ -186,7 +182,6 @@ struct RangedProperty : public Property<T, val>
      */
     auto& clamp()
     {
-        std::lock_guard lock(PropertyBase::mutex);
         this->_value = std::clamp(this->_value, min(), max());
         return *this;
     }
@@ -229,7 +224,6 @@ struct RangedProperty : public Property<T, val>
 
     virtual ErrorCode safe_set(T value) override
     {
-        std::lock_guard lock(PropertyBase::mutex);
         if (mode == RangeMode::Soft)
         {
             this->_value = value;
