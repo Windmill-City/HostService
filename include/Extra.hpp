@@ -99,8 +99,8 @@ struct Extra
     /**
      * @brief 解密缓冲区数据
      *
-     * 使用AES算法对缓冲区数据进行解密
      *
+     * @details
      * 加密数据的结构:
      * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
      * [encrypted_data]: 加密后的数据
@@ -136,14 +136,7 @@ struct Extra
     /**
      * @brief 加密缓冲区数据
      *
-     * 使用AES算法对缓冲区数据进行加密
-     *
-     * 加密数据的结构:
-     * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
-     * [encrypted_data]: 加密后的数据
-     * 解密后数据的结构:
-     * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
-     * [decrypted_data]:解密后的数据
+     * @note 缓冲区前部需要预留数据校验码的空位
      */
     void encrypt(const AES aes)
     {
@@ -168,7 +161,7 @@ struct Extra
     }
 
     /**
-     * @brief 设定数据的指针
+     * @brief 设置数据区偏移
      *
      * @param offset 指针偏移
      */
@@ -185,17 +178,6 @@ struct Extra
     uint8_t* operator&()
     {
         return _buf.data();
-    }
-
-    /**
-     * @brief 以数组下标的方式访问未解码的内容
-     *
-     * @param idx 下标
-     * @return uint8_t& 内容
-     */
-    uint8_t& operator[](size_t idx)
-    {
-        return _buf[_data + idx];
     }
 
     /**
