@@ -27,14 +27,6 @@ enum class Command : uint8_t
      */
     ECHO = 0,
     /**
-     * @brief 请求用于加密特权指令的随机数
-     *
-     * 请求: CMD
-     * 应答:
-     * CMD,S_OK,Nonce(96bit/12字节)
-     */
-    GET_PRIVILEGE_NONCE,
-    /**
      * @brief 读取属性值
      *
      * 请求: CMD,属性Id
