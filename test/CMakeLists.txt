@@ -24,7 +24,7 @@ set(INCLUDES include)
 # ##############################################################################
 add_executable(host_service_test ${SOURCES})
 target_include_directories(host_service_test PRIVATE ${INCLUDES})
-target_link_libraries(host_service_test PRIVATE gtest gtest_main host_service)
+target_link_libraries(host_service_test PRIVATE gtest gtest_main firmware.elf)
 
 include(GoogleTest)
 gtest_discover_tests(host_service_test)

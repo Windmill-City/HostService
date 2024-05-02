@@ -13,11 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_HOST_SERVICE_TEST "Build HostService Test" OFF)
 
 # ##############################################################################
-# 依赖
-# ##############################################################################
-add_subdirectory(libs/libcrc EXCLUDE_FROM_ALL)
-
-# ##############################################################################
 # 源文件
 # ##############################################################################
 # C/CPP文件
@@ -29,9 +24,14 @@ set(INCLUDES include)
 # ##############################################################################
 # 构建目标
 # ##############################################################################
-add_library(host_service STATIC ${SOURCES})
-target_include_directories(host_service PUBLIC ${INCLUDES})
-target_link_libraries(host_service PRIVATE libcrc)
+add_library(firmware.elf STATIC ${SOURCES})
+target_include_directories(firmware.elf PUBLIC ${INCLUDES})
+
+# ##############################################################################
+# 依赖
+# ##############################################################################
+add_subdirectory(libs/libcrc EXCLUDE_FROM_ALL)
+add_subdirectory(libs/uAES EXCLUDE_FROM_ALL)
 
 # ##############################################################################
 # 测试
