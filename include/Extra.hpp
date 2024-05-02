@@ -46,7 +46,7 @@ struct Extra
      * @return false 附加参数长度超过最大帧长限制
      */
     template <Data T>
-    bool add(const T* value, const uint8_t size)
+    bool add(const T* value, const size_t size)
     {
         // 检查是否超长
         if (size + _tail > UINT8_MAX) return false;
@@ -108,10 +108,11 @@ struct Extra
      * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
      * [decrypted_data]:解密后的数据
      *
+     * @param aes AES加密数据
      * @return true 解密成功
      * @return false 解密失败
      */
-    bool decrypt(const AES aes)
+    bool decrypt(const AES& aes)
     {
         size_t tag_len = aes.Key.size();
         if (tag_len > size()) return false;
@@ -137,8 +138,10 @@ struct Extra
      * @brief 加密缓冲区数据
      *
      * @note 缓冲区前部需要预留数据校验码的空位
+     * 
+     * @param aes AES加密数据
      */
-    void encrypt(const AES aes)
+    void encrypt(const AES& aes)
     {
         size_t tag_len = aes.Key.size();
         if (tag_len > size()) return;
