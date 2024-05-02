@@ -181,6 +181,17 @@ struct Extra
     }
 
     /**
+     * @brief 以数组下标的方式读写缓冲区的内容
+     *
+     * @param idx 下标
+     * @return uint8_t& 内容
+     */
+    uint8_t& operator[](size_t idx)
+    {
+        return _buf[idx];
+    }
+
+    /**
      * @brief 获取未解码数据的首指针
      *
      * @return uint8_t* 未解码数据的首指针
