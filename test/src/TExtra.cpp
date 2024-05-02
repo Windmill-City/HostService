@@ -33,3 +33,64 @@ TEST(Extra, read_write)
     EXPECT_EQ(extra.remain(), 0);
     EXPECT_FALSE(extra.get(floats_large.data(), sizeof(floats_large)));
 }
+
+TEST(Extra, AES)
+{
+    AES aes;
+    for (size_t i = 0; i < aes.Key.size(); i++)
+    {
+        aes.Key[i] = 0x01;
+    }
+
+    for (size_t i = 0; i < aes.Nonce.size(); i++)
+    {
+        aes.Nonce[i] = 0x01;
+    }
+
+    std::array<uint8_t, 3>  data = {0x01, 0x02, 0x03};
+    std::array<uint8_t, 12> tag;
+
+    UAES_CCM_SimpleEncrypt(aes.Key.data(),
+                           aes.Key.size(),
+                           aes.Nonce.data(),
+                           aes.Nonce.size(),
+                           NULL,
+                           0,
+                           data.data(),
+                           data.data(),
+                           data.size(),
+                           tag.data(),
+                           tag.size());
+
+    UAES_CCM_SimpleDecrypt(aes.Key.data(),
+                           aes.Key.size(),
+                           aes.Nonce.data(),
+                           aes.Nonce.size(),
+                           NULL,
+                           0,
+                           data.data(),
+                           data.data(),
+                           data.size(),
+                           tag.data(),
+                           tag.size());
+
+    Extra extra;
+    // 预留校验位
+    extra.reserve_tag();
+
+    while (extra.spare() > 0)
+    {
+        extra.add<uint8_t>(0x01);
+    }
+
+    extra.encrypt(aes);
+
+    EXPECT_TRUE(extra.decrypt(aes));
+
+    while (extra.remain() > 0)
+    {
+        uint8_t val;
+        EXPECT_TRUE(extra.get(val));
+        EXPECT_EQ(val, 0x01);
+    }
+}
