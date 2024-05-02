@@ -2,12 +2,10 @@
 #include <checksum.h>
 #include <string.h>
 
-#if defined(_MSC_VER)
-  #define __REV16(number) (_byteswap_ushort(number))
-#elif defined(__GNUC__) || defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
   #define __REV16(number) (__builtin_bswap16(number))
 #else
-  #error "Unsupported compiler!"
+  #define __REV16(number) (((number) >> 8) | ((number) << 8));
 #endif
 
 /**
@@ -24,7 +22,7 @@ void HostBase::_encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra
     // 写入帧头校验和
     uint16_t* h_chksum = (uint16_t*)(head + h_size - sizeof(Chksum));
     *h_chksum          = crc_ccitt_ffff(head, h_size - sizeof(Chksum));
-    // 注意: CRC-16 校验和**必须**进行大小端翻转, 在接收端计算时才会为 0
+    // 注意: CRC-16 校验和在大小端翻转后, 在接收端计算时才会为 0
     *h_chksum          = __REV16(*h_chksum);
     tx(head, h_size);
 
@@ -35,7 +33,7 @@ void HostBase::_encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra
     tx(extra, size);
     // 计算并发送数据校验和
     Chksum chksum = crc_ccitt_ffff(extra, size);
-    // 注意: CRC-16 校验和**必须**进行大小端翻转, 在接收端计算时才会为 0
+    // 注意: CRC-16 校验和在大小端翻转后, 在接收端计算时才会为 0
     chksum        = __REV16(chksum);
     tx((uint8_t*)&chksum, sizeof(chksum));
 }

@@ -24,15 +24,9 @@ bool HostClient::poll()
     case Command::GET_SIZE:
     case Command::GET_PROPERTY:
     case Command::SET_PROPERTY:
-        // 解码Id
-        if (!extra.decode_id()) return false;
         break;
     case Command::GET_MEMORY:
     case Command::SET_MEMORY:
-        // 解码Id
-        if (!extra.decode_id()) return false;
-        // 解码内存参数
-        if (!extra.decode_mem()) return false;
         break;
     }
     return true;

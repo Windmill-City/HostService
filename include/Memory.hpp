@@ -6,9 +6,15 @@
 template <typename T>
 concept MemoryData = std::is_standard_layout_v<T>;
 
+struct MemoryAccess
+{
+    uint16_t offset;
+    uint8_t  size;
+};
+
 /**
  * @brief 在内存中创建定长数组
- * 
+ *
  * 注意: 数组的读写分块进行, 需要额外的机制来保障数据的完整性
  *
  * @tparam T 标准布局类型
@@ -67,26 +73,28 @@ struct Memory : public PropertyAccess<access>
 
     virtual ErrorCode set_mem(Extra& extra) override
     {
-        uint16_t offset = extra.offset();
-        uint8_t  datlen = extra.datlen();
+        MemoryAccess access;
+        // 检查访问参数是否正确
+        if (!extra.get(access) || access.size != extra.remain()) return ErrorCode::E_INVALID_ARG;
         // 检查是否超出内存区范围
-        if (sizeof(_value) < offset + datlen) return ErrorCode::E_OUT_OF_INDEX;
+        if (sizeof(_value) < access.offset + access.size) return ErrorCode::E_OUT_OF_INDEX;
 
-        memcpy((uint8_t*)_value + offset, extra.data(), datlen);
+        memcpy((uint8_t*)_value + access.offset, extra.data(), access.size);
         return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get_mem(Extra& extra) override
     {
-        uint16_t offset = extra.offset();
-        uint8_t  datlen = extra.datlen();
+        MemoryAccess access;
+        // 检查访问参数是否正确
+        if (!extra.get(access) || access.size != extra.remain()) return ErrorCode::E_INVALID_ARG;
         // 检查是否超出内存区范围
-        if (sizeof(_value) < offset + datlen)
+        if (sizeof(_value) < access.offset + access.size)
         {
             return ErrorCode::E_OUT_OF_INDEX;
         }
 
-        if (!extra.add((uint8_t*)&_value + offset, datlen)) return ErrorCode::E_OUT_OF_BUFFER;
+        if (!extra.add((uint8_t*)&_value + access.offset, access.size)) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
 

@@ -1,36 +1,5 @@
 #pragma once
-#include <Command.hpp>
-#include <map>
-#include <PropertyBase.hpp>
-
-/**
- * @brief 使用 CRC16-CCITT-false(ffff)格式
- *
- */
-using Chksum = uint16_t;
-
-#pragma pack(1)
-
-struct Request
-{
-    uint8_t address; // 从机地址
-    Command cmd;     // 命令
-    uint8_t size;    // 附加参数长度
-    Chksum  chksum;  // 帧头校验和
-};
-
-struct Response
-{
-    uint8_t   address; // 从机地址
-    Command   cmd;     // 命令
-    uint8_t   size;    // 附加参数长度
-    ErrorCode error;   // 错误码
-    Chksum    chksum;  // 帧头校验和
-};
-
-#pragma pack()
-
-using PropertyHolder = std::map<uint16_t, PropertyBase*>;
+#include <Common.hpp>
 
 struct HostBase
 {
