@@ -76,6 +76,27 @@ struct Extra
     }
 
     /**
+     * @brief 读取数组
+     *
+     * @tparam T 数据类型
+     * @param value 数组指针
+     * @param size 数组字节长度
+     * @return true 成功读取
+     * @return false 数据长度不足
+     */
+    template <Data T>
+    bool get(T* value, size_t size)
+    {
+        // 检查长度是否过短
+        if (remain() < size) return false;
+        // 拷贝数据
+        memcpy(value, data(), size);
+        // 更新数据指针
+        _data += size;
+        return true;
+    }
+
+    /**
      * @brief 解密缓冲区数据
      *
      * 使用AES算法对缓冲区数据进行解密
