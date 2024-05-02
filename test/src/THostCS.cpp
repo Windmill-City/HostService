@@ -3,20 +3,20 @@
 
 TEST(HostClient, sizeof)
 {
-    EXPECT_EQ(sizeof(HostClient), 280);
+    EXPECT_EQ(sizeof(HostClient), 276);
 }
 
 TEST(HostServer, sizeof)
 {
     HostServerImpl hs;
-    EXPECT_EQ(sizeof(HostServer), 292);
+    EXPECT_EQ(sizeof(HostServer), 276);
 }
 
 TEST_F(HostCS, request)
 {
     uint8_t data[] = {0x01, 0x02, 0x03};
 
-    Extra   extra{Extra::Type::RAW};
+    Extra   extra;
     extra.add(data, sizeof(data));
     client.send_request(Command::ECHO, extra);
 

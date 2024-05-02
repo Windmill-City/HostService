@@ -33,11 +33,6 @@ TEST(HostBase, sizeof)
     EXPECT_EQ(sizeof(HostBase), 8);
 }
 
-TEST(Extra, sizeof)
-{
-    EXPECT_EQ(sizeof(Extra), 264);
-}
-
 TEST(HostBase, tx_rx)
 {
     uint8_t      data_tx[] = {0x00, 0x01, 0x02};
