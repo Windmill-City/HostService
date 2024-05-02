@@ -1,5 +1,4 @@
 #pragma once
-#include <AES.hpp>
 #include <array>
 #include <Common.hpp>
 #include <string.h>
@@ -8,6 +7,12 @@
 // 只允许标准布局类型和非指针类型
 template <typename T>
 concept Data = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
+
+struct AES
+{
+    std::array<uint8_t, 12>      Nonce;
+    std::array<uint8_t, 256 / 8> Key;
+};
 
 struct Extra
 {
@@ -94,17 +99,17 @@ struct Extra
         size_t   data_len = remain();
         uint8_t* _data    = &_buf[tag_len];
         uint8_t* _tag     = &_buf[0];
-        UAES_CCM_SimpleDecrypt(aes.Key.data(),
-                               aes.Key.size(),
-                               aes.Nonce.data(),
-                               aes.Nonce.size(),
-                               NULL,
-                               0,
-                               _data,
-                               _data,
-                               data_len,
-                               _tag,
-                               tag_len);
+        return UAES_CCM_SimpleDecrypt(aes.Key.data(),
+                                      aes.Key.size(),
+                                      aes.Nonce.data(),
+                                      aes.Nonce.size(),
+                                      NULL,
+                                      0,
+                                      _data,
+                                      _data,
+                                      data_len,
+                                      _tag,
+                                      tag_len);
     }
 
     /**
