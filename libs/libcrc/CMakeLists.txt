@@ -26,5 +26,6 @@ add_custom_target(
 # Pre-generated tabs
 file(COPY gentab32.inc gentab64.inc DESTINATION libcrc/tab)
 
-add_library(libcrc STATIC ${SOURCES})
-target_include_directories(libcrc PUBLIC libcrc/include)
+# Add Library
+target_sources(firmware.elf PRIVATE ${SOURCES})
+target_include_directories(firmware.elf PUBLIC libcrc/include)
