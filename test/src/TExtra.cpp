@@ -47,33 +47,6 @@ TEST(Extra, AES)
         aes.Nonce[i] = 0x01;
     }
 
-    std::array<uint8_t, 3>  data = {0x01, 0x02, 0x03};
-    std::array<uint8_t, 12> tag;
-
-    UAES_CCM_SimpleEncrypt(aes.Key.data(),
-                           aes.Key.size(),
-                           aes.Nonce.data(),
-                           aes.Nonce.size(),
-                           NULL,
-                           0,
-                           data.data(),
-                           data.data(),
-                           data.size(),
-                           tag.data(),
-                           tag.size());
-
-    UAES_CCM_SimpleDecrypt(aes.Key.data(),
-                           aes.Key.size(),
-                           aes.Nonce.data(),
-                           aes.Nonce.size(),
-                           NULL,
-                           0,
-                           data.data(),
-                           data.data(),
-                           data.size(),
-                           tag.data(),
-                           tag.size());
-
     Extra extra;
     // 预留校验位
     extra.reserve_tag();
