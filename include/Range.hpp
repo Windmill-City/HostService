@@ -30,7 +30,7 @@ struct _Range
  * 注意: 你不能在中断函数中读写属性值
  *
  * 设置命令:
- * Min,Max(GetSize返回的是写入命令的长度)
+ * Min,Max[,AbsMin,AbsMax]
  * 读取命令:
  * Min,Max,AbsMin,AbsMax
  *
@@ -102,6 +102,12 @@ struct Range : public Struct<_Range<T>, access>
         extra.add(this->safe_get());
         extra.add(AbsMin);
         extra.add(AbsMax);
+        return ErrorCode::S_OK;
+    }
+
+    virtual ErrorCode get_size(Extra& extra) override
+    {
+        extra.add<uint16_t>(4 * sizeof(T));
         return ErrorCode::S_OK;
     }
 };
