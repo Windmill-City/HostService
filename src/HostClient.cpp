@@ -19,7 +19,6 @@ bool HostClient::poll()
     switch (cmd)
     {
     case Command::ECHO:
-        // 无需解码
         break;
     case Command::GET_SIZE:
     case Command::GET_PROPERTY:
