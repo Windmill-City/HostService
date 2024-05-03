@@ -40,7 +40,7 @@ struct String
      */
     auto& set(const char* str)
     {
-        auto len = std::min(strlen(str), max_size());
+        auto len = std::min(strlen(str), capacity());
         memcpy(_str.data(), str, len);
         _str[len] = '\0';
         return *this;
@@ -61,7 +61,7 @@ struct String
      *
      * @return size_t 字符串最大长度
      */
-    size_t max_size() const
+    size_t capacity() const
     {
         static_assert(_len >= 1);
         return _len - 1;
