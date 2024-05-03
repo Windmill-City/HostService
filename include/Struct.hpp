@@ -101,7 +101,7 @@ struct Struct : public PropertyAccess<access>
     virtual ErrorCode set(Extra& extra) override
     {
         T value;
-        if (!extra.decode(value)) return ErrorCode::E_INVALID_ARG;
+        if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
 
         safe_set(value);
         return ErrorCode::S_OK;
