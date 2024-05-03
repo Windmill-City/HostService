@@ -134,3 +134,9 @@ struct Response
     ErrorCode error;   // 错误码
     Chksum    chksum;  // 帧头校验和
 };
+
+struct MemoryAccess
+{
+    uint16_t offset; // 地址偏移
+    uint8_t  size;   // 数据长度
+};

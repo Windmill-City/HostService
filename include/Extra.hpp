@@ -29,10 +29,10 @@ struct Extra
     bool add(const T value)
     {
         // 检查是否超长
-        if (sizeof(value) + _tail > UINT8_MAX) return false;
+        if (sizeof(value) + _data > UINT8_MAX) return false;
         // 复制数据
-        memcpy(&_buf[_tail], (uint8_t*)&value, sizeof(value));
-        _tail += sizeof(value);
+        memcpy(&_buf[_data], (uint8_t*)&value, sizeof(value));
+        seek(_data + sizeof(value));
         return true;
     }
 
@@ -49,10 +49,10 @@ struct Extra
     bool add(const T* value, const size_t size)
     {
         // 检查是否超长
-        if (size + _tail > UINT8_MAX) return false;
+        if (size + _data > UINT8_MAX) return false;
         // 复制数据
-        memcpy(&_buf[_tail], (uint8_t*)value, size);
-        _tail += size;
+        memcpy(&_buf[_data], (uint8_t*)value, size);
+        seek(_data + size);
         return true;
     }
 
@@ -179,6 +179,15 @@ struct Extra
     }
 
     /**
+     * @brief 将所有数据标记为已读取
+     *
+     */
+    void readall()
+    {
+        seek(remain());
+    }
+
+    /**
      * @brief 预留校验位的长度
      *
      */
@@ -209,9 +218,9 @@ struct Extra
     }
 
     /**
-     * @brief 获取未解码数据的首指针
+     * @brief 获取未读取数据的首指针
      *
-     * @return uint8_t* 未解码数据的首指针
+     * @return uint8_t* 未读取数据的首指针
      */
     uint8_t* data()
     {
@@ -219,7 +228,7 @@ struct Extra
     }
 
     /**
-     * @brief 获取未解码数据的长度
+     * @brief 获取未读取数据的长度
      *
      * @return uint8_t 数据长度
      */
@@ -239,7 +248,7 @@ struct Extra
     }
 
     /**
-     * @brief 丢弃未解码的内容
+     * @brief 丢弃未读取的内容
      *
      * @return auto& 返回自身的引用
      */
@@ -285,7 +294,7 @@ struct Extra
     static const uint8_t                            _tag_len   = 16;
     // 缓冲区长度
     uint8_t                                         _tail      = 0;
-    // 未解码数据的偏移
+    // 未读取数据的偏移
     uint8_t                                         _data      = 0;
     // 缓冲区
     std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;

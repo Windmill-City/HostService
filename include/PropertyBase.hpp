@@ -68,6 +68,13 @@ struct PropertyBase
      */
     virtual ErrorCode get_size(Extra& extra);
     /**
+     * @brief 获取属性描述
+     *
+     * @param extra [out]附加参数
+     * @return ErrorCode 错误码
+     */
+    virtual ErrorCode get_desc(Extra& extra);
+    /**
      * @brief 检查读取参数
      *
      * @param privileged 特权模式?

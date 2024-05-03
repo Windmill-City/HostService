@@ -6,12 +6,6 @@
 template <typename T>
 concept MemoryData = std::is_standard_layout_v<T>;
 
-struct MemoryAccess
-{
-    uint16_t offset;
-    uint8_t  size;
-};
-
 /**
  * @brief 在内存中创建定长数组
  *
@@ -27,8 +21,8 @@ struct Memory : public PropertyAccess<access>
     Memory()
     {
         // 确保所有内容都能访问到
-        const frame_size_max = UINT8_MAX;
-        const offset_max     = UINT16_MAX;
+        const size_t frame_size_max = UINT8_MAX;
+        const size_t offset_max     = UINT16_MAX;
         static_assert(sizeof(_value) < offset_max + frame_size_max);
     }
 
@@ -89,7 +83,7 @@ struct Memory : public PropertyAccess<access>
     {
         MemoryAccess access;
         // 检查访问参数是否正确
-        if (!extra.get(access) || access.size != extra.remain()) return ErrorCode::E_INVALID_ARG;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
         // 检查是否超出内存区范围
         if (sizeof(_value) < access.offset + access.size)
         {

@@ -26,3 +26,8 @@ ErrorCode PropertyBase::get_size(Extra& extra)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
+
+ErrorCode PropertyBase::get_desc(Extra& extra)
+{
+    return ErrorCode::E_NO_IMPLEMENT;
+}

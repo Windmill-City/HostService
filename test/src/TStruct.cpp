@@ -9,32 +9,38 @@ struct FloatSt
 
 TEST(Struct, sizeof)
 {
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
 }
 
 TEST_F(HostCS, Struct_GetProperty)
 {
     Struct<FloatSt> prop;
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
     prop.ref().val = 18.8f;
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
 
-    EXPECT_FLOAT_EQ(*(float*)client._extra.data(), 18.8f);
+    PropertyId id;
+    client._extra.get(id);
+
+    float recv;
+    client._extra.get(recv);
+
+    EXPECT_EQ(recv, 18.8f);
 }
 
 TEST_F(HostCS, Struct_SetProperty)
 {
     Struct<FloatSt> prop;
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -46,12 +52,15 @@ TEST_F(HostCS, Struct_SetProperty)
 TEST_F(HostCS, Struct_SetMemory)
 {
     Struct<FloatSt> prop;
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
-    Extra extra{Extra::Type::ID_AND_MEMORY};
-    extra.id()     = 0x01;
-    extra.offset() = 0;
-    extra.datlen() = sizeof(float);
+    MemoryAccess access;
+    access.offset = 0;
+    access.size   = sizeof(float);
+
+    Extra extra;
+    extra.add<PropertyId>(0x01);
+    extra.add(access);
     extra.add(18.8f); // data
     client.send_request(Command::SET_MEMORY, extra);
 
@@ -63,13 +72,16 @@ TEST_F(HostCS, Struct_SetMemory)
 TEST_F(HostCS, Struct_GetMemory)
 {
     Struct<FloatSt> prop;
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
     prop.ref().val = 18.8f;
 
-    Extra extra{Extra::Type::ID_AND_MEMORY};
-    extra.id()     = 0x01;
-    extra.offset() = 0;
-    extra.datlen() = sizeof(float);
+    MemoryAccess access;
+    access.offset = 0;
+    access.size   = sizeof(float);
+
+    Extra extra;
+    extra.add<PropertyId>(0x01);
+    extra.add(access);
     client.send_request(Command::GET_MEMORY, extra);
 
     Poll(true);
@@ -80,13 +92,18 @@ TEST_F(HostCS, Struct_GetMemory)
 TEST_F(HostCS, Struct_GetSize)
 {
     Struct<FloatSt> prop;
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
 
-    EXPECT_EQ(*(uint16_t*)client._extra.data(), sizeof(float));
+    PropertyId id;
+    client._extra.get(id);
+
+    uint16_t size;
+    client._extra.get(size);
+    EXPECT_EQ(size, sizeof(float));
 }

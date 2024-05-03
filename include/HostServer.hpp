@@ -27,4 +27,6 @@ struct HostServer : public HostBase
     void           send_response(const Command cmd, const ErrorCode err, Extra& extra);
     /* 帧解码 */
     bool           _decode_req(Command& cmd, Extra& extra);
+    /* 属性值获取与校验 */
+    PropertyBase*  _acquire_and_verify(Command& cmd, Extra& extra);
 };

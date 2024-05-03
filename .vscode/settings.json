@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "array": "cpp",
+        "format": "cpp",
+        "istream": "cpp",
+        "tuple": "cpp",
+        "variant": "cpp",
+        "xutility": "cpp",
+        "utility": "cpp",
+        "xtree": "cpp",
+        "mutex": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "vector": "cpp"
+    }
+}

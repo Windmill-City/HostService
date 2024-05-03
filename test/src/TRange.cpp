@@ -4,7 +4,7 @@
 
 TEST(RangedProperty, sizeof)
 {
-    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 20);
+    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 28);
     EXPECT_EQ(sizeof(_Range<float>), 8);
 }
 
@@ -57,24 +57,30 @@ TEST(Range, BoundTest)
 TEST_F(HostCS, Range_GetProperty)
 {
     RangedProperty<float, 0, 25> prop{18.8f};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
 
-    EXPECT_EQ(*(float*)client._extra.data(), 18.8f);
+    PropertyId id;
+    client._extra.get(id);
+
+    float recv;
+    client._extra.get(recv);
+
+    EXPECT_EQ(recv, 18.8f);
 }
 
 TEST_F(HostCS, Range_SetProperty)
 {
     RangedProperty<float, 0, 25> prop{0.0f};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -86,12 +92,15 @@ TEST_F(HostCS, Range_SetProperty)
 TEST_F(HostCS, Range_SetMemory)
 {
     RangedProperty<float, 0, 25> prop{0.0f};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
-    Extra extra{Extra::Type::ID_AND_MEMORY};
-    extra.id()     = 0x01;
-    extra.offset() = 0;
-    extra.datlen() = sizeof(float);
+    MemoryAccess access;
+    access.offset = 0;
+    access.size   = sizeof(float);
+
+    Extra extra;
+    extra.add<PropertyId>(0x01);
+    extra.add(access);
     extra.add(18.8f); // data
     client.send_request(Command::SET_MEMORY, extra);
 
@@ -103,12 +112,15 @@ TEST_F(HostCS, Range_SetMemory)
 TEST_F(HostCS, Range_GetMemory)
 {
     RangedProperty<float, 0, 25> prop{0.0f};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
-    Extra extra{Extra::Type::ID_AND_MEMORY};
-    extra.id()     = 0x01;
-    extra.offset() = 0;
-    extra.datlen() = sizeof(float);
+    MemoryAccess access;
+    access.offset = 0;
+    access.size   = sizeof(float);
+
+    Extra extra;
+    extra.add<PropertyId>(0x01);
+    extra.add(access);
     client.send_request(Command::GET_MEMORY, extra);
 
     Poll(true);
@@ -119,13 +131,18 @@ TEST_F(HostCS, Range_GetMemory)
 TEST_F(HostCS, Range_GetSize)
 {
     RangedProperty<float, 0, 25> prop{0.0f};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
 
-    EXPECT_EQ(*(uint16_t*)client._extra.data(), sizeof(float));
+    PropertyId id;
+    client._extra.get(id);
+
+    uint16_t size;
+    client._extra.get(size);
+    EXPECT_EQ(size, sizeof(float));
 }

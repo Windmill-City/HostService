@@ -15,49 +15,86 @@ bool HostServer::poll()
     Extra&  extra = _extra;
     if (!recv_request(cmd, extra)) return false;
 
-    bool privileged = false;
     // 检查加密标记
     if (IS_ENCRYPTED(cmd))
     {
         extra.encrypted() = true;
-        privileged        = extra.decrypt(PropertyBase::Key);
+        if (!extra.decrypt(PropertyBase::Key))
+        {
+            // 清空附加参数
+            extra.reset();
+            send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
+            return false;
+        }
     }
 
     switch (REMOVE_ENCRYPT_MARK(cmd))
     {
     case Command::ECHO:
     {
-        // 读取数据, 防止截断
-        extra.seek(extra.remain());
+        // 读取全部数据, 防止截断
+        extra.readall();
         // 将收到的数据再发回去
         send_response(cmd, ErrorCode::S_OK, extra);
         return true;
     }
     case Command::GET_PROPERTY:
     {
-        // 解析Id
-        PropertyId id;
-        extra.get(id);
-        // 查找属性值
         PropertyBase* prop;
-        if (!(prop = get(id)))
-        {
-            send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
-            return false;
-        }
-        // 检查权限
-        ErrorCode err;
-        err = prop->check_read(privileged);
-        if (err != ErrorCode::S_OK)
-        {
-            send_response(cmd, err, extra);
-            return false;
-        }
+        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
         // 读取属性值
-        err = prop->get(extra);
+        ErrorCode err = prop->get(extra);
         send_response(cmd, err, extra);
         return err == ErrorCode::S_OK;
     }
+    case Command::SET_PROPERTY:
+    {
+        PropertyBase* prop;
+        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        // 写入属性值
+        ErrorCode err = prop->set(extra);
+        send_response(cmd, err, extra);
+        return err == ErrorCode::S_OK;
+    }
+    case Command::GET_MEMORY:
+    {
+        PropertyBase* prop;
+        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        // 读取内存
+        ErrorCode err = prop->get_mem(extra);
+        send_response(cmd, err, extra);
+        return err == ErrorCode::S_OK;
+    }
+    case Command::SET_MEMORY:
+    {
+        PropertyBase* prop;
+        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        // 写入内存
+        ErrorCode err = prop->set_mem(extra);
+        send_response(cmd, err, extra);
+        return err == ErrorCode::S_OK;
+    }
+    case Command::GET_SIZE:
+    {
+        PropertyBase* prop;
+        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        // 读取Size
+        ErrorCode err = prop->get_size(extra);
+        send_response(cmd, err, extra);
+        return err == ErrorCode::S_OK;
+    }
+    case Command::GET_DESC:
+    {
+        PropertyBase* prop;
+        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        // 读取描述
+        ErrorCode err = prop->get_desc(extra);
+        send_response(cmd, err, extra);
+        return err == ErrorCode::S_OK;
+    }
+    default:
+        send_response(cmd, ErrorCode::E_NO_IMPLEMENT, extra);
+        return false;
     }
     return false;
 }
@@ -154,4 +191,42 @@ bool HostServer::_decode_req(Command& cmd, Extra& extra)
     if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
 
     return true;
+}
+
+PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
+{
+    // 解析Id
+    PropertyId id;
+    extra.get(id);
+    // 查找属性值
+    PropertyBase* prop;
+    if (!(prop = get(id)))
+    {
+        send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
+        return nullptr;
+    }
+    // 检查权限
+    ErrorCode err;
+    switch (REMOVE_ENCRYPT_MARK(cmd))
+    {
+    case Command::GET_DESC:
+    case Command::GET_SIZE:
+    case Command::GET_MEMORY:
+    case Command::GET_PROPERTY:
+        err = prop->check_read(IS_ENCRYPTED(cmd));
+        break;
+    case Command::SET_MEMORY:
+    case Command::SET_PROPERTY:
+        err = prop->check_write(IS_ENCRYPTED(cmd));
+        break;
+    default:
+        err = ErrorCode::S_OK;
+        break;
+    }
+    if (err != ErrorCode::S_OK)
+    {
+        send_response(cmd, err, extra);
+        return nullptr;
+    }
+    return prop;
 }

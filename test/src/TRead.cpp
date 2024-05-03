@@ -5,10 +5,10 @@
 TEST_F(HostCS, Read_Read)
 {
     Property<bool, Access::READ> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -19,10 +19,10 @@ TEST_F(HostCS, Read_Read)
 TEST_F(HostCS, Read_Read_Protect_NotPrivileged)
 {
     Property<bool, Access::READ_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll(true);
@@ -32,12 +32,13 @@ TEST_F(HostCS, Read_Read_Protect_NotPrivileged)
 
 TEST_F(HostCS, Read_Read_Protect_Privileged)
 {
-    server.privileged = true;
     Property<bool, Access::READ_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.reserve_tag();
+    extra.add<PropertyId>(0x01);
+    extra.encrypt(PropertyBase::Key);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -48,10 +49,10 @@ TEST_F(HostCS, Read_Read_Protect_Privileged)
 TEST_F(HostCS, Read_Read_Write_Protect_NotPrivileged)
 {
     Property<bool, Access::READ_WRITE_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll(true);
@@ -61,12 +62,13 @@ TEST_F(HostCS, Read_Read_Write_Protect_NotPrivileged)
 
 TEST_F(HostCS, Read_Read_Write_Protect_Privileged)
 {
-    server.privileged = true;
     Property<bool, Access::READ_WRITE_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.reserve_tag();
+    extra.add<PropertyId>(0x01);
+    extra.encrypt(PropertyBase::Key);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -77,10 +79,10 @@ TEST_F(HostCS, Read_Read_Write_Protect_Privileged)
 TEST_F(HostCS, Read_Write_Protect_NotPrivileged)
 {
     Property<bool, Access::WRITE_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -90,12 +92,13 @@ TEST_F(HostCS, Read_Write_Protect_NotPrivileged)
 
 TEST_F(HostCS, Read_Write_Protect_Privileged)
 {
-    server.privileged = true;
     Property<bool, Access::WRITE_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.reserve_tag();
+    extra.add<PropertyId>(0x01);
+    extra.encrypt(PropertyBase::Key);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -105,11 +108,11 @@ TEST_F(HostCS, Read_Write_Protect_Privileged)
 
 TEST_F(HostCS, Read_Read_Write)
 {
-    Property<bool, Access::WRITE_PROTECT> prop{true};
-    server.insert(0x01, prop);
+    Property<bool, Access::READ_WRITE> prop{true};
+    server.put(0x01, prop);
 
     Extra extra;
-    extra.id() = 0x01;
+    extra.add<PropertyId>(0x01);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
