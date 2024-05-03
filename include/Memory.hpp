@@ -27,7 +27,9 @@ struct Memory : public PropertyAccess<access>
     Memory()
     {
         // 确保所有内容都能访问到
-        static_assert(sizeof(_value) < UINT16_MAX + UINT8_MAX);
+        const frame_size_max = UINT8_MAX;
+        const offset_max     = UINT16_MAX;
+        static_assert(sizeof(_value) < offset_max + frame_size_max);
     }
 
     /**
