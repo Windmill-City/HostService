@@ -114,7 +114,8 @@ struct Extra
      */
     bool decrypt(const AES& aes)
     {
-        if (_tag_len > size()) return false;
+        // 数据长度至少为 1
+        if (_tag_len >= size()) return false;
         seek(_tag_len);
 
         size_t   data_len = remain();
@@ -142,7 +143,8 @@ struct Extra
      */
     void encrypt(const AES& aes)
     {
-        if (_tag_len > size()) return;
+        // 数据长度至少为 1
+        if (_tag_len >= size()) return;
         seek(_tag_len);
 
         size_t   data_len = remain();
