@@ -28,10 +28,10 @@ struct PropertyBase
 {
     static AES        Key;
     /**
-     * @brief 属性值唯一名
+     * @brief 属性值名称
      *
      */
-    const char*       unique;
+    const char*       name;
     /**
      * @brief 设置属性值
      *
