@@ -102,7 +102,7 @@ struct Memory : public PropertyAccess<access>
 
     virtual ErrorCode get_size(Extra& extra) override
     {
-        extra.add((uint16_t)sizeof(_value));
+        extra.add<uint16_t>(sizeof(_value));
         return ErrorCode::S_OK;
     }
 
