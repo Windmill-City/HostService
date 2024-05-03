@@ -114,6 +114,8 @@ struct Extra
      */
     bool decrypt(const AES& aes)
     {
+        if (!_encrypted) return false;
+        _encrypted = false;
         // 数据长度至少为 1
         if (_tag_len >= size()) return false;
         seek(_tag_len);
@@ -143,6 +145,8 @@ struct Extra
      */
     void encrypt(const AES& aes)
     {
+        if (_encrypted) return;
+        _encrypted = true;
         // 数据长度至少为 1
         if (_tag_len >= size()) return;
         seek(_tag_len);
@@ -264,13 +268,25 @@ struct Extra
         _tail = _data = 0;
     }
 
+    /**
+     * @brief 数据区是否加密
+     *
+     * @return true 已加密
+     * @return false 未加密
+     */
+    bool& encrypted()
+    {
+        return _encrypted;
+    }
+
   protected:
+    bool                                            _encrypted = false;
     // 校验位长度
-    static const uint8_t                            _tag_len = 16;
+    static const uint8_t                            _tag_len   = 16;
     // 缓冲区长度
-    uint8_t                                         _tail    = 0;
+    uint8_t                                         _tail      = 0;
     // 未解码数据的偏移
-    uint8_t                                         _data    = 0;
+    uint8_t                                         _data      = 0;
     // 缓冲区
     std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
 };

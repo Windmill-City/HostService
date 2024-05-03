@@ -1,6 +1,10 @@
 #pragma once
 #include <stdint.h>
 
+#define IS_ENCRYPTED(cmd)        ((uint8_t)(cmd) & 0x80)
+#define REMOVE_ENCRYPT_MARK(cmd) ((Command)((uint8_t)(cmd) & 0x7F))
+#define ADD_ENCRYPT_MARK(cmd)    ((Command)((uint8_t)(cmd) | 0x80))
+
 enum class ErrorCode : uint8_t
 {
     S_OK = 0,          // 执行成功
@@ -117,7 +121,7 @@ using Chksum = uint16_t;
 struct Request
 {
     uint8_t address; // 从机地址
-    Command cmd;     // 命令
+    Command cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
     uint8_t size;    // 附加参数长度
     Chksum  chksum;  // 帧头校验和
 };
@@ -125,7 +129,7 @@ struct Request
 struct Response
 {
     uint8_t   address; // 从机地址
-    Command   cmd;     // 命令
+    Command   cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
     uint8_t   size;    // 附加参数长度
     ErrorCode error;   // 错误码
     Chksum    chksum;  // 帧头校验和

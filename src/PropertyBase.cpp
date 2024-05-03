@@ -1,5 +1,7 @@
 #include "PropertyBase.hpp"
 
+AES       PropertyBase::Key;
+
 ErrorCode PropertyBase::set(Extra& extra)
 {
     return ErrorCode::E_NO_IMPLEMENT;

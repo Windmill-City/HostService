@@ -3,7 +3,7 @@
 
 TEST(Extra, sizeof)
 {
-    EXPECT_EQ(sizeof(Extra), 259);
+    EXPECT_EQ(sizeof(Extra), 260);
 }
 
 TEST(Extra, read_write)

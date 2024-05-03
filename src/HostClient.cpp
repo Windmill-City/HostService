@@ -37,13 +37,12 @@ bool HostClient::poll()
  *
  * @param cmd 请求的指令
  * @param extra 附加参数
- * @param size 参数长度
  */
 void HostClient::send_request(const Command cmd, Extra& extra)
 {
     Request req;
     req.address = address;
-    req.cmd     = cmd;
+    req.cmd     = extra.encrypted() ? ADD_ENCRYPT_MARK(cmd) : cmd;
     req.size    = extra.size();
     _encode((uint8_t*)&req, sizeof(req), &extra, req.size);
 }

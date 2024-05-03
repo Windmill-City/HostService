@@ -15,16 +15,79 @@ bool HostServer::poll()
     Extra&  extra = _extra;
     if (!recv_request(cmd, extra)) return false;
 
-    switch (cmd)
+    bool privileged = false;
+    // 检查加密标记
+    if (IS_ENCRYPTED(cmd))
+    {
+        extra.encrypted() = true;
+        privileged        = extra.decrypt(PropertyBase::Key);
+    }
+
+    switch (REMOVE_ENCRYPT_MARK(cmd))
     {
     case Command::ECHO:
     {
+        // 读取数据, 防止截断
+        extra.seek(extra.remain());
         // 将收到的数据再发回去
         send_response(cmd, ErrorCode::S_OK, extra);
         return true;
     }
+    case Command::GET_PROPERTY:
+    {
+        // 解析Id
+        PropertyId id;
+        extra.get(id);
+        // 查找属性值
+        PropertyBase* prop;
+        if (!(prop = get(id)))
+        {
+            send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
+            return false;
+        }
+        // 检查权限
+        ErrorCode err;
+        err = prop->check_read(privileged);
+        if (err != ErrorCode::S_OK)
+        {
+            send_response(cmd, err, extra);
+            return false;
+        }
+        // 读取属性值
+        err = prop->get(extra);
+        send_response(cmd, err, extra);
+        return err == ErrorCode::S_OK;
+    }
     }
     return false;
+}
+
+/**
+ * @brief 添加属性值
+ *
+ * @param id 属性值Id
+ * @param prop 属性值
+ * @return true 成功添加
+ * @return false id重复
+ */
+bool HostServer::put(PropertyId id, PropertyBase& prop)
+{
+    bool ok;
+    std::tie(std::ignore, ok) = _props.emplace(id, &prop);
+    return ok;
+}
+
+/**
+ * @brief 获取属性值
+ *
+ * @param id 属性值Id
+ * @return PropertyBase* 属性值
+ */
+PropertyBase* HostServer::get(PropertyId id)
+{
+    auto it = _props.find(id);
+    if (it == _props.end()) return nullptr;
+    return (*it).second;
 }
 
 /**
@@ -50,8 +113,10 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
  */
 void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& extra)
 {
-    // 如果指令执行过程中有错误, 则截断数据区, 减少不必要的数据传输
-    if (err != ErrorCode::S_OK) extra.truncate();
+    // 截断多余的数据
+    extra.truncate();
+    // 若有加密标记, 则对参数进行加密
+    if (IS_ENCRYPTED(cmd)) extra.encrypt(PropertyBase::Key);
     Response rep;
     rep.address = address;
     rep.cmd     = cmd;
