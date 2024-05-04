@@ -370,8 +370,13 @@ struct RangedProperty : public Property<T, val>
             extra.add(this->safe_get());
             return ErrorCode::S_OK;
         case RangeAccess::Range:
+        {
+#ifndef NO_LOCK
+            std::lock_guard lock(PropertyBase::Mutex);
+#endif
             extra.add(_range);
             return ErrorCode::S_OK;
+        }
         case RangeAccess::Absolute:
             extra.add(AbsMin);
             extra.add(AbsMax);
