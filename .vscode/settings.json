@@ -13,6 +13,17 @@
         "deque": "cpp",
         "queue": "cpp",
         "vector": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "*.rh": "cpp",
+        "chrono": "cpp",
+        "compare": "cpp",
+        "locale": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp",
+        "xlocale": "cpp",
+        "xlocinfo": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp"
     }
 }

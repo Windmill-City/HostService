@@ -6,6 +6,18 @@
 
 using PropertyHolder = std::map<PropertyId, PropertyBase*>;
 
+struct HostServer;
+
+struct PropertyIds : public PropertyAccess<Access::READ>
+{
+    const HostServer* server;
+
+    PropertyIds(const HostServer* server);
+
+    virtual ErrorCode get_mem(Extra& extra) override;
+    virtual ErrorCode get_size(Extra& extra) override;
+};
+
 struct HostServer : public HostBase
 {
     // 帧头缓冲区
@@ -15,18 +27,22 @@ struct HostServer : public HostBase
     // 属性值容器
     PropertyHolder _props;
 
+    // 访问属性值Id信息
+    PropertyIds    Ids{this};
+
+    HostServer();
     /* 轮询请求 */
-    virtual bool   poll() override;
+    virtual bool  poll() override;
     /* 添加属性值 */
-    bool           put(PropertyId id, PropertyBase& prop);
+    bool          put(PropertyId id, PropertyBase& prop);
     /* 获取属性值 */
-    PropertyBase*  get(PropertyId id);
+    PropertyBase* get(PropertyId id);
     /* 接收请求帧 */
-    bool           recv_request(Command& cmd, Extra& extra);
+    bool          recv_request(Command& cmd, Extra& extra);
     /* 发送响应帧 */
-    void           send_response(const Command cmd, const ErrorCode err, Extra& extra);
+    void          send_response(const Command cmd, const ErrorCode err, Extra& extra);
     /* 帧解码 */
-    bool           _decode_req(Command& cmd, Extra& extra);
+    bool          _decode_req(Command& cmd, Extra& extra);
     /* 属性值获取与校验 */
-    PropertyBase*  _acquire_and_verify(Command& cmd, Extra& extra);
+    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
 };

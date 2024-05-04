@@ -3,6 +3,11 @@
 #include <array>
 #include <checksum.h>
 
+HostServer::HostServer()
+{
+    put(0, this->Ids);
+}
+
 /**
  * @brief 从机轮询主机请求
  *
@@ -229,4 +234,46 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
         return nullptr;
     }
     return prop;
+}
+
+PropertyIds::PropertyIds(const HostServer* server)
+    : server(server)
+{
+    this->name = "prop.ids";
+}
+
+ErrorCode PropertyIds::get_mem(Extra& extra)
+{
+    MemoryAccess access;
+    // 检查访问参数是否正确
+    if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+    // 检查是否超出内存区范围
+    size_t size = server->_props.size() * sizeof(PropertyId);
+    if (size < access.offset + access.size)
+    {
+        return ErrorCode::E_OUT_OF_INDEX;
+    }
+
+    // 需要获取的元素的数量
+    size_t count = access.size / sizeof(PropertyId);
+    // 从第几个元素开始读取
+    size_t i_beg = access.offset / sizeof(PropertyId);
+    size_t i     = 0;
+    for (auto it : server->_props)
+    {
+        if (i++ >= i_beg)
+        {
+            if (!extra.add(it.first)) return ErrorCode::E_OUT_OF_BUFFER;
+        }
+
+        if (i == count) break;
+    }
+    return ErrorCode::S_OK;
+}
+
+ErrorCode PropertyIds::get_size(Extra& extra)
+{
+    size_t size = server->_props.size() * sizeof(PropertyId);
+    extra.add<uint16_t>(size);
+    return ErrorCode::S_OK;
 }
