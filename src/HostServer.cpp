@@ -6,6 +6,7 @@
 HostServer::HostServer()
 {
     put(0, this->Ids);
+    put(1, this->Nonce);
 }
 
 /**
@@ -275,5 +276,22 @@ ErrorCode PropertyIds::get_size(Extra& extra)
 {
     size_t size = server->_props.size() * sizeof(PropertyId);
     extra.add<uint16_t>(size);
+    return ErrorCode::S_OK;
+}
+
+PropertyNonce::PropertyNonce()
+{
+    this->name = "prop.nonce";
+}
+
+ErrorCode PropertyNonce::get(Extra& extra)
+{
+    extra.add(Key.Nonce.data(), Key.Nonce.size());
+    return ErrorCode::S_OK;
+}
+
+ErrorCode PropertyNonce::get_size(Extra& extra)
+{
+    extra.add(Key.Nonce.size());
     return ErrorCode::S_OK;
 }

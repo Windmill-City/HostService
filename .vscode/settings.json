@@ -24,6 +24,9 @@
         "xlocinfo": "cpp",
         "xlocnum": "cpp",
         "xloctime": "cpp",
-        "xmemory": "cpp"
+        "xmemory": "cpp",
+        "memory": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp"
     }
 }

@@ -16,11 +16,11 @@ TEST(Struct, sizeof)
 TEST_F(HostCS, Struct_GetProperty)
 {
     Struct<FloatSt> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
     prop.ref().val = 18.8f;
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -37,10 +37,10 @@ TEST_F(HostCS, Struct_GetProperty)
 TEST_F(HostCS, Struct_SetProperty)
 {
     Struct<FloatSt> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -52,14 +52,14 @@ TEST_F(HostCS, Struct_SetProperty)
 TEST_F(HostCS, Struct_SetMemory)
 {
     Struct<FloatSt> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     MemoryAccess access;
     access.offset = 0;
     access.size   = sizeof(float);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(access);
     extra.add(18.8f); // data
     client.send_request(Command::SET_MEMORY, extra);
@@ -72,7 +72,7 @@ TEST_F(HostCS, Struct_SetMemory)
 TEST_F(HostCS, Struct_GetMemory)
 {
     Struct<FloatSt> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
     prop.ref().val = 18.8f;
 
     MemoryAccess access;
@@ -80,7 +80,7 @@ TEST_F(HostCS, Struct_GetMemory)
     access.size   = sizeof(float);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(access);
     client.send_request(Command::GET_MEMORY, extra);
 
@@ -92,10 +92,10 @@ TEST_F(HostCS, Struct_GetMemory)
 TEST_F(HostCS, Struct_GetSize)
 {
     Struct<FloatSt> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
@@ -111,10 +111,10 @@ TEST_F(HostCS, Struct_GetSize)
 TEST_F(HostCS, Struct_GetDesc)
 {
     Struct<FloatSt> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_DESC, extra);
 
     Poll();

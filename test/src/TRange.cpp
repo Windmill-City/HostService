@@ -57,7 +57,7 @@ TEST(Range, BoundTest)
 
 TEST_F(HostCS, Range_GetProperty)
 {
-    PropertyId                   id = 0x01;
+    PropertyId                   id = 0x05;
     RangedProperty<float, 0, 25> prop("Prop", 18.8f);
     server.put(id, prop);
 
@@ -69,7 +69,7 @@ TEST_F(HostCS, Range_GetProperty)
     Poll();
 
     client._extra.get(id);
-    EXPECT_EQ(id, 0x01);
+    EXPECT_EQ(id, 0x05);
 
     RangeAccess access;
     client._extra.get(access);
@@ -82,7 +82,7 @@ TEST_F(HostCS, Range_GetProperty)
 
 TEST_F(HostCS, Range_SetProperty)
 {
-    PropertyId                   id = 0x01;
+    PropertyId                   id = 0x05;
     RangedProperty<float, 0, 25> prop("Prop");
     server.put(id, prop);
 
@@ -99,7 +99,7 @@ TEST_F(HostCS, Range_SetProperty)
 
 TEST_F(HostCS, Range_SetMemory)
 {
-    PropertyId                   id = 0x01;
+    PropertyId                   id = 0x05;
     RangedProperty<float, 0, 25> prop("Prop");
     server.put(id, prop);
 
@@ -120,7 +120,7 @@ TEST_F(HostCS, Range_SetMemory)
 
 TEST_F(HostCS, Range_GetMemory)
 {
-    PropertyId                   id = 0x01;
+    PropertyId                   id = 0x05;
     RangedProperty<float, 0, 25> prop("Prop");
     server.put(id, prop);
 
@@ -140,7 +140,7 @@ TEST_F(HostCS, Range_GetMemory)
 
 TEST_F(HostCS, Range_GetSize)
 {
-    PropertyId                   id = 0x01;
+    PropertyId                   id = 0x05;
     RangedProperty<float, 0, 25> prop("Prop");
     server.put(id, prop);
 
@@ -152,7 +152,7 @@ TEST_F(HostCS, Range_GetSize)
     Poll();
 
     client._extra.get(id);
-    EXPECT_EQ(id, 0x01);
+    EXPECT_EQ(id, 0x05);
 
     RangeAccess access;
     client._extra.get(access);
@@ -165,7 +165,7 @@ TEST_F(HostCS, Range_GetSize)
 
 TEST_F(HostCS, Range_GetDesc)
 {
-    PropertyId                   id = 0x01;
+    PropertyId                   id = 0x05;
     RangedProperty<float, 0, 25> prop("Prop");
     server.put(id, prop);
 
@@ -177,7 +177,7 @@ TEST_F(HostCS, Range_GetDesc)
     Poll();
 
     client._extra.get(id);
-    EXPECT_EQ(id, 0x01);
+    EXPECT_EQ(id, 0x05);
 
     std::string name{(const char*)client._extra.data(), client._extra.remain()};
     EXPECT_STREQ(name.c_str(), "Prop");

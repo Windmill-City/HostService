@@ -11,10 +11,10 @@ TEST(Memory, sizeof)
 TEST_F(HostCS, Memory_GetProperty)
 {
     Memory<float, 1> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll(true);
@@ -25,10 +25,10 @@ TEST_F(HostCS, Memory_GetProperty)
 TEST_F(HostCS, Memory_SetProperty)
 {
     Memory<float, 1> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -40,10 +40,10 @@ TEST_F(HostCS, Memory_SetProperty)
 TEST_F(HostCS, Memory_SetMemory)
 {
     Memory<uint8_t, 1024> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
     access.offset = 0;
@@ -70,7 +70,7 @@ TEST_F(HostCS, Memory_SetMemory)
 TEST_F(HostCS, Memory_GetMemory)
 {
     Memory<uint8_t, 1024> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     for (size_t i = 0; i < prop.len(); i++)
     {
@@ -78,7 +78,7 @@ TEST_F(HostCS, Memory_GetMemory)
     }
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
     access.offset = 0;
@@ -103,10 +103,10 @@ TEST_F(HostCS, Memory_GetMemory)
 TEST_F(HostCS, Memory_SetMemory_OutOfRange)
 {
     Memory<uint8_t, 32> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
     access.offset = 0;
@@ -133,10 +133,10 @@ TEST_F(HostCS, Memory_SetMemory_OutOfRange)
 TEST_F(HostCS, Memory_GetMemory_OutOfRange)
 {
     Memory<uint8_t, 32> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
     access.offset = 0;
@@ -153,14 +153,14 @@ TEST_F(HostCS, Memory_GetMemory_OutOfRange)
 TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
 {
     Memory<uint8_t, 1024> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     MemoryAccess access;
     access.offset = 0;
     access.size   = 255; // 加上Id和内存参数, 超出最大帧长限制
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(access);
 
     client.send_request(Command::GET_MEMORY, extra);
@@ -173,10 +173,10 @@ TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
 TEST_F(HostCS, Memory_GetSize)
 {
     Memory<float, 1> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
@@ -192,10 +192,10 @@ TEST_F(HostCS, Memory_GetSize)
 TEST_F(HostCS, Memory_GetDesc)
 {
     Memory<float, 1> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_DESC, extra);
 
     Poll();

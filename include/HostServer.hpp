@@ -18,6 +18,13 @@ struct PropertyIds : public PropertyAccess<Access::READ>
     virtual ErrorCode get_size(Extra& extra) override;
 };
 
+struct PropertyNonce : public PropertyAccess<Access::READ>
+{
+    PropertyNonce();
+    virtual ErrorCode get(Extra& extra) override;
+    virtual ErrorCode get_size(Extra& extra) override;
+};
+
 struct HostServer : public HostBase
 {
     // 帧头缓冲区
@@ -27,8 +34,10 @@ struct HostServer : public HostBase
     // 属性值容器
     PropertyHolder _props;
 
-    // 访问属性值Id信息
+    // 属性值Id信息
     PropertyIds    Ids{this};
+    // 属性值加密通信随机数
+    PropertyNonce  Nonce;
 
     HostServer();
     /* 轮询请求 */

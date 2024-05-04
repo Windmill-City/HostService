@@ -10,7 +10,7 @@ TEST(HostClient, sizeof)
 TEST(HostServer, sizeof)
 {
     HostServerImpl hs;
-    EXPECT_EQ(sizeof(HostServer), 300);
+    EXPECT_EQ(sizeof(HostServer), 308);
 }
 
 TEST_F(HostCS, request)
@@ -39,7 +39,7 @@ TEST_F(HostCS, ids_size)
 
     uint16_t size;
     client._extra.get(size);
-    EXPECT_EQ(size, sizeof(PropertyId) * 1);
+    EXPECT_EQ(size, sizeof(PropertyId) * 2);
 }
 
 TEST_F(HostCS, ids_content)
@@ -51,7 +51,7 @@ TEST_F(HostCS, ids_content)
     PropertyId   id = 0;
 
     MemoryAccess access;
-    access.offset = sizeof(PropertyId) * 1;
+    access.offset = sizeof(PropertyId) * 2;
     access.size   = sizeof(PropertyId) * 1;
 
     Extra extra;
@@ -67,4 +67,27 @@ TEST_F(HostCS, ids_content)
     // id = 233, prop.float
     client._extra.get(id);
     EXPECT_EQ(id, 233);
+}
+
+TEST_F(HostCS, nonce)
+{
+    PropertyId id = 1;
+
+    for (size_t i = 0; i < PropertyBase::Key.Nonce.size(); i++)
+    {
+        PropertyBase::Key.Nonce[i] = i;
+    }
+
+    Extra extra;
+    extra.add(id);
+    client.send_request(Command::GET_PROPERTY, extra);
+
+    Poll();
+
+    client._extra.get(id);
+
+    std::array<uint8_t, 12> nonce;
+    EXPECT_EQ(nonce.size(), client._extra.remain());
+    client._extra.get(nonce.data(), nonce.size());
+    EXPECT_TRUE(memcmp(nonce.data(), PropertyBase::Key.Nonce.data(), nonce.size()) == 0);
 }

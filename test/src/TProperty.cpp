@@ -45,10 +45,10 @@ TEST(Property, Calc)
 TEST_F(HostCS, Property_GetProperty)
 {
     Property<float> prop("Prop", 18.8f);
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -65,10 +65,10 @@ TEST_F(HostCS, Property_GetProperty)
 TEST_F(HostCS, Property_SetProperty)
 {
     Property<float> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -80,14 +80,14 @@ TEST_F(HostCS, Property_SetProperty)
 TEST_F(HostCS, Property_SetMemory)
 {
     Property<float> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     MemoryAccess access;
     access.offset = 0;
     access.size   = sizeof(float);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(access);
     extra.add(18.8f); // data
     client.send_request(Command::SET_MEMORY, extra);
@@ -100,14 +100,14 @@ TEST_F(HostCS, Property_SetMemory)
 TEST_F(HostCS, Property_GetMemory)
 {
     Property<float> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     MemoryAccess access;
     access.offset = 0;
     access.size   = sizeof(float);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     extra.add(access);
     client.send_request(Command::GET_MEMORY, extra);
 
@@ -119,10 +119,10 @@ TEST_F(HostCS, Property_GetMemory)
 TEST_F(HostCS, Property_GetSize)
 {
     Property<float> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
@@ -138,10 +138,10 @@ TEST_F(HostCS, Property_GetSize)
 TEST_F(HostCS, Property_GetDesc)
 {
     Property<float> prop("Prop");
-    server.put(0x01, prop);
+    server.put(0x05, prop);
 
     Extra extra;
-    extra.add<PropertyId>(0x01);
+    extra.add<PropertyId>(0x05);
     client.send_request(Command::GET_DESC, extra);
 
     Poll();
