@@ -6,13 +6,10 @@
 
 // 只允许标准布局类型和非指针类型
 template <typename T>
-concept Data = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
+concept Data    = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
 
-struct AES
-{
-    std::array<uint8_t, 12>      Nonce;
-    std::array<uint8_t, 256 / 8> Key;
-};
+using NonceType = std::array<uint8_t, 12>;
+using KeyType   = std::array<uint8_t, 256 / 8>;
 
 struct Extra
 {
@@ -108,11 +105,10 @@ struct Extra
      * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
      * [decrypted_data]:解密后的数据
      *
-     * @param aes AES加密数据
      * @return true 解密成功
      * @return false 解密失败
      */
-    bool decrypt(const AES& aes)
+    bool decrypt(const NonceType& nonce, const KeyType& key)
     {
         if (!_encrypted) return false;
         _encrypted = false;
@@ -123,10 +119,10 @@ struct Extra
         size_t   data_len = remain();
         uint8_t* _data    = &_buf[_tag_len];
         uint8_t* _tag     = &_buf[0];
-        return UAES_CCM_SimpleDecrypt(aes.Key.data(),
-                                      aes.Key.size(),
-                                      aes.Nonce.data(),
-                                      aes.Nonce.size(),
+        return UAES_CCM_SimpleDecrypt(key.data(),
+                                      key.size(),
+                                      nonce.data(),
+                                      nonce.size(),
                                       NULL,
                                       0,
                                       _data,
@@ -143,7 +139,7 @@ struct Extra
      *
      * @param aes AES加密数据
      */
-    void encrypt(const AES& aes)
+    void encrypt(const NonceType& nonce, const KeyType& key)
     {
         if (_encrypted) return;
         _encrypted = true;
@@ -154,10 +150,10 @@ struct Extra
         size_t   data_len = remain();
         uint8_t* _data    = &_buf[_tag_len];
         uint8_t* _tag     = &_buf[0];
-        UAES_CCM_SimpleEncrypt(aes.Key.data(),
-                               aes.Key.size(),
-                               aes.Nonce.data(),
-                               aes.Nonce.size(),
+        UAES_CCM_SimpleEncrypt(key.data(),
+                               key.size(),
+                               nonce.data(),
+                               nonce.size(),
                                NULL,
                                0,
                                _data,

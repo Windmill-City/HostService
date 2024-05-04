@@ -38,7 +38,7 @@ TEST_F(HostCS, Write_Read_Protect_Privileged)
     Extra extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(PropertyBase::AES);
+    extra.encrypt(server.Nonce, server.Key);
     client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
@@ -68,7 +68,7 @@ TEST_F(HostCS, Write_Read_Write_Protect_Privileged)
     Extra extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(PropertyBase::AES);
+    extra.encrypt(server.Nonce, server.Key);
     client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);
@@ -98,7 +98,7 @@ TEST_F(HostCS, Write_Write_Protect_Privileged)
     Extra extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(PropertyBase::AES);
+    extra.encrypt(server.Nonce, server.Key);
     client.send_request(Command::SET_PROPERTY, extra);
 
     Poll(true);

@@ -2,7 +2,7 @@
 #include <Extra.hpp>
 #include <HostBase.hpp>
 #include <map>
-#include <PropertyBase.hpp>
+#include <Struct.hpp>
 
 using PropertyHolder = std::map<PropertyId, PropertyBase*>;
 
@@ -18,18 +18,17 @@ struct PropertyIds : public PropertyAccess<Access::READ>
     virtual ErrorCode get_size(Extra& extra) override;
 };
 
-struct PropertyNonce : public PropertyAccess<Access::READ>
+struct PropertyNonce : public Struct<NonceType, Access::READ>
 {
+    using parent = Struct<NonceType, Access::READ>;
     PropertyNonce();
-    virtual ErrorCode get(Extra& extra) override;
-    virtual ErrorCode get_size(Extra& extra) override;
 };
 
-struct PropertyKey : public PropertyAccess<Access::READ_WRITE_PROTECT>
+struct PropertyKey : public Struct<std::array<uint8_t, 256 / 8>, Access::READ_WRITE_PROTECT>
 {
+    using parent = Struct<std::array<uint8_t, 256 / 8>, Access::READ_WRITE_PROTECT>;
     PropertyKey();
-    virtual ErrorCode set(Extra& extra) override;
-    virtual ErrorCode get_size(Extra& extra) override;
+    virtual ErrorCode get(Extra& extra) override;
 };
 
 struct HostServer : public HostBase

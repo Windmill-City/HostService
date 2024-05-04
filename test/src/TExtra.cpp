@@ -40,15 +40,16 @@ TEST(Extra, read_write)
 
 TEST(Extra, AES)
 {
-    AES aes;
-    for (size_t i = 0; i < aes.Key.size(); i++)
+    KeyType key;
+    for (size_t i = 0; i < key.size(); i++)
     {
-        aes.Key[i] = 0x01;
+        key[i] = 0x01;
     }
 
-    for (size_t i = 0; i < aes.Nonce.size(); i++)
+    NonceType nonce;
+    for (size_t i = 0; i < nonce.size(); i++)
     {
-        aes.Nonce[i] = 0x01;
+        nonce[i] = 0x01;
     }
 
     Extra extra;
@@ -60,9 +61,9 @@ TEST(Extra, AES)
         extra.add<uint8_t>(0x01);
     }
 
-    extra.encrypt(aes);
+    extra.encrypt(nonce, key);
 
-    EXPECT_TRUE(extra.decrypt(aes));
+    EXPECT_TRUE(extra.decrypt(nonce, key));
 
     while (extra.remain() > 0)
     {

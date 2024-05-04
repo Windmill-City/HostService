@@ -29,11 +29,6 @@ using PropertyId = uint16_t;
 
 struct PropertyBase
 {
-    /**
-     * @brief AES 加密密钥
-     *
-     */
-    static AES AES;
 #ifndef NO_LOCK
     static std::recursive_mutex Mutex;
 #endif

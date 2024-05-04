@@ -10,7 +10,7 @@ TEST(HostClient, sizeof)
 TEST(HostServer, sizeof)
 {
     HostServerImpl hs;
-    EXPECT_EQ(sizeof(HostServer), 316);
+    EXPECT_EQ(sizeof(HostServer), 360);
 }
 
 TEST_F(HostCS, request)
@@ -73,9 +73,9 @@ TEST_F(HostCS, nonce)
 {
     PropertyId id = 1;
 
-    for (size_t i = 0; i < PropertyBase::AES.Nonce.size(); i++)
+    for (size_t i = 0; i < server.Nonce.ref().size(); i++)
     {
-        PropertyBase::AES.Nonce[i] = i;
+        server.Nonce.ref()[i] = i;
     }
 
     Extra extra;
@@ -89,7 +89,7 @@ TEST_F(HostCS, nonce)
     std::array<uint8_t, 12> nonce;
     EXPECT_EQ(nonce.size(), client._extra.remain());
     client._extra.get(nonce.data(), nonce.size());
-    EXPECT_TRUE(memcmp(nonce.data(), PropertyBase::AES.Nonce.data(), nonce.size()) == 0);
+    EXPECT_TRUE(memcmp(nonce.data(), server.Nonce.ref().data(), nonce.size()) == 0);
 }
 
 TEST_F(HostCS, key)
@@ -107,10 +107,10 @@ TEST_F(HostCS, key)
     extra.reserve_tag();
     extra.add(id);
     extra.add(key.data(), key.size());
-    extra.encrypt(PropertyBase::AES);
+    extra.encrypt(server.Nonce, server.Key);
     client.send_request(Command::SET_PROPERTY, extra);
 
     Poll();
 
-    EXPECT_TRUE(memcmp(key.data(), PropertyBase::AES.Key.data(), key.size()) == 0);
+    EXPECT_TRUE(memcmp(key.data(), server.Key.ref().data(), key.size()) == 0);
 }
