@@ -38,7 +38,7 @@ TEST_F(HostCS, Read_Read_Protect_Privileged)
     Extra extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(PropertyBase::Key);
+    extra.encrypt(PropertyBase::AES);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -68,7 +68,7 @@ TEST_F(HostCS, Read_Read_Write_Protect_Privileged)
     Extra extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(PropertyBase::Key);
+    extra.encrypt(PropertyBase::AES);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
@@ -98,7 +98,7 @@ TEST_F(HostCS, Read_Write_Protect_Privileged)
     Extra extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(PropertyBase::Key);
+    extra.encrypt(PropertyBase::AES);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();

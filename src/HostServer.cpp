@@ -7,6 +7,7 @@ HostServer::HostServer()
 {
     put(0, this->Ids);
     put(1, this->Nonce);
+    put(2, this->Key);
 }
 
 /**
@@ -25,7 +26,7 @@ bool HostServer::poll()
     if (IS_ENCRYPTED(cmd))
     {
         extra.encrypted() = true;
-        if (!extra.decrypt(PropertyBase::Key))
+        if (!extra.decrypt(PropertyBase::AES))
         {
             // 清空附加参数
             extra.reset();
@@ -159,7 +160,7 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
     // 截断多余的数据
     extra.truncate();
     // 若有加密标记, 则对参数进行加密
-    if (IS_ENCRYPTED(cmd)) extra.encrypt(PropertyBase::Key);
+    if (IS_ENCRYPTED(cmd)) extra.encrypt(PropertyBase::AES);
     Response rep;
     rep.address = address;
     rep.cmd     = cmd;
@@ -286,12 +287,31 @@ PropertyNonce::PropertyNonce()
 
 ErrorCode PropertyNonce::get(Extra& extra)
 {
-    extra.add(Key.Nonce.data(), Key.Nonce.size());
+    extra.add(AES.Nonce.data(), AES.Nonce.size());
     return ErrorCode::S_OK;
 }
 
 ErrorCode PropertyNonce::get_size(Extra& extra)
 {
-    extra.add(Key.Nonce.size());
+    extra.add(AES.Nonce.size());
+    return ErrorCode::S_OK;
+}
+
+PropertyKey::PropertyKey()
+{
+    this->name = "prop.key";
+}
+
+ErrorCode PropertyKey::set(Extra& extra)
+{
+    if (extra.remain() != AES.Key.size()) return ErrorCode::E_INVALID_ARG;
+
+    extra.get(AES.Key.data(), AES.Key.size());
+    return ErrorCode::S_OK;
+}
+
+ErrorCode PropertyKey::get_size(Extra& extra)
+{
+    extra.add(AES.Key.size());
     return ErrorCode::S_OK;
 }

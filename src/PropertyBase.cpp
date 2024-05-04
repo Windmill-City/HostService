@@ -1,6 +1,6 @@
 #include "PropertyBase.hpp"
 
-AES PropertyBase::Key;
+AES PropertyBase::AES;
 
 #ifndef NO_LOCK
 std::recursive_mutex PropertyBase::Mutex;

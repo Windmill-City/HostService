@@ -25,6 +25,13 @@ struct PropertyNonce : public PropertyAccess<Access::READ>
     virtual ErrorCode get_size(Extra& extra) override;
 };
 
+struct PropertyKey : public PropertyAccess<Access::READ_WRITE_PROTECT>
+{
+    PropertyKey();
+    virtual ErrorCode set(Extra& extra) override;
+    virtual ErrorCode get_size(Extra& extra) override;
+};
+
 struct HostServer : public HostBase
 {
     // 帧头缓冲区
@@ -38,6 +45,8 @@ struct HostServer : public HostBase
     PropertyIds    Ids{this};
     // 加密通信随机数
     PropertyNonce  Nonce;
+    // 加密通信密钥
+    PropertyKey    Key;
 
     HostServer();
     /* 轮询请求 */
