@@ -12,9 +12,9 @@ enum class RangeMode : uint8_t
 
 enum class RangeAccess : uint8_t
 {
-    Property, // 属性值
-    Range,    // 范围值
-    Absolute  // 绝对范围
+    Property = 0, // 属性值
+    Range,        // 范围值
+    Absolute      // 绝对范围
 };
 
 /**
