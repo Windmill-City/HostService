@@ -292,5 +292,6 @@ PropertyKey::PropertyKey()
 
 ErrorCode PropertyKey::get(Extra& extra)
 {
+    // 不允许回读密钥
     return ErrorCode::E_NO_IMPLEMENT;
 }
