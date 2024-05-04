@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include <stdint.h>
 
 #define IS_ENCRYPTED(cmd)        ((uint8_t)(cmd) & 0x80)
