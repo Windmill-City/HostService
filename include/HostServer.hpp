@@ -34,9 +34,9 @@ struct HostServer : public HostBase
     // 属性值容器
     PropertyHolder _props;
 
-    // 属性值Id信息
+    // Id信息
     PropertyIds    Ids{this};
-    // 属性值加密通信随机数
+    // 加密通信随机数
     PropertyNonce  Nonce;
 
     HostServer();
