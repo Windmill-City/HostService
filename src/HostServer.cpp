@@ -265,10 +265,8 @@ ErrorCode PropertyIds::get_mem(Extra& extra)
         if (i++ >= i_beg)
         {
             if (!extra.add(it.first)) return ErrorCode::E_OUT_OF_BUFFER;
-            count--;
+            if (--count == 0) break;
         }
-
-        if (count == 0) break;
     }
     return ErrorCode::S_OK;
 }
