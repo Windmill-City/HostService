@@ -246,7 +246,8 @@ ErrorCode PropertyIds::get_mem(Extra& extra)
 {
     MemoryAccess access;
     // 检查访问参数是否正确
-    if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+    if (!extra.get(access) && access.offset % sizeof(PropertyId) == 0 && access.size % sizeof(PropertyId) == 0)
+        return ErrorCode::E_INVALID_ARG;
     // 检查是否超出内存区范围
     size_t size = server->_props.size() * sizeof(PropertyId);
     if (size < access.offset + access.size)
@@ -264,9 +265,10 @@ ErrorCode PropertyIds::get_mem(Extra& extra)
         if (i++ >= i_beg)
         {
             if (!extra.add(it.first)) return ErrorCode::E_OUT_OF_BUFFER;
+            count--;
         }
 
-        if (i == count) break;
+        if (count == 0) break;
     }
     return ErrorCode::S_OK;
 }

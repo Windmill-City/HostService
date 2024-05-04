@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include <HostCS.hpp>
+#include <Property.hpp>
 
 TEST(HostClient, sizeof)
 {
@@ -43,10 +44,14 @@ TEST_F(HostCS, ids_size)
 
 TEST_F(HostCS, ids_content)
 {
+    // 添加一个属性值
+    Property<float> prop("prop.float");
+    server.put(233, prop);
+
     PropertyId   id = 0;
 
     MemoryAccess access;
-    access.offset = 0;
+    access.offset = sizeof(PropertyId) * 1;
     access.size   = sizeof(PropertyId) * 1;
 
     Extra extra;
@@ -59,7 +64,7 @@ TEST_F(HostCS, ids_content)
     client._extra.get(id);
     client._extra.get(access);
 
-    // 返回参数为 id号
+    // id = 233, prop.float
     client._extra.get(id);
-    EXPECT_EQ(id, 0);
+    EXPECT_EQ(id, 233);
 }
