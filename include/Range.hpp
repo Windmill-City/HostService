@@ -10,12 +10,19 @@ enum class RangeMode : uint8_t
     Clamp, // 超出范围的赋值会被截断到范围以内
 };
 
+enum class RangeAccess : uint8_t
+{
+    Property, // 属性值
+    Range,    // 范围值
+    Absolute  // 绝对范围
+};
+
 /**
  * @brief 存放范围属性的结构体
  *
  * @tparam T 属性的类型
  */
-template <typename T>
+template <Number T>
 struct _Range
 {
     T min;
@@ -30,9 +37,10 @@ struct _Range
  * 注意: 你不能在中断函数中读写属性值
  *
  * 设置命令:
- * Min,Max[,AbsMin,AbsMax]
+ * Range,Min,Max
  * 读取命令:
- * Min,Max,AbsMin,AbsMax
+ * Range,Min,Max
+ * Absolute,Min,Max
  *
  * @tparam T 数值类型
  * @tparam AbsMin 绝对最小值
@@ -97,18 +105,61 @@ struct Range : public Struct<_Range<T>, access>
         return ErrorCode::S_OK;
     }
 
+    virtual ErrorCode set(Extra& extra) override
+    {
+        RangeAccess access;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+
+        switch (access)
+        {
+        case RangeAccess::Range:
+            _Range<T> value;
+            if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+
+            safe_set(value);
+            return ErrorCode::S_OK;
+        default:
+            break;
+        }
+        return ErrorCode::E_INVALID_ARG;
+    }
+
     virtual ErrorCode get(Extra& extra) override
     {
-        extra.add(this->safe_get());
-        extra.add(AbsMin);
-        extra.add(AbsMax);
-        return ErrorCode::S_OK;
+        RangeAccess access;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+
+        switch (access)
+        {
+        case RangeAccess::Range:
+            extra.add(this->safe_get());
+            return ErrorCode::S_OK;
+        case RangeAccess::Absolute:
+            extra.add(AbsMin);
+            extra.add(AbsMax);
+            return ErrorCode::S_OK;
+        default:
+            break;
+        }
+        return ErrorCode::E_INVALID_ARG;
     }
 
     virtual ErrorCode get_size(Extra& extra) override
     {
-        extra.add<uint16_t>(4 * sizeof(T));
-        return ErrorCode::S_OK;
+        RangeAccess access;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+        switch (access)
+        {
+        case RangeAccess::Range:
+            extra.add<uint16_t>(2 * sizeof(T));
+            return ErrorCode::S_OK;
+        case RangeAccess::Absolute:
+            extra.add<uint16_t>(2 * sizeof(T));
+            return ErrorCode::S_OK;
+        default:
+            break;
+        }
+        return ErrorCode::E_INVALID_ARG;
     }
 };
 
@@ -117,6 +168,14 @@ struct Range : public Struct<_Range<T>, access>
  *
  * 属性值的读写是线程安全的
  *
+ * 设置命令:
+ * Property,Value
+ * Range,Min,Max
+ * 读取命令:
+ * Property,Value
+ * Range,Min,Max
+ * Absolute,Min,Max
+ *
  * @tparam T 属性值类型
  * @tparam AbsMin 绝对最小值
  * @tparam AbsMax 绝对最大值
@@ -124,17 +183,14 @@ struct Range : public Struct<_Range<T>, access>
  * @tparam range 范围的访问级
  * @tparam val 属性值的访问级
  */
-template <typename T,
+template <Number    T,
           int       AbsMin,
           int       AbsMax,
           RangeMode mode  = RangeMode::Hard,
           Access    range = Access::READ_WRITE,
           Access    val   = Access::READ_WRITE>
-    requires std::is_arithmetic_v<T> || std::is_enum_v<T>
 struct RangedProperty : public Property<T, val>
 {
-    Range<T, AbsMin, AbsMax, range> _range;
-
     explicit RangedProperty(T value = (AbsMin + AbsMax) / 2, T min = AbsMin, T max = AbsMax)
     {
         _range = {min, max};
@@ -151,7 +207,7 @@ struct RangedProperty : public Property<T, val>
      */
     T& min()
     {
-        return _range.min();
+        return _range.min;
     }
 
     /**
@@ -163,7 +219,7 @@ struct RangedProperty : public Property<T, val>
      */
     T& max()
     {
-        return _range.max();
+        return _range.max;
     }
 
     /**
@@ -176,7 +232,7 @@ struct RangedProperty : public Property<T, val>
      */
     bool in_range()
     {
-        return _range.in_range(this->_value);
+        return this->_value >= min() && this->_value <= max();
     }
 
     /**
@@ -255,4 +311,84 @@ struct RangedProperty : public Property<T, val>
 
         return ErrorCode::E_NO_IMPLEMENT;
     }
+
+    virtual ErrorCode set(Extra& extra) override
+    {
+        RangeAccess access;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+
+        switch (access)
+        {
+        case RangeAccess::Property:
+        {
+            T value;
+            if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+
+            safe_set(value);
+            return ErrorCode::S_OK;
+        }
+        case RangeAccess::Range:
+        {
+            _Range<T> value;
+            if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+
+            if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
+            if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
+            if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
+
+            this->_range = value;
+            return ErrorCode::S_OK;
+        }
+        default:
+            break;
+        }
+        return ErrorCode::E_INVALID_ARG;
+    }
+
+    virtual ErrorCode get(Extra& extra) override
+    {
+        RangeAccess access;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+
+        switch (access)
+        {
+        case RangeAccess::Property:
+            extra.add(this->safe_get());
+            return ErrorCode::S_OK;
+        case RangeAccess::Range:
+            extra.add(_range);
+            return ErrorCode::S_OK;
+        case RangeAccess::Absolute:
+            extra.add(AbsMin);
+            extra.add(AbsMax);
+            return ErrorCode::S_OK;
+        default:
+            break;
+        }
+        return ErrorCode::E_INVALID_ARG;
+    }
+
+    virtual ErrorCode get_size(Extra& extra) override
+    {
+        RangeAccess access;
+        if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+        switch (access)
+        {
+        case RangeAccess::Property:
+            extra.add<uint16_t>(sizeof(T));
+            return ErrorCode::S_OK;
+        case RangeAccess::Range:
+            extra.add<uint16_t>(2 * sizeof(T));
+            return ErrorCode::S_OK;
+        case RangeAccess::Absolute:
+            extra.add<uint16_t>(2 * sizeof(T));
+            return ErrorCode::S_OK;
+        default:
+            break;
+        }
+        return ErrorCode::E_INVALID_ARG;
+    }
+
+  protected:
+    _Range<T> _range;
 };
