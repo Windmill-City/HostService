@@ -4,14 +4,17 @@
 
 TEST(Property, sizeof)
 {
-    EXPECT_EQ(sizeof(Property<bool>), 8);
-    EXPECT_EQ(sizeof(Property<float>), 8);
+    EXPECT_EQ(sizeof(Property<bool>), 12);
+    EXPECT_EQ(sizeof(Property<float>), 12);
 }
 
 TEST(Property, Assign)
 {
-    Property<bool> prop_1 = true;
-    Property<bool> prop_2 = false;
+    Property<bool> prop_1("Prop1");
+    Property<bool> prop_2("Prop2");
+
+    prop_1 = true;
+    prop_2 = false;
 
     EXPECT_EQ(prop_1, true);
     EXPECT_EQ(prop_2, false);
@@ -22,8 +25,11 @@ TEST(Property, Assign)
 
 TEST(Property, Calc)
 {
-    Property<float> prop_1 = 5;
-    Property<float> prop_2 = 7;
+    Property<float> prop_1("Prop1");
+    Property<float> prop_2("Prop2");
+
+    prop_1 = 5;
+    prop_2 = 7;
 
     EXPECT_EQ(prop_1 + 8, 5 + 8.f);
     EXPECT_EQ(prop_1 - 8, 5 - 8.f);
@@ -38,7 +44,7 @@ TEST(Property, Calc)
 
 TEST_F(HostCS, Property_GetProperty)
 {
-    Property<float> prop{18.8f};
+    Property<float> prop("Prop", 18.8f);
     server.put(0x01, prop);
 
     Extra extra;
@@ -58,7 +64,7 @@ TEST_F(HostCS, Property_GetProperty)
 
 TEST_F(HostCS, Property_SetProperty)
 {
-    Property<float> prop{0.0f};
+    Property<float> prop("Prop");
     server.put(0x01, prop);
 
     Extra extra;
@@ -73,7 +79,7 @@ TEST_F(HostCS, Property_SetProperty)
 
 TEST_F(HostCS, Property_SetMemory)
 {
-    Property<float> prop{0.0f};
+    Property<float> prop("Prop");
     server.put(0x01, prop);
 
     MemoryAccess access;
@@ -93,7 +99,7 @@ TEST_F(HostCS, Property_SetMemory)
 
 TEST_F(HostCS, Property_GetMemory)
 {
-    Property<float> prop{0.0f};
+    Property<float> prop("Prop");
     server.put(0x01, prop);
 
     MemoryAccess access;
@@ -112,7 +118,7 @@ TEST_F(HostCS, Property_GetMemory)
 
 TEST_F(HostCS, Property_GetSize)
 {
-    Property<float> prop{0.0f};
+    Property<float> prop("Prop");
     server.put(0x01, prop);
 
     Extra extra;
@@ -131,7 +137,7 @@ TEST_F(HostCS, Property_GetSize)
 
 TEST_F(HostCS, Property_GetDesc)
 {
-    Property<float> prop{0.0f};
+    Property<float> prop("Prop");
     server.put(0x01, prop);
 
     Extra extra;
@@ -144,5 +150,5 @@ TEST_F(HostCS, Property_GetDesc)
     client._extra.get(id);
 
     std::string name{(const char*)client._extra.data(), client._extra.remain()};
-    EXPECT_STREQ(name.c_str(), "struct Property<float,1>");
+    EXPECT_STREQ(name.c_str(), "Prop");
 }

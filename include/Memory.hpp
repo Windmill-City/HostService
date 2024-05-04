@@ -18,8 +18,9 @@ concept MemoryData = std::is_standard_layout_v<T>;
 template <MemoryData T, size_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
-    Memory()
+    Memory(const char* name)
     {
+        this->name                  = name;
         // 确保所有内容都能访问到
         const size_t frame_size_max = UINT8_MAX;
         const size_t offset_max     = UINT16_MAX;
@@ -97,14 +98,6 @@ struct Memory : public PropertyAccess<access>
     virtual ErrorCode get_size(Extra& extra) override
     {
         extra.add<uint16_t>(sizeof(_value));
-        return ErrorCode::S_OK;
-    }
-
-    virtual ErrorCode get_desc(Extra& extra) override
-    {
-        auto name = typeid(*this).name();
-        auto size = strlen(name);
-        extra.add(name, size);
         return ErrorCode::S_OK;
     }
 

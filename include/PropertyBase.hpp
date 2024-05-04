@@ -29,10 +29,19 @@ using PropertyId = uint16_t;
 
 struct PropertyBase
 {
+    /**
+     * @brief AES 加密密钥
+     *
+     */
     static AES Key;
 #ifndef NO_LOCK
     static std::recursive_mutex Mutex;
 #endif
+    /**
+     * @brief 属性名
+     *
+     */
+    const char*       name;
     /**
      * @brief 设置属性值
      *

@@ -15,8 +15,9 @@ concept Number = std::is_arithmetic_v<T>;
 template <Number T, Access access = Access::READ_WRITE>
 struct Property : public PropertyAccess<access>
 {
-    Property(T value = 0)
+    Property(const char* name, T value = 0)
     {
+        this->name = name;
         safe_set(value);
     }
 
@@ -114,14 +115,6 @@ struct Property : public PropertyAccess<access>
     virtual ErrorCode get_size(Extra& extra) override
     {
         extra.add<uint16_t>(sizeof(_value));
-        return ErrorCode::S_OK;
-    }
-
-    virtual ErrorCode get_desc(Extra& extra) override
-    {
-        auto name = typeid(*this).name();
-        auto size = strlen(name);
-        extra.add(name, size);
         return ErrorCode::S_OK;
     }
 

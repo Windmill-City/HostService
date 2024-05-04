@@ -33,5 +33,8 @@ ErrorCode PropertyBase::get_size(Extra& extra)
 
 ErrorCode PropertyBase::get_desc(Extra& extra)
 {
-    return ErrorCode::E_NO_IMPLEMENT;
+    auto name = this->name;
+    auto size = strlen(name);
+    extra.add(name, size);
+    return ErrorCode::S_OK;
 }

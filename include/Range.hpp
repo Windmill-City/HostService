@@ -46,8 +46,10 @@ struct _Range
 template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
 struct Range : public Struct<_Range<T>, access>
 {
-    Range(T min = AbsMin, T max = AbsMax)
+    Range(const char* name, T min = AbsMin, T max = AbsMax)
+        : Struct<_Range<T>, access>(name)
     {
+        this->name  = name;
         this->min() = AbsMin;
         this->max() = AbsMax;
         safe_set({min, max});
@@ -108,6 +110,22 @@ struct Range : public Struct<_Range<T>, access>
         return ErrorCode::S_OK;
     }
 
+    /**
+     * @brief 设置属性值
+     *
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
+     *
+     * @tparam K 数值类型
+     * @param other 要设置的属性值
+     * @return auto& 自身的引用
+     */
+    auto& operator=(const _Range<T> other)
+    {
+        safe_set(other);
+        return *this;
+    }
+
     virtual ErrorCode set(Extra& extra) override
     {
         RangeAccess access;
@@ -164,14 +182,6 @@ struct Range : public Struct<_Range<T>, access>
         }
         return ErrorCode::E_INVALID_ARG;
     }
-
-    virtual ErrorCode get_desc(Extra& extra) override
-    {
-        auto name = typeid(*this).name();
-        auto size = strlen(name);
-        extra.add(name, size);
-        return ErrorCode::S_OK;
-    }
 };
 
 /**
@@ -200,7 +210,8 @@ template <Number    T,
           Access    val   = Access::READ_WRITE>
 struct RangedProperty : public Property<T, val>
 {
-    explicit RangedProperty(T value = (AbsMin + AbsMax) / 2, T min = AbsMin, T max = AbsMax)
+    explicit RangedProperty(const char* name, T value = (AbsMin + AbsMax) / 2, T min = AbsMin, T max = AbsMax)
+        : Property<T, val>(name)
     {
         _range = {min, max};
         safe_set((AbsMax + AbsMin) / 2); // 默认属性值初始化为中间值
