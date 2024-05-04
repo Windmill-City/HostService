@@ -188,3 +188,21 @@ TEST_F(HostCS, Memory_GetSize)
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
+
+TEST_F(HostCS, Memory_GetDesc)
+{
+    Memory<float, 1> prop;
+    server.put(0x01, prop);
+
+    Extra extra;
+    extra.add<PropertyId>(0x01);
+    client.send_request(Command::GET_DESC, extra);
+
+    Poll();
+    
+    PropertyId id;
+    client._extra.get(id);
+
+    std::string name{(const char*)client._extra.data(), client._extra.remain()};
+    EXPECT_STREQ(name.c_str(), "struct Memory<float,1,1>");
+}

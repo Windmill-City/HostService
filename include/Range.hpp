@@ -164,6 +164,14 @@ struct Range : public Struct<_Range<T>, access>
         }
         return ErrorCode::E_INVALID_ARG;
     }
+
+    virtual ErrorCode get_desc(Extra& extra) override
+    {
+        auto name = typeid(*this).name();
+        auto size = strlen(name);
+        extra.add(name, size);
+        return ErrorCode::S_OK;
+    }
 };
 
 /**

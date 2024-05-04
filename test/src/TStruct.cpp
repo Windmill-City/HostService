@@ -107,3 +107,21 @@ TEST_F(HostCS, Struct_GetSize)
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
+
+TEST_F(HostCS, Struct_GetDesc)
+{
+    Struct<FloatSt> prop;
+    server.put(0x01, prop);
+
+    Extra extra;
+    extra.add<PropertyId>(0x01);
+    client.send_request(Command::GET_DESC, extra);
+
+    Poll();
+
+    PropertyId id;
+    client._extra.get(id);
+
+    std::string name{(const char*)client._extra.data(), client._extra.remain()};
+    EXPECT_STREQ(name.c_str(), "struct Struct<struct FloatSt,1>");
+}

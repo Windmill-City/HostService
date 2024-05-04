@@ -162,3 +162,23 @@ TEST_F(HostCS, Range_GetSize)
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
+
+TEST_F(HostCS, Range_GetDesc)
+{
+    PropertyId                   id = 0x01;
+    RangedProperty<float, 0, 25> prop{0.0f};
+    server.put(id, prop);
+
+    Extra extra;
+    extra.add<PropertyId>(id);
+    extra.add(RangeAccess::Property);
+    client.send_request(Command::GET_DESC, extra);
+
+    Poll();
+
+    client._extra.get(id);
+    EXPECT_EQ(id, 0x01);
+
+    std::string name{(const char*)client._extra.data(), client._extra.remain()};
+    EXPECT_STREQ(name.c_str(), "struct RangedProperty<float,0,25,0,1,1>");
+}

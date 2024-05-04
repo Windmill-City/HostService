@@ -100,6 +100,14 @@ struct Memory : public PropertyAccess<access>
         return ErrorCode::S_OK;
     }
 
+    virtual ErrorCode get_desc(Extra& extra) override
+    {
+        auto name = typeid(*this).name();
+        auto size = strlen(name);
+        extra.add(name, size);
+        return ErrorCode::S_OK;
+    }
+
   protected:
     T _value[_len];
 };
