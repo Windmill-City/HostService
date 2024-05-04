@@ -1,9 +1,12 @@
 #include "PropertyBase.hpp"
 
-AES                  PropertyBase::Key;
-std::recursive_mutex PropertyBase::Mutex;
+AES PropertyBase::Key;
 
-ErrorCode            PropertyBase::set(Extra& extra)
+#ifndef NO_LOCK
+std::recursive_mutex PropertyBase::Mutex;
+#endif
+
+ErrorCode PropertyBase::set(Extra& extra)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
