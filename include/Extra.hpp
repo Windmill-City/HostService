@@ -274,6 +274,7 @@ struct Extra
      */
     void reset()
     {
+        _encrypted = false;
         _tail = _data = 0;
     }
 
