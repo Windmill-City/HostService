@@ -28,11 +28,6 @@ struct PropertyBase
 {
     static AES        Key;
     /**
-     * @brief 属性值名称
-     *
-     */
-    const char*       name;
-    /**
      * @brief 设置属性值
      *
      * @param extra [in]附加参数

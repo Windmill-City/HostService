@@ -9,8 +9,8 @@ struct FloatSt
 
 TEST(Struct, sizeof)
 {
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
 }
 
 TEST_F(HostCS, Struct_GetProperty)

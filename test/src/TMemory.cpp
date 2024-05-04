@@ -4,8 +4,8 @@
 
 TEST(Memory, sizeof)
 {
-    EXPECT_EQ(sizeof(Memory<bool, 1>), 12);
-    EXPECT_EQ(sizeof(Memory<float, 1>), 12);
+    EXPECT_EQ(sizeof(Memory<bool, 1>), 8);
+    EXPECT_EQ(sizeof(Memory<float, 1>), 8);
 }
 
 TEST_F(HostCS, Memory_GetProperty)
