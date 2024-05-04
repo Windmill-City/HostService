@@ -8,11 +8,7 @@ template <typename T>
 concept _Struct = std::is_class_v<T> && std::is_standard_layout_v<T>;
 
 /**
- * @brief 创建结构体属性值
- *
- * 属性值的读写是线程安全的
- *
- * 注意: 你不能在中断函数中读写属性值
+ * @brief 结构体属性值模板
  *
  * @tparam T 结构体类型
  * @tparam access 访问级别
@@ -21,23 +17,31 @@ template <_Struct T, Access access = Access::READ_WRITE>
 struct Struct : public PropertyAccess<access>
 {
     /**
-     * @brief 线程安全的读取
+     * @brief 设置属性值
      *
-     * @return T 读取的值
-     */
-    virtual T safe_get() const
-    {
-        return _value;
-    }
-
-    /**
-     * @brief 线程安全的写入
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @param value 要写入的值
      * @return ErrorCode 错误码
      */
+    virtual T safe_get() const
+    {
+        std::lock_guard lock(PropertyBase::Mutex);
+        return _value;
+    }
+
+    /**
+     * @brief 读取属性值
+     *
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
+     *
+     * @return T 属性值
+     */
     virtual ErrorCode safe_set(const T value)
     {
+        std::lock_guard lock(PropertyBase::Mutex);
         _value = value;
         return ErrorCode::S_OK;
     }
@@ -45,7 +49,8 @@ struct Struct : public PropertyAccess<access>
     /**
      * @brief 读取属性值
      *
-     * 线程安全的读取
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @return T 属性值
      */
@@ -57,7 +62,7 @@ struct Struct : public PropertyAccess<access>
     /**
      * @brief 获取属性的引用
      *
-     * 注意: 通过引用访问需要加锁
+     * @note 此方法非线程安全
      *
      * @return T& 属性值引用
      */
@@ -69,7 +74,7 @@ struct Struct : public PropertyAccess<access>
     /**
      * @brief 获取属性的地址
      *
-     * 注意: 通过地址访问需要加锁
+     * @note 此方法非线程安全
      *
      * @return T* 属性地址
      */
@@ -81,7 +86,8 @@ struct Struct : public PropertyAccess<access>
     /**
      * @brief 写入属性值
      *
-     * 线程安全的写入
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @param other 要写的值
      * @return auto& 自身的引用

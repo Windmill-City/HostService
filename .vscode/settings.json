@@ -12,6 +12,7 @@
         "mutex": "cpp",
         "deque": "cpp",
         "queue": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "set": "cpp"
     }
 }

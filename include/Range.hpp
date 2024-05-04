@@ -30,11 +30,7 @@ struct _Range
 };
 
 /**
- * @brief 创建范围属性值
- *
- * 属性值的读写是线程安全的
- *
- * 注意: 你不能在中断函数中读写属性值
+ * @brief 范围属性值模板
  *
  * 设置命令:
  * Range,Min,Max
@@ -60,7 +56,7 @@ struct Range : public Struct<_Range<T>, access>
     /**
      * @brief 获取最小值的引用
      *
-     * 注意: 访问引用需要加锁
+     * @note 此方法非线程安全
      *
      * @return T& 最小值的引用
      */
@@ -72,7 +68,7 @@ struct Range : public Struct<_Range<T>, access>
     /**
      * @brief 获取最大值的引用
      *
-     * 注意: 访问引用需要加锁
+     * @note 此方法非线程安全
      *
      * @return T& 最大值的引用
      */
@@ -84,7 +80,8 @@ struct Range : public Struct<_Range<T>, access>
     /**
      * @brief 检查数值是否在范围内
      *
-     * 注意: 此方法线程安全
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @param value 要检查的数值
      * @return true 在范围内
@@ -92,11 +89,13 @@ struct Range : public Struct<_Range<T>, access>
      */
     bool in_range(T value)
     {
+        std::lock_guard lock(PropertyBase::Mutex);
         return value >= min() && value <= max();
     }
 
     virtual ErrorCode safe_set(const _Range<T> value) override
     {
+        std::lock_guard lock(PropertyBase::Mutex);
         if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
         if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
         if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
@@ -164,9 +163,7 @@ struct Range : public Struct<_Range<T>, access>
 };
 
 /**
- * @brief 带范围限制的属性值
- *
- * 属性值的读写是线程安全的
+ * @brief 带范围限制的属性值模板
  *
  * 设置命令:
  * Property,Value
@@ -201,7 +198,7 @@ struct RangedProperty : public Property<T, val>
     /**
      * @brief 获取最小值的引用
      *
-     * 注意: 访问引用需要加锁
+     * @note 此方法非线程安全
      *
      * @return T& 最小值的引用
      */
@@ -213,7 +210,7 @@ struct RangedProperty : public Property<T, val>
     /**
      * @brief 获取最大值的引用
      *
-     * 注意: 访问引用需要加锁
+     * @note 此方法非线程安全
      *
      * @return T& 最大值的引用
      */
@@ -225,25 +222,29 @@ struct RangedProperty : public Property<T, val>
     /**
      * @brief 检查数值是否在范围内
      *
-     * 注意: 此方法线程安全
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @return true 在范围内
      * @return false 不在范围内
      */
     bool in_range()
     {
+        std::lock_guard lock(PropertyBase::Mutex);
         return this->_value >= min() && this->_value <= max();
     }
 
     /**
      * @brief 将数值限定到范围内
      *
-     * 注意: 此方法线程安全
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @return 自身的引用
      */
     auto& clamp()
     {
+        std::lock_guard lock(PropertyBase::Mutex);
         this->_value = std::clamp(this->_value, min(), max());
         return *this;
     }
@@ -253,7 +254,8 @@ struct RangedProperty : public Property<T, val>
      *
      * 支持不同类型的数值赋值
      *
-     * 注意: 此方法线程安全
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @tparam K 数值类型
      * @param other 要设置的属性值
@@ -271,7 +273,8 @@ struct RangedProperty : public Property<T, val>
      *
      * 支持不同类型的RangedProperty的赋值
      *
-     * 注意: 此方法线程安全
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
      *
      * @tparam K 数值类型
      * @param other 要设置的属性值
@@ -286,6 +289,7 @@ struct RangedProperty : public Property<T, val>
 
     virtual ErrorCode safe_set(T value) override
     {
+        std::lock_guard lock(PropertyBase::Mutex);
         if (mode == RangeMode::Soft)
         {
             this->_value = value;
