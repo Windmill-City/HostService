@@ -24,9 +24,9 @@ struct PropertyNonce : public Struct<NonceType, Access::READ>
     PropertyNonce();
 };
 
-struct PropertyKey : public Struct<std::array<uint8_t, 256 / 8>, Access::READ_WRITE_PROTECT>
+struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
 {
-    using parent = Struct<std::array<uint8_t, 256 / 8>, Access::READ_WRITE_PROTECT>;
+    using parent = Struct<KeyType, Access::READ_WRITE_PROTECT>;
     PropertyKey();
     virtual ErrorCode get(Extra& extra) override;
 };
