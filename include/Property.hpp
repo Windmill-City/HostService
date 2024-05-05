@@ -20,7 +20,7 @@ struct Property : public PropertyAccess<access>
     {
     }
 
-    Property(const char* name, T value = 0)
+    explicit Property(const char* name, T value = 0)
     {
         this->name = name;
         safe_set(value);
