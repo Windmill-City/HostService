@@ -15,7 +15,7 @@ concept Number = std::is_arithmetic_v<T>;
 template <Number T, Access access = Access::READ_WRITE>
 struct Property : public PropertyAccess<access>
 {
-    Property(T value = 0)
+    explicit Property(T value = 0)
         : Property("", value)
     {
     }

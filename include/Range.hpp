@@ -46,12 +46,12 @@ struct _Range
 template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
 struct Range : public Struct<_Range<T>, access>
 {
-    Range(T min = AbsMin, T max = AbsMax)
+    explicit Range(T min = AbsMin, T max = AbsMax)
         : Range("", min, max)
     {
     }
 
-    Range(const char* name, T min = AbsMin, T max = AbsMax)
+    explicit Range(const char* name, T min = AbsMin, T max = AbsMax)
     {
         this->name  = name;
         this->min() = AbsMin;
@@ -215,9 +215,9 @@ template <Number    T,
 struct RangedProperty : public Property<T, val>
 {
     explicit RangedProperty(const char* name, T value = (AbsMin + AbsMax) / 2, T min = AbsMin, T max = AbsMax)
-        : Property<T, val>(name)
     {
-        _range = {min, max};
+        this->name = name;
+        _range     = {min, max};
         safe_set((AbsMax + AbsMin) / 2); // 默认属性值初始化为中间值
         safe_set(value);                 // 此处赋值可能失败
     }
