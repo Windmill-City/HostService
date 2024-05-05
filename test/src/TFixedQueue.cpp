@@ -1,12 +1,6 @@
 #include "gtest/gtest.h"
 #include <FixedQueue.hpp>
 
-#if defined(__GNUC__) || defined(__clang__)
-  #define __REV16(number) (__builtin_bswap16(number))
-#else
-  #define __REV16(number) (((number) >> 8) | ((number) << 8));
-#endif
-
 TEST(FixedQueue, NoPop)
 {
     FixedQueue<255> Q;
@@ -81,36 +75,4 @@ TEST(FixedQueue, PopOnPush)
     ASSERT_EQ(Q.size(), 255);
     // 元素 0 已被弹出, 接下来是元素 1
     ASSERT_EQ(Q[0], 1);
-}
-
-TEST(FixedQueue, asHeader)
-{
-    struct Item
-    {
-        uint8_t  item1;
-        uint8_t  item2;
-        uint16_t chksum;
-    };
-
-    Item item;
-    item.item1  = 1;
-    item.item2  = 2;
-    item.chksum = crc_ccitt_ffff((uint8_t*)&item, sizeof(item) - sizeof(uint16_t));
-    item.chksum = __REV16(item.chksum);
-
-    FixedQueue<sizeof(Item)> Q;
-
-    for (size_t i = 0; i < Q.capacity(); i++)
-    {
-        Q.push(((uint8_t*)&item)[i]);
-    }
-
-    ASSERT_TRUE(Q.verify<Item>());
-
-    Item fromQueue = Q.as<Item>();
-    ASSERT_EQ(fromQueue.item1, item.item1);
-    ASSERT_EQ(fromQueue.item2, item.item2);
-    ASSERT_EQ(fromQueue.chksum, item.chksum);
-
-    ASSERT_EQ(Q.size(), 0);
 }

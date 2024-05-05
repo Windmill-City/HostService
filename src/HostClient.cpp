@@ -72,9 +72,9 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 bool HostClient::_decode_rep(Command& cmd, ErrorCode& err, Extra& extra)
 {
     _buf.push(rx());
-    if (!_buf.verify<Response>()) return false;
+    if (!_buf.verify()) return false;
 
-    _rep          = _buf.as<Response>();
+    _rep          = _buf.get();
 
     uint8_t& size = extra.size();
     cmd           = _rep.cmd;

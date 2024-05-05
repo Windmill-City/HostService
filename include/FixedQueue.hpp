@@ -23,44 +23,6 @@ struct FixedQueue
     }
 
     /**
-     * @brief 验证队列中的元素是否是一个有效的帧头
-     *
-     * @tparam K 帧头类型
-     * @return true 帧头有效
-     * @return false 帧头无效
-     */
-    template <typename K>
-    bool verify()
-    {
-        if (sizeof(K) != size()) return false;
-
-        uint16_t chksum = CRC_START_CCITT_FFFF;
-        for (size_t i = 0; i < size(); i++)
-        {
-            chksum = update_crc_ccitt(chksum, (*this)[i]);
-        }
-        return chksum == 0;
-    }
-
-    /**
-     * @brief 使用队列中的元素构造帧头
-     *
-     * @tparam K 帧头类型
-     * @return K 构造的帧头
-     */
-    template <typename K>
-    K as()
-    {
-        K item;
-        for (size_t i = 0; i < sizeof(K); i++)
-        {
-            ((uint8_t*)&item)[i] = (*this)[i];
-        }
-        reset();
-        return item;
-    }
-
-    /**
      * @brief 在队列尾部放入一个元素
      *
      * @param item 要放入的元素

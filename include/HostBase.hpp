@@ -1,5 +1,44 @@
 #pragma once
 #include <Common.hpp>
+#include <FixedQueue.hpp>
+
+template <typename T>
+struct Sync : public FixedQueue<sizeof(T), PopAction::PopOnPush>
+{
+    /**
+     * @brief 验证是否是一个有效的帧头
+     *
+     * @return true 帧头有效
+     * @return false 帧头无效
+     */
+    bool verify()
+    {
+        if (sizeof(T) != this->size()) return false;
+
+        uint16_t chksum = CRC_START_CCITT_FFFF;
+        for (size_t i = 0; i < this->size(); i++)
+        {
+            chksum = update_crc_ccitt(chksum, (*this)[i]);
+        }
+        return chksum == 0;
+    }
+
+    /**
+     * @brief 获取帧头
+     *
+     * @return T 帧头
+     */
+    T get()
+    {
+        T item;
+        for (size_t i = 0; i < sizeof(T); i++)
+        {
+            ((uint8_t*)&item)[i] = (*this)[i];
+        }
+        this->reset(); // 清空队列
+        return item;
+    }
+};
 
 struct HostBase
 {

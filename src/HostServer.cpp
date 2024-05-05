@@ -180,9 +180,9 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
 bool HostServer::_decode_req(Command& cmd, Extra& extra)
 {
     _buf.push(rx());
-    if (!_buf.verify<Request>()) return false;
+    if (!_buf.verify()) return false;
 
-    Request  _req = _buf.as<Request>();
+    Request  _req = _buf.get();
 
     uint8_t& size = extra.size();
     cmd           = _req.cmd;

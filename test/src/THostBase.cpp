@@ -3,6 +3,12 @@
 #include <HostBase.hpp>
 #include <queue>
 
+#if defined(__GNUC__) || defined(__clang__)
+  #define __REV16(number) (__builtin_bswap16(number))
+#else
+  #define __REV16(number) (((number) >> 8) | ((number) << 8));
+#endif
+
 struct HostBaseImpl : public HostBase
 {
     std::queue<uint8_t> Q;
@@ -51,4 +57,36 @@ TEST(HostBase, tx_rx)
     {
         EXPECT_EQ(data_tx[i], data_rx[i]);
     }
+}
+
+TEST(Sync, header)
+{
+    struct Item
+    {
+        uint8_t  item1;
+        uint8_t  item2;
+        uint16_t chksum;
+    };
+
+    Item item;
+    item.item1  = 1;
+    item.item2  = 2;
+    item.chksum = crc_ccitt_ffff((uint8_t*)&item, sizeof(item) - sizeof(uint16_t));
+    item.chksum = __REV16(item.chksum);
+
+    Sync<Item> Q;
+
+    for (size_t i = 0; i < Q.capacity(); i++)
+    {
+        Q.push(((uint8_t*)&item)[i]);
+    }
+
+    ASSERT_TRUE(Q.verify());
+
+    Item fromQueue = Q.get();
+    ASSERT_EQ(fromQueue.item1, item.item1);
+    ASSERT_EQ(fromQueue.item2, item.item2);
+    ASSERT_EQ(fromQueue.chksum, item.chksum);
+
+    ASSERT_EQ(Q.size(), 0);
 }
