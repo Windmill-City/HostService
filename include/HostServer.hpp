@@ -12,7 +12,7 @@ struct PropertyIds : public PropertyAccess<Access::READ>
 {
     const HostServer* server;
 
-    PropertyIds(const HostServer* server);
+    explicit PropertyIds(const HostServer* server);
 
     virtual ErrorCode get_mem(Extra& extra) override;
     virtual ErrorCode get_size(Extra& extra) override;
