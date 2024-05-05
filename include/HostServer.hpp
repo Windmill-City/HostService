@@ -1,5 +1,6 @@
 #pragma once
 #include <Extra.hpp>
+#include <FixedQueue.hpp>
 #include <HostBase.hpp>
 #include <map>
 #include <Struct.hpp>
@@ -43,21 +44,21 @@ struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
 struct HostServer : public HostBase
 {
     // 帧头缓冲区
-    Request        _req;
+    FixedQueue<sizeof(Request), PopAction::PopOnPush> _buf;
     // 附加参数缓冲区
-    Extra          _extra;
+    Extra                                             _extra;
     // 属性值容器
-    PropertyHolder _props;
+    PropertyHolder                                    _props;
 
     // Id信息
-    PropertyIds    Ids{this};
+    PropertyIds                                       Ids{this};
     // 加密通信随机数, 用来防止重放攻击
     // 每次成功接收一个加密数据包, 就更新此随机数
     // 如果MCU没有随机数外设, 可以使用加密后的唯一ID作为静态随机数
     // 目的是防止不同设备间的重放攻击
-    PropertyNonce  Nonce;
+    PropertyNonce                                     Nonce;
     // 加密通信密钥
-    PropertyKey    Key;
+    PropertyKey                                       Key;
 
     HostServer();
     /* 轮询请求 */

@@ -37,26 +37,3 @@ void HostBase::_encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra
     chksum        = __REV16(chksum);
     tx((uint8_t*)&chksum, sizeof(chksum));
 }
-
-/**
- * @brief 完成帧同步工作
- *
- * @param head 帧头
- * @param h_size 帧头长度
- * @param rx 数据接收方法
- * @return true 接收到帧头
- * @return false 没有接收到帧头
- */
-bool HostBase::_decode_head(uint8_t* head, uint8_t h_size)
-{
-    // 帧同步 - 每次读取 1 字节数据
-    // 从队列头部弹出 1 字节, 头部为低地址
-    memmove(head, head + 1, h_size - 1);
-    // 从队列尾部放入 1 字节
-    *(head + h_size - 1) = rx();
-
-    // 验证帧头有效性
-    if (crc_ccitt_ffff(head, h_size) != 0) return false;
-
-    return true;
-}

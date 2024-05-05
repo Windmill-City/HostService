@@ -26,7 +26,6 @@ struct HostBase
      * @param size 数据的长度
      */
     virtual void    tx(const uint8_t* buf, const size_t size) = 0;
-    /* 帧编码/解码 */
+    /* 帧编码 */
     void            _encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint8_t size);
-    bool            _decode_head(uint8_t* head, uint8_t h_size);
 };

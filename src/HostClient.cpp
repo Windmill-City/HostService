@@ -71,8 +71,10 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
  */
 bool HostClient::_decode_rep(Command& cmd, ErrorCode& err, Extra& extra)
 {
-    // 解码帧头
-    if (!_decode_head((uint8_t*)&_rep, sizeof(_rep))) return false;
+    _buf.push(rx());
+    if (!_buf.verify<Response>()) return false;
+
+    _rep          = _buf.as<Response>();
 
     uint8_t& size = extra.size();
     cmd           = _rep.cmd;

@@ -4,13 +4,13 @@
 
 TEST(HostClient, sizeof)
 {
-    EXPECT_EQ(sizeof(HostClient), 276);
+    EXPECT_EQ(sizeof(HostClient), 292);
 }
 
 TEST(HostServer, sizeof)
 {
     HostServerImpl hs;
-    EXPECT_EQ(sizeof(HostServer), 360);
+    EXPECT_EQ(sizeof(HostServer), 368);
 }
 
 TEST_F(HostCS, request)

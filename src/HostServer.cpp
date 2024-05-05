@@ -179,8 +179,10 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
  */
 bool HostServer::_decode_req(Command& cmd, Extra& extra)
 {
-    // 解码帧头
-    if (!_decode_head((uint8_t*)&_req, sizeof(_req))) return false;
+    _buf.push(rx());
+    if (!_buf.verify<Request>()) return false;
+
+    Request  _req = _buf.as<Request>();
 
     uint8_t& size = extra.size();
     cmd           = _req.cmd;
