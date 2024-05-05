@@ -279,19 +279,3 @@ ErrorCode PropertyIds::get_size(Extra& extra)
     extra.add<uint16_t>(size);
     return ErrorCode::S_OK;
 }
-
-PropertyNonce::PropertyNonce()
-    : parent("prop.nonce")
-{
-}
-
-PropertyKey::PropertyKey()
-    : parent("prop.key")
-{
-}
-
-ErrorCode PropertyKey::get(Extra& extra)
-{
-    // 不允许回读密钥
-    return ErrorCode::E_NO_IMPLEMENT;
-}

@@ -20,15 +20,24 @@ struct PropertyIds : public PropertyAccess<Access::READ>
 
 struct PropertyNonce : public Struct<NonceType, Access::READ>
 {
-    using parent = Struct<NonceType, Access::READ>;
-    PropertyNonce();
+    PropertyNonce()
+    {
+        this->name = "prop.nonce";
+    }
 };
 
 struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
 {
-    using parent = Struct<KeyType, Access::READ_WRITE_PROTECT>;
-    PropertyKey();
-    virtual ErrorCode get(Extra& extra) override;
+    PropertyKey()
+    {
+        this->name = "prop.key";
+    }
+
+    virtual ErrorCode get(Extra& extra) override
+    {
+        // 不允许回读密钥
+        return ErrorCode::E_NO_IMPLEMENT;
+    }
 };
 
 struct HostServer : public HostBase

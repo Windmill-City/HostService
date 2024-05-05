@@ -18,7 +18,7 @@ concept MemoryData = std::is_standard_layout_v<T>;
 template <MemoryData T, size_t _len, Access access = Access::READ_WRITE>
 struct Memory : public PropertyAccess<access>
 {
-    Memory(const char* name)
+    Memory(const char* name = "")
     {
         this->name                  = name;
         // 确保所有内容都能访问到

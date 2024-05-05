@@ -16,7 +16,7 @@ concept _Struct = std::is_class_v<T> && std::is_standard_layout_v<T>;
 template <_Struct T, Access access = Access::READ_WRITE>
 struct Struct : public PropertyAccess<access>
 {
-    Struct(const char* name)
+    Struct(const char* name = "")
     {
         this->name = name;
     }

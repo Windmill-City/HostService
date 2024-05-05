@@ -46,8 +46,12 @@ struct _Range
 template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
 struct Range : public Struct<_Range<T>, access>
 {
+    Range(T min = AbsMin, T max = AbsMax)
+        : Range("", min, max)
+    {
+    }
+
     Range(const char* name, T min = AbsMin, T max = AbsMax)
-        : Struct<_Range<T>, access>(name)
     {
         this->name  = name;
         this->min() = AbsMin;
