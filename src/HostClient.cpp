@@ -13,7 +13,6 @@ bool HostClient::poll()
     Command   cmd;
     Extra&    extra = _extra;
     ErrorCode err;
-    uint8_t   size;
     if (!recv_response(cmd, err, extra)) return false;
 
     switch (cmd)
