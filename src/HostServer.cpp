@@ -144,8 +144,28 @@ PropertyBase* HostServer::get(PropertyId id)
  */
 bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
+    _buf.push(rx());
+    if (!_buf.verify()) return false;
+
     extra.reset();
-    return _decode_req(cmd, extra);
+    Request  _req = _buf.get();
+
+    uint8_t& size = extra.size();
+    cmd           = _req.cmd;
+    size          = _req.size;
+
+    // 数据为空, 跳过接收
+    if (size == 0) return true;
+
+    // 读取数据
+    for (size_t i = 0; i < size + sizeof(Chksum); i++)
+    {
+        extra[i] = rx();
+    }
+    // 验证数据
+    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
+
+    return true;
 }
 
 /**
@@ -167,39 +187,6 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
     rep.error   = err;
     rep.size    = extra.size();
     _encode((uint8_t*)&rep, sizeof(rep), &extra, rep.size);
-}
-
-/**
- * @brief 解码请求帧
- *
- * @param cmd 请求的指令
- * @param extra 附加参数
- * @return true 成功接收一帧
- * @return false 没有接收一帧
- */
-bool HostServer::_decode_req(Command& cmd, Extra& extra)
-{
-    _buf.push(rx());
-    if (!_buf.verify()) return false;
-
-    Request  _req = _buf.get();
-
-    uint8_t& size = extra.size();
-    cmd           = _req.cmd;
-    size          = _req.size;
-
-    // 数据为空, 跳过接收
-    if (size == 0) return true;
-
-    // 读取数据
-    for (size_t i = 0; i < size + sizeof(Chksum); i++)
-    {
-        extra[i] = rx();
-    }
-    // 验证数据
-    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
-
-    return true;
 }
 
 PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)

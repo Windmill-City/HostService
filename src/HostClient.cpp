@@ -56,24 +56,10 @@ void HostClient::send_request(const Command cmd, Extra& extra)
  */
 bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 {
-    extra.reset();
-    return _decode_rep(cmd, err, extra);
-}
-
-/**
- * @brief 解码响应帧
- *
- * @param cmd 响应的指令
- * @param err 错误码
- * @param extra 附加参数
- * @return true 成功接收一帧
- * @return false 没有接收一帧
- */
-bool HostClient::_decode_rep(Command& cmd, ErrorCode& err, Extra& extra)
-{
     _buf.push(rx());
     if (!_buf.verify()) return false;
 
+    extra.reset();
     _rep          = _buf.get();
 
     uint8_t& size = extra.size();

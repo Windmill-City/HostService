@@ -18,6 +18,4 @@ struct HostClient : public HostBase
     void           send_request(const Command cmd, Extra& extra);
     /* 接收响应帧 */
     bool           recv_response(Command& cmd, ErrorCode& err, Extra& extra);
-    /* 帧解码 */
-    bool           _decode_rep(Command& cmd, ErrorCode& err, Extra& extra);
 };
