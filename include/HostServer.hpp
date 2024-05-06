@@ -77,4 +77,6 @@ struct HostServer : public HostBase
     void          send_response(const Command cmd, const ErrorCode err, Extra& extra);
     /* 属性值获取与鉴权 */
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
+    /* 更新随机数 */
+    virtual void  update_nonce() = 0;
 };

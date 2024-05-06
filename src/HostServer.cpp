@@ -33,6 +33,7 @@ bool HostServer::poll()
             send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
             return false;
         }
+        update_nonce();
     }
 
     switch (REMOVE_ENCRYPT_MARK(cmd))

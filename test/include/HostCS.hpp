@@ -45,6 +45,10 @@ struct HostServerImpl : public HostServer
             Q_Client->push(buf[i]);
         }
     }
+
+    virtual void update_nonce() override
+    {
+    }
 };
 
 struct HostCS : testing::Test
