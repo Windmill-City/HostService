@@ -131,6 +131,8 @@ enum class Command : uint8_t
  */
 using Chksum = uint16_t;
 
+#pragma pack(1)
+
 struct Request
 {
     uint8_t address; // 从机地址
@@ -147,6 +149,8 @@ struct Response
     ErrorCode error;   // 错误码
     Chksum    chksum;  // 帧头校验和
 };
+
+#pragma pack()
 
 struct MemoryAccess
 {
