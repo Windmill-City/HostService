@@ -19,7 +19,8 @@ struct FixedQueue
      */
     void reset()
     {
-        _empty = _data = 0;
+        _empty = 0;
+        _data  = 0;
     }
 
     /**
@@ -123,7 +124,7 @@ struct FixedQueue
     // 需要额外占用一个元素来表示队列满
     std::array<uint8_t, (_size + 1)> _buf;
     // 指向空数据
-    size_t                           _empty = 0;
+    volatile size_t                  _empty = 0;
     // 指向有效数据
-    size_t                           _data  = 0;
+    volatile size_t                  _data  = 0;
 };
