@@ -21,6 +21,11 @@ enum class ErrorCode : uint8_t
     E_ILLEGAL_STATE,   // 非法状态
 };
 
+enum class Signal : uint8_t
+{
+    LOG = 0, // CMD, log字符串
+};
+
 enum class Command : uint8_t
 {
     /**
@@ -111,6 +116,13 @@ enum class Command : uint8_t
      * CMD,E_NO_PERMISSION,属性Id
      */
     GET_DESC,
+    /**
+     * @brief 信号
+     *
+     * 请求: CMD,信号Id,信号参数
+     * 应答: 无
+     */
+    SIGNAL,
 };
 
 /**
