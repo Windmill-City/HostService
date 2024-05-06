@@ -227,12 +227,6 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
     return prop;
 }
 
-PropertyIds::PropertyIds(const HostServer* server)
-    : server(server)
-{
-    this->name = "prop.ids";
-}
-
 ErrorCode PropertyIds::get_mem(Extra& extra)
 {
     MemoryAccess access;
