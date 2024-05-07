@@ -4,15 +4,15 @@
 
 TEST(RangedProperty, sizeof)
 {
-    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 20);
+    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 16);
     EXPECT_EQ(sizeof(_Range<float>), 8);
 }
 
 TEST(RangedProperty, Mode)
 {
-    RangedProperty<int, 0, 10, RangeMode::Hard>  hard("Prop");
-    RangedProperty<int, 0, 10, RangeMode::Soft>  soft("Prop");
-    RangedProperty<int, 0, 10, RangeMode::Clamp> clamp("Prop");
+    RangedProperty<int, 0, 10, RangeMode::Hard>  hard;
+    RangedProperty<int, 0, 10, RangeMode::Soft>  soft;
+    RangedProperty<int, 0, 10, RangeMode::Clamp> clamp;
 
     // 测试边界能否赋值
     hard = 10;
@@ -47,7 +47,7 @@ TEST(RangedProperty, Mode)
 
 TEST(Range, BoundTest)
 {
-    Range<float, 0, 0.1> range("Range");
+    Range<float, 0, 0.1> range;
 
     // 测试是否拦截赋值
     range = _Range<float>{-100, 100};
@@ -57,8 +57,8 @@ TEST(Range, BoundTest)
 
 TEST_F(HostCS, Range_GetProperty)
 {
-    PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop("Prop", 18.8f);
+    PropertyId                   id   = 0x05;
+    RangedProperty<float, 0, 25> prop = 18.8f;
     server.put(id, prop);
 
     Extra extra;
@@ -83,7 +83,7 @@ TEST_F(HostCS, Range_GetProperty)
 TEST_F(HostCS, Range_SetProperty)
 {
     PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop("Prop");
+    RangedProperty<float, 0, 25> prop;
     server.put(id, prop);
 
     Extra extra;
@@ -100,7 +100,7 @@ TEST_F(HostCS, Range_SetProperty)
 TEST_F(HostCS, Range_SetMemory)
 {
     PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop("Prop");
+    RangedProperty<float, 0, 25> prop;
     server.put(id, prop);
 
     MemoryAccess access;
@@ -121,7 +121,7 @@ TEST_F(HostCS, Range_SetMemory)
 TEST_F(HostCS, Range_GetMemory)
 {
     PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop("Prop");
+    RangedProperty<float, 0, 25> prop;
     server.put(id, prop);
 
     MemoryAccess access;
@@ -141,7 +141,7 @@ TEST_F(HostCS, Range_GetMemory)
 TEST_F(HostCS, Range_GetSize)
 {
     PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop("Prop");
+    RangedProperty<float, 0, 25> prop;
     server.put(id, prop);
 
     Extra extra;
@@ -161,24 +161,4 @@ TEST_F(HostCS, Range_GetSize)
     uint16_t size;
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
-}
-
-TEST_F(HostCS, Range_GetDesc)
-{
-    PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop("Prop");
-    server.put(id, prop);
-
-    Extra extra;
-    extra.add<PropertyId>(id);
-    extra.add(RangeAccess::Property);
-    client.send_request(Command::GET_DESC, extra);
-
-    Poll();
-
-    client._extra.get(id);
-    EXPECT_EQ(id, 0x05);
-
-    std::string name{(const char*)client._extra.data(), client._extra.remain()};
-    EXPECT_STREQ(name.c_str(), "Prop");
 }

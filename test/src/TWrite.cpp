@@ -4,7 +4,7 @@
 
 TEST_F(HostCS, Write_Read)
 {
-    Property<bool, Access::READ> prop("Prop");
+    Property<bool, Access::READ> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -18,7 +18,7 @@ TEST_F(HostCS, Write_Read)
 
 TEST_F(HostCS, Write_Read_Protect_NotPrivileged)
 {
-    Property<bool, Access::READ_PROTECT> prop("Prop");
+    Property<bool, Access::READ_PROTECT> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -32,7 +32,7 @@ TEST_F(HostCS, Write_Read_Protect_NotPrivileged)
 
 TEST_F(HostCS, Write_Read_Protect_Privileged)
 {
-    Property<bool, Access::READ_PROTECT> prop("Prop");
+    Property<bool, Access::READ_PROTECT> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -48,7 +48,7 @@ TEST_F(HostCS, Write_Read_Protect_Privileged)
 
 TEST_F(HostCS, Write_Read_Write_Protect_NotPrivileged)
 {
-    Property<bool, Access::READ_WRITE_PROTECT> prop("Prop");
+    Property<bool, Access::READ_WRITE_PROTECT> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -62,7 +62,7 @@ TEST_F(HostCS, Write_Read_Write_Protect_NotPrivileged)
 
 TEST_F(HostCS, Write_Read_Write_Protect_Privileged)
 {
-    Property<bool, Access::READ_WRITE_PROTECT> prop("Prop");
+    Property<bool, Access::READ_WRITE_PROTECT> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -78,7 +78,7 @@ TEST_F(HostCS, Write_Read_Write_Protect_Privileged)
 
 TEST_F(HostCS, Write_Write_Protect_NotPrivileged)
 {
-    Property<bool, Access::WRITE_PROTECT> prop("Prop");
+    Property<bool, Access::WRITE_PROTECT> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -92,7 +92,7 @@ TEST_F(HostCS, Write_Write_Protect_NotPrivileged)
 
 TEST_F(HostCS, Write_Write_Protect_Privileged)
 {
-    Property<bool, Access::WRITE_PROTECT> prop("Prop");
+    Property<bool, Access::WRITE_PROTECT> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -108,7 +108,7 @@ TEST_F(HostCS, Write_Write_Protect_Privileged)
 
 TEST_F(HostCS, Write_Read_Write)
 {
-    Property<bool, Access::READ_WRITE> prop("Prop");
+    Property<bool, Access::READ_WRITE> prop;
     server.put(0x05, prop);
 
     Extra extra;

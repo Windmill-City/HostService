@@ -9,13 +9,13 @@ struct FloatSt
 
 TEST(Struct, sizeof)
 {
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
-    EXPECT_EQ(sizeof(Struct<FloatSt>), 12);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
+    EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
 }
 
 TEST_F(HostCS, Struct_GetProperty)
 {
-    Struct<FloatSt> prop("Prop");
+    Struct<FloatSt> prop;
     server.put(0x05, prop);
     prop.ref().val = 18.8f;
 
@@ -36,7 +36,7 @@ TEST_F(HostCS, Struct_GetProperty)
 
 TEST_F(HostCS, Struct_SetProperty)
 {
-    Struct<FloatSt> prop("Prop");
+    Struct<FloatSt> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -51,7 +51,7 @@ TEST_F(HostCS, Struct_SetProperty)
 
 TEST_F(HostCS, Struct_SetMemory)
 {
-    Struct<FloatSt> prop("Prop");
+    Struct<FloatSt> prop;
     server.put(0x05, prop);
 
     MemoryAccess access;
@@ -71,7 +71,7 @@ TEST_F(HostCS, Struct_SetMemory)
 
 TEST_F(HostCS, Struct_GetMemory)
 {
-    Struct<FloatSt> prop("Prop");
+    Struct<FloatSt> prop;
     server.put(0x05, prop);
     prop.ref().val = 18.8f;
 
@@ -91,7 +91,7 @@ TEST_F(HostCS, Struct_GetMemory)
 
 TEST_F(HostCS, Struct_GetSize)
 {
-    Struct<FloatSt> prop("Prop");
+    Struct<FloatSt> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -106,22 +106,4 @@ TEST_F(HostCS, Struct_GetSize)
     uint16_t size;
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
-}
-
-TEST_F(HostCS, Struct_GetDesc)
-{
-    Struct<FloatSt> prop("Prop");
-    server.put(0x05, prop);
-
-    Extra extra;
-    extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_DESC, extra);
-
-    Poll();
-
-    PropertyId id;
-    client._extra.get(id);
-
-    std::string name{(const char*)client._extra.data(), client._extra.remain()};
-    EXPECT_STREQ(name.c_str(), "Prop");
 }

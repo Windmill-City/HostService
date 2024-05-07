@@ -16,9 +16,9 @@ concept _Struct = std::is_class_v<T> && std::is_standard_layout_v<T>;
 template <_Struct T, Access access = Access::READ_WRITE>
 struct Struct : public PropertyAccess<access>
 {
-    explicit Struct(const char* name = "")
+    Struct(T value = {0})
     {
-        this->name = name;
+        safe_set(value);
     }
 
     /**

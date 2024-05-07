@@ -10,7 +10,7 @@ TEST(HostClient, sizeof)
 TEST(HostServer, sizeof)
 {
     HostServerImpl hs;
-    EXPECT_EQ(sizeof(HostServer), 368);
+    EXPECT_EQ(sizeof(HostServer), 356);
 }
 
 TEST_F(HostCS, request)
@@ -45,7 +45,7 @@ TEST_F(HostCS, ids_size)
 TEST_F(HostCS, ids_content)
 {
     // 添加一个属性值
-    Property<float> prop("prop.float");
+    Property<float> prop;
     server.put(233, prop);
 
     PropertyId   id = 0;

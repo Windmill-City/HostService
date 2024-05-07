@@ -4,14 +4,14 @@
 
 TEST(Property, sizeof)
 {
-    EXPECT_EQ(sizeof(Property<bool>), 12);
-    EXPECT_EQ(sizeof(Property<float>), 12);
+    EXPECT_EQ(sizeof(Property<bool>), 8);
+    EXPECT_EQ(sizeof(Property<float>), 8);
 }
 
 TEST(Property, Assign)
 {
-    Property<bool> prop_1("Prop1");
-    Property<bool> prop_2("Prop2");
+    Property<bool> prop_1;
+    Property<bool> prop_2;
 
     prop_1 = true;
     prop_2 = false;
@@ -25,8 +25,8 @@ TEST(Property, Assign)
 
 TEST(Property, Calc)
 {
-    Property<float> prop_1("Prop1");
-    Property<float> prop_2("Prop2");
+    Property<float> prop_1;
+    Property<float> prop_2;
 
     prop_1 = 5;
     prop_2 = 7;
@@ -44,7 +44,7 @@ TEST(Property, Calc)
 
 TEST_F(HostCS, Property_GetProperty)
 {
-    Property<float> prop("Prop", 18.8f);
+    Property<float> prop = 18.8f;
     server.put(0x05, prop);
 
     Extra extra;
@@ -64,7 +64,7 @@ TEST_F(HostCS, Property_GetProperty)
 
 TEST_F(HostCS, Property_SetProperty)
 {
-    Property<float> prop("Prop");
+    Property<float> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -79,7 +79,7 @@ TEST_F(HostCS, Property_SetProperty)
 
 TEST_F(HostCS, Property_SetMemory)
 {
-    Property<float> prop("Prop");
+    Property<float> prop;
     server.put(0x05, prop);
 
     MemoryAccess access;
@@ -99,7 +99,7 @@ TEST_F(HostCS, Property_SetMemory)
 
 TEST_F(HostCS, Property_GetMemory)
 {
-    Property<float> prop("Prop");
+    Property<float> prop;
     server.put(0x05, prop);
 
     MemoryAccess access;
@@ -118,7 +118,7 @@ TEST_F(HostCS, Property_GetMemory)
 
 TEST_F(HostCS, Property_GetSize)
 {
-    Property<float> prop("Prop");
+    Property<float> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -133,22 +133,4 @@ TEST_F(HostCS, Property_GetSize)
     uint16_t size;
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
-}
-
-TEST_F(HostCS, Property_GetDesc)
-{
-    Property<float> prop("Prop");
-    server.put(0x05, prop);
-
-    Extra extra;
-    extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_DESC, extra);
-
-    Poll();
-
-    PropertyId id;
-    client._extra.get(id);
-
-    std::string name{(const char*)client._extra.data(), client._extra.remain()};
-    EXPECT_STREQ(name.c_str(), "Prop");
 }

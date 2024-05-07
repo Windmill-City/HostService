@@ -4,13 +4,13 @@
 
 TEST(Memory, sizeof)
 {
-    EXPECT_EQ(sizeof(Memory<bool, 1>), 12);
-    EXPECT_EQ(sizeof(Memory<float, 1>), 12);
+    EXPECT_EQ(sizeof(Memory<bool, 1>), 8);
+    EXPECT_EQ(sizeof(Memory<float, 1>), 8);
 }
 
 TEST_F(HostCS, Memory_GetProperty)
 {
-    Memory<float, 1> prop("Prop");
+    Memory<float, 1> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -24,7 +24,7 @@ TEST_F(HostCS, Memory_GetProperty)
 
 TEST_F(HostCS, Memory_SetProperty)
 {
-    Memory<float, 1> prop("Prop");
+    Memory<float, 1> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -39,7 +39,7 @@ TEST_F(HostCS, Memory_SetProperty)
 
 TEST_F(HostCS, Memory_SetMemory)
 {
-    Memory<uint8_t, 1024> prop("Prop");
+    Memory<uint8_t, 1024> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -69,7 +69,7 @@ TEST_F(HostCS, Memory_SetMemory)
 
 TEST_F(HostCS, Memory_GetMemory)
 {
-    Memory<uint8_t, 1024> prop("Prop");
+    Memory<uint8_t, 1024> prop;
     server.put(0x05, prop);
 
     for (size_t i = 0; i < prop.len(); i++)
@@ -102,7 +102,7 @@ TEST_F(HostCS, Memory_GetMemory)
 
 TEST_F(HostCS, Memory_SetMemory_OutOfRange)
 {
-    Memory<uint8_t, 32> prop("Prop");
+    Memory<uint8_t, 32> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -132,7 +132,7 @@ TEST_F(HostCS, Memory_SetMemory_OutOfRange)
 
 TEST_F(HostCS, Memory_GetMemory_OutOfRange)
 {
-    Memory<uint8_t, 32> prop("Prop");
+    Memory<uint8_t, 32> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -152,7 +152,7 @@ TEST_F(HostCS, Memory_GetMemory_OutOfRange)
 
 TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
 {
-    Memory<uint8_t, 1024> prop("Prop");
+    Memory<uint8_t, 1024> prop;
     server.put(0x05, prop);
 
     MemoryAccess access;
@@ -172,7 +172,7 @@ TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
 
 TEST_F(HostCS, Memory_GetSize)
 {
-    Memory<float, 1> prop("Prop");
+    Memory<float, 1> prop;
     server.put(0x05, prop);
 
     Extra extra;
@@ -187,22 +187,4 @@ TEST_F(HostCS, Memory_GetSize)
     uint16_t size;
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
-}
-
-TEST_F(HostCS, Memory_GetDesc)
-{
-    Memory<float, 1> prop("Prop");
-    server.put(0x05, prop);
-
-    Extra extra;
-    extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_DESC, extra);
-
-    Poll();
-    
-    PropertyId id;
-    client._extra.get(id);
-
-    std::string name{(const char*)client._extra.data(), client._extra.remain()};
-    EXPECT_STREQ(name.c_str(), "Prop");
 }

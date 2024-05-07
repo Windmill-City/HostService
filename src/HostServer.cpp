@@ -92,14 +92,6 @@ bool HostServer::poll()
         return err == ErrorCode::S_OK;
     }
     case Command::GET_DESC:
-    {
-        PropertyBase* prop;
-        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
-        // 读取描述
-        ErrorCode err = prop->get_desc(extra);
-        send_response(cmd, err, extra);
-        return err == ErrorCode::S_OK;
-    }
     default:
         send_response(cmd, ErrorCode::E_NO_IMPLEMENT, extra);
         return false;

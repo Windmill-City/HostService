@@ -16,28 +16,16 @@ struct PropertyIds : public PropertyAccess<Access::READ>
     explicit PropertyIds(const HostServer* server)
         : server(server)
     {
-        this->name = "prop.ids";
     }
 
     virtual ErrorCode get_mem(Extra& extra) override;
     virtual ErrorCode get_size(Extra& extra) override;
 };
 
-struct PropertyNonce : public Struct<NonceType, Access::READ>
-{
-    PropertyNonce()
-    {
-        this->name = "prop.nonce";
-    }
-};
+using PropertyNonce = Struct<NonceType, Access::READ>;
 
 struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
 {
-    PropertyKey()
-    {
-        this->name = "prop.key";
-    }
-
     virtual ErrorCode get(Extra& extra) override
     {
         // 不允许回读密钥
