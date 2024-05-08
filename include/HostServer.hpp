@@ -1,26 +1,9 @@
 #pragma once
 #include <Extra.hpp>
 #include <FixedQueue.hpp>
+#include <frozen/map.h>
 #include <HostBase.hpp>
-#include <map>
 #include <Struct.hpp>
-
-using PropertyHolder = std::map<PropertyId, PropertyBase*>;
-
-struct HostServer;
-
-struct PropertyIds : public PropertyAccess<Access::READ>
-{
-    const HostServer* server;
-
-    explicit PropertyIds(const HostServer* server)
-        : server(server)
-    {
-    }
-
-    virtual ErrorCode get_mem(Extra& extra) override;
-    virtual ErrorCode get_size(Extra& extra) override;
-};
 
 using PropertyNonce = Struct<NonceType, Access::READ>;
 
@@ -33,38 +16,37 @@ struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
     }
 };
 
-struct HostServer : public HostBase
+struct HostServerBase : public HostBase
 {
     // 帧头缓冲区
-    Sync<Request>  _buf;
+    Sync<Request>         _buf;
     // 附加参数缓冲区
-    Extra          _extra;
-    // 属性值容器
-    PropertyHolder _props;
+    Extra                 _extra;
 
-    // Id信息
-    PropertyIds    Ids{this};
     // 加密通信随机数, 用来防止重放攻击
     // 每次成功接收一个加密数据包, 就更新此随机数
     // 如果MCU没有随机数外设, 可以使用加密后的唯一ID作为静态随机数
-    // 目的是防止不同设备间的重放攻击
-    PropertyNonce  Nonce;
+    // 可以防止不同设备间的重放攻击
+    PropertyNonce         Nonce;
     // 加密通信密钥
-    PropertyKey    Key;
+    PropertyKey           Key;
 
-    HostServer();
-    /* 轮询请求 */
-    virtual bool  poll() override;
-    /* 添加属性值 */
-    bool          put(PropertyId id, PropertyBase& prop);
-    /* 获取属性值 */
-    PropertyBase* get(PropertyId id);
-    /* 接收请求帧 */
-    bool          recv_request(Command& cmd, Extra& extra);
-    /* 发送响应帧 */
-    void          send_response(const Command cmd, const ErrorCode err, Extra& extra);
+    virtual bool          poll() override;
+    bool                  recv_request(Command& cmd, Extra& extra);
+    void                  send_response(const Command cmd, const ErrorCode err, Extra& extra);
     /* 属性值获取与鉴权 */
-    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
+    PropertyBase*         _acquire_and_verify(Command& cmd, Extra& extra);
+    /* 获取属性值 */
+    virtual PropertyBase* get(PropertyId id) = 0;
     /* 更新随机数 */
-    virtual void  update_nonce() = 0;
+    virtual void          update_nonce()     = 0;
+};
+
+template <size_t _size>
+struct HostServer : public HostServerBase
+{
+    using PropertyHolder     = frozen::map<PropertyId, PropertyBase*, _size>;
+    using PropertyHolderInit = frozen::map<PropertyId, PropertyBase*, _size>::container_type;
+
+    const PropertyHolder _props;
 };
