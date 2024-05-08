@@ -1,10 +1,12 @@
 #pragma once
+#include <algorithm>
 #include <Extra.hpp>
 #include <FixedQueue.hpp>
 #include <frozen/map.h>
 #include <HostBase.hpp>
 #include <Struct.hpp>
 
+using Item          = std::pair<PropertyId, PropertyBase*>;
 using PropertyNonce = Struct<NonceType, Access::READ>;
 
 struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
@@ -45,8 +47,36 @@ struct HostServerBase : public HostBase
 template <size_t _size>
 struct HostServer : public HostServerBase
 {
-    using PropertyHolder     = frozen::map<PropertyId, PropertyBase*, _size>;
-    using PropertyHolderInit = frozen::map<PropertyId, PropertyBase*, _size>::container_type;
+    using PropertyHolder = frozen::map<PropertyId, PropertyBase*, _size + 2>;
 
-    const PropertyHolder _props;
+    const PropertyHolder          _props;
+
+    constexpr std::array<Item, 2> get_defaults()
+    {
+        return std::array<Item, 2>({
+            {1, &(PropertyBase&)Nonce},
+            {2,   &(PropertyBase&)Key},
+        });
+    }
+
+    constexpr std::array<Item, _size + 2> merge(std::array<Item, 2> defaults, std::initializer_list<Item> items)
+    {
+        std::array<Item, _size + 2> merged;
+
+        std::copy(defaults.begin(), defaults.end(), merged.begin());
+        std::copy(items.begin(), items.end(), merged.begin() + defaults.size());
+        return merged;
+    }
+
+    constexpr HostServer(std::initializer_list<Item> items)
+        : _props(items)
+    {
+    }
+
+    virtual PropertyBase* get(PropertyId id) override
+    {
+        auto it = _props.find(id);
+        if (it == _props.end()) return nullptr;
+        return (*it).second;
+    }
 };

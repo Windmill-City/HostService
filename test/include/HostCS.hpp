@@ -7,13 +7,13 @@
 
 struct HostClientImpl : public HostClient
 {
-    std::queue<uint8_t>* Q_Server;
-    std::queue<uint8_t>  Q_Client;
+    FixedQueue<255>* Q_Server;
+    FixedQueue<255>  Q_Client;
 
-    virtual uint8_t      rx() override
+    virtual uint8_t  rx() override
     {
-        uint8_t res = Q_Client.front();
-        Q_Client.pop();
+        uint8_t res;
+        Q_Client.pop(&res);
         return res;
     }
 
@@ -26,15 +26,23 @@ struct HostClientImpl : public HostClient
     }
 };
 
-struct HostServerImpl : public HostServer
+template <size_t _size>
+struct HostServerImpl : public HostServer<_size>
 {
-    std::queue<uint8_t>  Q_Server;
-    std::queue<uint8_t>* Q_Client;
+    using parent = HostServer<_size>;
 
-    virtual uint8_t      rx() override
+    FixedQueue<255>  Q_Server;
+    FixedQueue<255>* Q_Client;
+
+    constexpr HostServerImpl(std::initializer_list<Item> items)
+        : parent(items)
     {
-        uint8_t res = Q_Server.front();
-        Q_Server.pop();
+    }
+
+    virtual uint8_t rx() override
+    {
+        uint8_t res;
+        Q_Server.pop(&res);
         return res;
     }
 
@@ -51,32 +59,34 @@ struct HostServerImpl : public HostServer
     }
 };
 
-struct HostCS : testing::Test
+template <size_t _size = 0>
+struct HostCS
 {
-    HostClientImpl client;
-    HostServerImpl server;
+    HostServerImpl<_size> server;
+    HostClientImpl        client;
 
-    virtual void   SetUp() override
+    constexpr HostCS(std::initializer_list<Item> items = {})
+        : server(items)
     {
-        client.Q_Server = &server.Q_Server;
         server.Q_Client = &client.Q_Client;
+        client.Q_Server = &server.Q_Server;
     }
 
     /**
      * @brief 轮询处理请求和响应
      *
-     * @param fail 请求是否会失败?
+     * @param ok 请求是否会失败?
      */
-    void Poll(bool fail = false)
+    void Poll(bool ok = true)
     {
         for (size_t i = 0; i < sizeof(Request) - 1; i++)
         {
             ASSERT_FALSE(server.poll());
         }
-        if (fail)
-            ASSERT_FALSE(server.poll());
-        else
+        if (ok)
             ASSERT_TRUE(server.poll());
+        else
+            ASSERT_FALSE(server.poll());
 
         for (size_t i = 0; i < sizeof(Response) - 1; i++)
         {
