@@ -3,20 +3,13 @@
 #include <array>
 #include <checksum.h>
 
-HostServer::HostServer()
-{
-    put(0, this->Ids);
-    put(1, this->Nonce);
-    put(2, this->Key);
-}
-
 /**
  * @brief 从机轮询主机请求
  *
  * @return true 成功处理一帧
  * @return false 没有接收一帧/帧无效
  */
-bool HostServer::poll()
+bool HostServerBase::poll()
 {
     Command cmd;
     Extra&  extra = _extra;
@@ -100,34 +93,6 @@ bool HostServer::poll()
 }
 
 /**
- * @brief 添加属性值
- *
- * @param id 属性值Id
- * @param prop 属性值
- * @return true 成功添加
- * @return false id重复
- */
-bool HostServer::put(PropertyId id, PropertyBase& prop)
-{
-    bool ok;
-    std::tie(std::ignore, ok) = _props.emplace(id, &prop);
-    return ok;
-}
-
-/**
- * @brief 获取属性值
- *
- * @param id 属性值Id
- * @return PropertyBase* 属性值
- */
-PropertyBase* HostServer::get(PropertyId id)
-{
-    auto it = _props.find(id);
-    if (it == _props.end()) return nullptr;
-    return (*it).second;
-}
-
-/**
  * @brief 接收请求
  *
  * @param cmd [out]接收到的命令
@@ -135,7 +100,7 @@ PropertyBase* HostServer::get(PropertyId id)
  * @return true 成功接收一帧
  * @return false 没有接收一帧
  */
-bool HostServer::recv_request(Command& cmd, Extra& extra)
+bool HostServerBase::recv_request(Command& cmd, Extra& extra)
 {
     _buf.push(rx());
     if (!_buf.verify()) return false;
@@ -168,7 +133,7 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
  * @param err 错误码
  * @param extra 附加参数
  */
-void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& extra)
+void HostServerBase::send_response(const Command cmd, const ErrorCode err, Extra& extra)
 {
     // 截断多余的数据
     extra.truncate();
@@ -182,7 +147,7 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
     _encode((uint8_t*)&rep, sizeof(rep), &extra, rep.size);
 }
 
-PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
+PropertyBase* HostServerBase::_acquire_and_verify(Command& cmd, Extra& extra)
 {
     // 解析Id
     PropertyId id;
@@ -218,40 +183,4 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
         return nullptr;
     }
     return prop;
-}
-
-ErrorCode PropertyIds::get_mem(Extra& extra)
-{
-    MemoryAccess access;
-    // 检查访问参数是否正确
-    if (!extra.get(access) && access.offset % sizeof(PropertyId) == 0 && access.size % sizeof(PropertyId) == 0)
-        return ErrorCode::E_INVALID_ARG;
-    // 检查是否超出内存区范围
-    size_t size = server->_props.size() * sizeof(PropertyId);
-    if (size < access.offset + access.size)
-    {
-        return ErrorCode::E_OUT_OF_INDEX;
-    }
-
-    // 需要获取的元素的数量
-    size_t count = access.size / sizeof(PropertyId);
-    // 从第几个元素开始读取
-    size_t i_beg = access.offset / sizeof(PropertyId);
-    size_t i     = 0;
-    for (auto it : server->_props)
-    {
-        if (i++ >= i_beg)
-        {
-            if (!extra.add(it.first)) return ErrorCode::E_OUT_OF_BUFFER;
-            if (--count == 0) break;
-        }
-    }
-    return ErrorCode::S_OK;
-}
-
-ErrorCode PropertyIds::get_size(Extra& extra)
-{
-    size_t size = server->_props.size() * sizeof(PropertyId);
-    extra.add<uint16_t>(size);
-    return ErrorCode::S_OK;
 }
