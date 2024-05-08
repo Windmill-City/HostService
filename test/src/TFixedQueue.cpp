@@ -1,6 +1,11 @@
 #include "gtest/gtest.h"
 #include <FixedQueue.hpp>
 
+TEST(FixedQueue, sizeof)
+{
+    ASSERT_EQ(sizeof(FixedQueue<255>), 264);
+}
+
 TEST(FixedQueue, NoPop)
 {
     FixedQueue<255> Q;
