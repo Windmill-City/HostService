@@ -42,47 +42,53 @@ TEST(Property, Calc)
     EXPECT_EQ(prop_1 / prop_2, 5 / 7.f);
 }
 
-TEST_F(HostCS, Property_GetProperty)
+TEST(HostCS, Property_GetProperty)
 {
     Property<float> prop = 18.8f;
-    server.put(0x05, prop);
+    HostCS<1>       cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra           extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    cs.client._extra.get(id);
 
     float recv;
-    client._extra.get(recv);
+    cs.client._extra.get(recv);
 
     EXPECT_EQ(recv, 18.8f);
 }
 
-TEST_F(HostCS, Property_SetProperty)
+TEST(HostCS, Property_SetProperty)
 {
     Property<float> prop;
-    server.put(0x05, prop);
+    HostCS<1>       cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra           extra;
     extra.add<PropertyId>(0x05);
     extra.add(18.8f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    cs.client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
     EXPECT_EQ(prop, 18.8f);
 }
 
-TEST_F(HostCS, Property_SetMemory)
+TEST(HostCS, Property_SetMemory)
 {
     Property<float> prop;
-    server.put(0x05, prop);
+    HostCS<1>       cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    MemoryAccess access;
+    MemoryAccess    access;
     access.offset = 0;
     access.size   = sizeof(float);
 
@@ -90,47 +96,51 @@ TEST_F(HostCS, Property_SetMemory)
     extra.add<PropertyId>(0x05);
     extra.add(access);
     extra.add(18.8f); // data
-    client.send_request(Command::SET_MEMORY, extra);
+    cs.client.send_request(Command::SET_MEMORY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_IMPLEMENT);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
 }
 
-TEST_F(HostCS, Property_GetMemory)
+TEST(HostCS, Property_GetMemory)
 {
     Property<float> prop;
-    server.put(0x05, prop);
+    HostCS<1>       cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    MemoryAccess access;
+    MemoryAccess    access;
     access.offset = 0;
     access.size   = sizeof(float);
 
     Extra extra;
     extra.add<PropertyId>(0x05);
     extra.add(access);
-    client.send_request(Command::GET_MEMORY, extra);
+    cs.client.send_request(Command::GET_MEMORY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_IMPLEMENT);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
 }
 
-TEST_F(HostCS, Property_GetSize)
+TEST(HostCS, Property_GetSize)
 {
     Property<float> prop;
-    server.put(0x05, prop);
+    HostCS<1>       cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra           extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_SIZE, extra);
+    cs.client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
+    cs.Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    cs.client._extra.get(id);
 
     uint16_t size;
-    client._extra.get(size);
+    cs.client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }

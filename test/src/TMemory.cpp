@@ -8,41 +8,47 @@ TEST(Memory, sizeof)
     EXPECT_EQ(sizeof(Memory<float, 1>), 8);
 }
 
-TEST_F(HostCS, Memory_GetProperty)
+TEST(HostCS, Memory_GetProperty)
 {
     Memory<float, 1> prop;
-    server.put(0x05, prop);
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra            extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_IMPLEMENT);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
 }
 
-TEST_F(HostCS, Memory_SetProperty)
+TEST(HostCS, Memory_SetProperty)
 {
     Memory<float, 1> prop;
-    server.put(0x05, prop);
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra            extra;
     extra.add<PropertyId>(0x05);
     extra.add(18.8f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    cs.client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_IMPLEMENT);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
 }
 
-TEST_F(HostCS, Memory_SetMemory)
+TEST(HostCS, Memory_SetMemory)
 {
     Memory<uint8_t, 1024> prop;
-    server.put(0x05, prop);
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra            extra;
     extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
@@ -60,17 +66,19 @@ TEST_F(HostCS, Memory_SetMemory)
     }
     extra.add(data.data(), data.size());
 
-    client.send_request(Command::SET_MEMORY, extra);
+    cs.client.send_request(Command::SET_MEMORY, extra);
 
-    Poll();
+    cs.Poll();
 
     EXPECT_TRUE(memcmp(&prop, data.data(), data.size()) == 0);
 }
 
-TEST_F(HostCS, Memory_GetMemory)
+TEST(HostCS, Memory_GetMemory)
 {
     Memory<uint8_t, 1024> prop;
-    server.put(0x05, prop);
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
     for (size_t i = 0; i < prop.len(); i++)
     {
@@ -85,27 +93,29 @@ TEST_F(HostCS, Memory_GetMemory)
     access.size   = extra.spare() - sizeof(access);
     extra.add(access);
 
-    client.send_request(Command::GET_MEMORY, extra);
+    cs.client.send_request(Command::GET_MEMORY, extra);
 
-    Poll();
+    cs.Poll();
 
     PropertyId id;
-    client._extra.get(id);
-    client._extra.get(access);
+    cs.client._extra.get(id);
+    cs.client._extra.get(access);
 
     // 读取数组
     std::vector<uint8_t> recv;
     recv.resize(access.size);
-    client._extra.get(recv.data(), recv.size());
+    cs.client._extra.get(recv.data(), recv.size());
     EXPECT_TRUE(memcmp(recv.data(), &prop, access.size) == 0);
 }
 
-TEST_F(HostCS, Memory_SetMemory_OutOfRange)
+TEST(HostCS, Memory_SetMemory_OutOfRange)
 {
-    Memory<uint8_t, 32> prop;
-    server.put(0x05, prop);
+    Memory<float, 1> prop;
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra            extra;
     extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
@@ -123,19 +133,21 @@ TEST_F(HostCS, Memory_SetMemory_OutOfRange)
     }
     extra.add(data.data(), data.size());
 
-    client.send_request(Command::SET_MEMORY, extra);
+    cs.client.send_request(Command::SET_MEMORY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_OUT_OF_INDEX);
 }
 
-TEST_F(HostCS, Memory_GetMemory_OutOfRange)
+TEST(HostCS, Memory_GetMemory_OutOfRange)
 {
-    Memory<uint8_t, 32> prop;
-    server.put(0x05, prop);
+    Memory<float, 1> prop;
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra            extra;
     extra.add<PropertyId>(0x05);
 
     MemoryAccess access;
@@ -143,19 +155,21 @@ TEST_F(HostCS, Memory_GetMemory_OutOfRange)
     access.size   = 255;
     extra.add(access);
 
-    client.send_request(Command::GET_MEMORY, extra);
+    cs.client.send_request(Command::GET_MEMORY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_OUT_OF_INDEX);
 }
 
-TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
+TEST(HostCS, Memory_GetMemory_OutOfBuffer)
 {
     Memory<uint8_t, 1024> prop;
-    server.put(0x05, prop);
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    MemoryAccess access;
+    MemoryAccess     access;
     access.offset = 0;
     access.size   = 255; // 加上Id和内存参数, 超出最大帧长限制
 
@@ -163,28 +177,30 @@ TEST_F(HostCS, Memory_GetMemory_OutOfBuffer)
     extra.add<PropertyId>(0x05);
     extra.add(access);
 
-    client.send_request(Command::GET_MEMORY, extra);
+    cs.client.send_request(Command::GET_MEMORY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_BUFFER);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_OUT_OF_BUFFER);
 }
 
-TEST_F(HostCS, Memory_GetSize)
+TEST(HostCS, Memory_GetSize)
 {
     Memory<float, 1> prop;
-    server.put(0x05, prop);
+    HostCS<1>        cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra            extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_SIZE, extra);
+    cs.client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
-    
+    cs.Poll();
+
     PropertyId id;
-    client._extra.get(id);
+    cs.client._extra.get(id);
 
     uint16_t size;
-    client._extra.get(size);
+    cs.client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }

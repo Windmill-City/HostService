@@ -2,120 +2,136 @@
 #include <HostCS.hpp>
 #include <Property.hpp>
 
-TEST_F(HostCS, Read_Read)
+TEST(HostCS, Read_Read)
 {
     Property<bool, Access::READ> prop;
-    server.put(0x05, prop);
+    HostCS<1>                    cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                        extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::S_OK);
 }
 
-TEST_F(HostCS, Read_Read_Protect_NotPrivileged)
+TEST(HostCS, Read_Read_Protect_NotPrivileged)
 {
     Property<bool, Access::READ_PROTECT> prop;
-    server.put(0x05, prop);
+    HostCS<1>                            cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                                extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_PERMISSION);
 }
 
-TEST_F(HostCS, Read_Read_Protect_Privileged)
+TEST(HostCS, Read_Read_Protect_Privileged)
 {
     Property<bool, Access::READ_PROTECT> prop;
-    server.put(0x05, prop);
+    HostCS<1>                            cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                                extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(server.Nonce, server.Key);
-    client.send_request(Command::GET_PROPERTY, extra);
+    extra.encrypt(cs.server.Nonce, cs.server.Key);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::S_OK);
 }
 
-TEST_F(HostCS, Read_Read_Write_Protect_NotPrivileged)
+TEST(HostCS, Read_Read_Write_Protect_NotPrivileged)
 {
     Property<bool, Access::READ_WRITE_PROTECT> prop;
-    server.put(0x05, prop);
+    HostCS<1>                                  cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                                      extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(true);
+    cs.Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_PERMISSION);
 }
 
-TEST_F(HostCS, Read_Read_Write_Protect_Privileged)
+TEST(HostCS, Read_Read_Write_Protect_Privileged)
 {
     Property<bool, Access::READ_WRITE_PROTECT> prop;
-    server.put(0x05, prop);
+    HostCS<1>                                  cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                                      extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(server.Nonce, server.Key);
-    client.send_request(Command::GET_PROPERTY, extra);
+    extra.encrypt(cs.server.Nonce, cs.server.Key);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::S_OK);
 }
 
-TEST_F(HostCS, Read_Write_Protect_NotPrivileged)
+TEST(HostCS, Read_Write_Protect_NotPrivileged)
 {
     Property<bool, Access::WRITE_PROTECT> prop;
-    server.put(0x05, prop);
+    HostCS<1>                             cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                                 extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::S_OK);
 }
 
-TEST_F(HostCS, Read_Write_Protect_Privileged)
+TEST(HostCS, Read_Write_Protect_Privileged)
 {
     Property<bool, Access::WRITE_PROTECT> prop;
-    server.put(0x05, prop);
+    HostCS<1>                             cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                                 extra;
     extra.reserve_tag();
     extra.add<PropertyId>(0x05);
-    extra.encrypt(server.Nonce, server.Key);
-    client.send_request(Command::GET_PROPERTY, extra);
+    extra.encrypt(cs.server.Nonce, cs.server.Key);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::S_OK);
 }
 
-TEST_F(HostCS, Read_Read_Write)
+TEST(HostCS, Read_Read_Write)
 {
     Property<bool, Access::READ_WRITE> prop;
-    server.put(0x05, prop);
+    HostCS<1>                          cs({
+        {5, &(PropertyBase&)prop}
+    });
 
-    Extra extra;
+    Extra                              extra;
     extra.add<PropertyId>(0x05);
-    client.send_request(Command::GET_PROPERTY, extra);
+    cs.client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    cs.Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(cs.client._rep.error, ErrorCode::S_OK);
 }

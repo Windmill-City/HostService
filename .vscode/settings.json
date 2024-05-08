@@ -78,6 +78,8 @@
         "xiosbase": "cpp",
         "xlocbuf": "cpp",
         "xstring": "cpp",
-        "xtr1common": "cpp"
+        "xtr1common": "cpp",
+        "future": "cpp",
+        "cinttypes": "cpp"
     }
 }

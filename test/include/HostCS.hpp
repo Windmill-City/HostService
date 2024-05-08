@@ -7,8 +7,8 @@
 
 struct HostClientImpl : public HostClient
 {
-    FixedQueue<255>* Q_Server;
-    FixedQueue<255>  Q_Client;
+    FixedQueue<1024>* Q_Server;
+    FixedQueue<1024>  Q_Client;
 
     virtual uint8_t  rx() override
     {
@@ -31,8 +31,8 @@ struct HostServerImpl : public HostServer<_size>
 {
     using parent = HostServer<_size>;
 
-    FixedQueue<255>  Q_Server;
-    FixedQueue<255>* Q_Client;
+    FixedQueue<1024>  Q_Server;
+    FixedQueue<1024>* Q_Client;
 
     HostServerImpl(std::initializer_list<Item> items)
         : parent(items)

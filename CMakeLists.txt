@@ -32,6 +32,7 @@ target_include_directories(firmware.elf PUBLIC ${INCLUDES})
 # ##############################################################################
 add_subdirectory(libs/libcrc EXCLUDE_FROM_ALL)
 add_subdirectory(libs/uAES EXCLUDE_FROM_ALL)
+add_subdirectory(libs/frozen EXCLUDE_FROM_ALL)
 
 # ##############################################################################
 # 测试
