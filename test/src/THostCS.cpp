@@ -15,7 +15,7 @@ TEST(Response, sizeof)
 TEST(HostServer, frozen)
 {
     // 验证 frozen map 是否能正常编译
-    static constinit HostServerImpl<1> Server({
+    HostServerImpl<1> Server({
         {3, (PropertyBase*)8}
     });
 

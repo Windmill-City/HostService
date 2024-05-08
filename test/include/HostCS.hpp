@@ -34,7 +34,7 @@ struct HostServerImpl : public HostServer<_size>
     FixedQueue<255>  Q_Server;
     FixedQueue<255>* Q_Client;
 
-    constexpr HostServerImpl(std::initializer_list<Item> items)
+    HostServerImpl(std::initializer_list<Item> items)
         : parent(items)
     {
     }
@@ -65,7 +65,7 @@ struct HostCS
     HostServerImpl<_size> server;
     HostClientImpl        client;
 
-    constexpr HostCS(std::initializer_list<Item> items = {})
+    HostCS(std::initializer_list<Item> items = {})
         : server(items)
     {
         server.Q_Client = &client.Q_Client;

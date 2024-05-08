@@ -68,8 +68,8 @@ struct HostServer : public HostServerBase
         return merged;
     }
 
-    constexpr HostServer(std::initializer_list<Item> items)
-        : _props(items)
+    HostServer(std::initializer_list<Item> items)
+        : _props(merge(get_defaults(), items))
     {
     }
 

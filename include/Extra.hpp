@@ -286,9 +286,10 @@ struct Extra
     }
 
   protected:
-    bool                                            _encrypted = false;
     // 校验位长度
     static const uint8_t                            _tag_len   = 16;
+    // 数据是否加密
+    bool                                            _encrypted = false;
     // 缓冲区长度
     uint8_t                                         _tail      = 0;
     // 未读取数据的偏移
