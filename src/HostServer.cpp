@@ -138,7 +138,11 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
 {
     // 解析Id
     PropertyId id;
-    extra.get(id);
+    if (!extra.get(id))
+    {
+        send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
+        return nullptr;
+    }
     // 查找属性值
     PropertyBase* prop;
     if (!(prop = _holder.get(id)))
