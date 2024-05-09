@@ -137,8 +137,10 @@ struct Range : public Struct<_Range<T>, access>
 
             safe_set(value);
             return ErrorCode::S_OK;
+        case RangeAccess::Absolute:
+            return ErrorCode::E_READ_ONLY;
         default:
-            break;
+            return ErrorCode::E_NO_IMPLEMENT;
         }
         return ErrorCode::E_INVALID_ARG;
     }
@@ -154,11 +156,11 @@ struct Range : public Struct<_Range<T>, access>
             extra.add(this->safe_get());
             return ErrorCode::S_OK;
         case RangeAccess::Absolute:
-            extra.add(AbsMin);
-            extra.add(AbsMax);
+            extra.add<T>(AbsMin);
+            extra.add<T>(AbsMax);
             return ErrorCode::S_OK;
         default:
-            break;
+            return ErrorCode::E_NO_IMPLEMENT;
         }
         return ErrorCode::E_INVALID_ARG;
     }
@@ -176,7 +178,7 @@ struct Range : public Struct<_Range<T>, access>
             extra.add<uint16_t>(2 * sizeof(T));
             return ErrorCode::S_OK;
         default:
-            break;
+            return ErrorCode::E_NO_IMPLEMENT;
         }
         return ErrorCode::E_INVALID_ARG;
     }
@@ -369,8 +371,10 @@ struct RangedProperty : public Property<T, val>
             this->_range = value;
             return ErrorCode::S_OK;
         }
+        case RangeAccess::Absolute:
+            return ErrorCode::E_READ_ONLY;
         default:
-            break;
+            return ErrorCode::E_NO_IMPLEMENT;
         }
         return ErrorCode::E_INVALID_ARG;
     }
@@ -394,11 +398,11 @@ struct RangedProperty : public Property<T, val>
             return ErrorCode::S_OK;
         }
         case RangeAccess::Absolute:
-            extra.add(AbsMin);
-            extra.add(AbsMax);
+            extra.add<T>(AbsMin);
+            extra.add<T>(AbsMax);
             return ErrorCode::S_OK;
         default:
-            break;
+            return ErrorCode::E_NO_IMPLEMENT;
         }
         return ErrorCode::E_INVALID_ARG;
     }
@@ -419,7 +423,7 @@ struct RangedProperty : public Property<T, val>
             extra.add<uint16_t>(2 * sizeof(T));
             return ErrorCode::S_OK;
         default:
-            break;
+            return ErrorCode::E_NO_IMPLEMENT;
         }
         return ErrorCode::E_INVALID_ARG;
     }

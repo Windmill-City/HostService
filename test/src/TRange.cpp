@@ -55,10 +55,10 @@ TEST(Range, BoundTest)
     EXPECT_FLOAT_EQ(range.max(), 0.1);
 }
 
-static RangedProperty<float, 0, 100> prop = 18.8f;
-using PropertyMap                  = frozen::map<PropertyId, PropertyBase*, 1>;
+static RangedProperty<float, 0, 100> prop;
+using PropertyMap                = frozen::map<PropertyId, PropertyBase*, 1>;
 // 静态初始化
-static constexpr PropertyMap map   = {
+static constexpr PropertyMap map = {
     {0, &(PropertyBase&)prop}
 };
 
@@ -74,10 +74,12 @@ struct TRange
     }
 };
 
-TEST_F(TRange, Get)
+TEST_F(TRange, Get_Property)
 {
+    prop = 18.8f;
+
     Extra extra;
-    extra.add(0);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Property);
     client.send_request(Command::GET_PROPERTY, extra);
 
@@ -94,10 +96,62 @@ TEST_F(TRange, Get)
     EXPECT_EQ(value, 18.8f);
 }
 
-TEST_F(TRange, Set)
+TEST_F(TRange, Get_Range)
+{
+    prop.min() = 10;
+    prop.max() = 80;
+
+    Extra extra;
+    extra.add<PropertyId>(0);
+    extra.add(RangeAccess::Range);
+    client.send_request(Command::GET_PROPERTY, extra);
+
+    Poll();
+
+    PropertyId id;
+    client._extra.get(id);
+
+    RangeAccess access;
+    client._extra.get(access);
+
+    float min;
+    float max;
+    client._extra.get(min);
+    client._extra.get(max);
+    EXPECT_EQ(min, 10);
+    EXPECT_EQ(max, 80);
+}
+
+TEST_F(TRange, Get_Absolute)
+{
+    prop.min() = 10;
+    prop.max() = 80;
+
+    Extra extra;
+    extra.add<PropertyId>(0);
+    extra.add(RangeAccess::Absolute);
+    client.send_request(Command::GET_PROPERTY, extra);
+
+    Poll();
+
+    PropertyId id;
+    client._extra.get(id);
+
+    RangeAccess access;
+    client._extra.get(access);
+
+    float min;
+    float max;
+    client._extra.get(min);
+    client._extra.get(max);
+    EXPECT_EQ(min, 0);
+    EXPECT_EQ(max, 100);
+}
+
+TEST_F(TRange, Set_Property)
 {
     Extra extra;
-    extra.add(0);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Property);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
@@ -107,7 +161,37 @@ TEST_F(TRange, Set)
     EXPECT_EQ(prop, 18.8f);
 }
 
-TEST_F(TRange, GetSize)
+TEST_F(TRange, Set_Range)
+{
+    prop.min() = 0;
+    prop.max() = 100;
+
+    Extra extra;
+    extra.add<PropertyId>(0);
+    extra.add(RangeAccess::Range);
+    extra.add(10.f);
+    extra.add(80.f);
+    client.send_request(Command::SET_PROPERTY, extra);
+
+    Poll();
+
+    EXPECT_EQ(prop.min(), 10.f);
+    EXPECT_EQ(prop.max(), 80.f);
+}
+
+TEST_F(TRange, Set_Absolute)
+{
+    Extra extra;
+    extra.add<PropertyId>(0);
+    extra.add(RangeAccess::Absolute);
+    client.send_request(Command::SET_PROPERTY, extra);
+
+    Poll(false);
+
+    EXPECT_EQ(client._rep.error, ErrorCode::E_READ_ONLY);
+}
+
+TEST_F(TRange, GetSize_Property)
 {
     Extra extra;
     extra.add<PropertyId>(0);
@@ -125,4 +209,44 @@ TEST_F(TRange, GetSize)
     uint16_t size;
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
+}
+
+TEST_F(TRange, GetSize_Range)
+{
+    Extra extra;
+    extra.add<PropertyId>(0);
+    extra.add(RangeAccess::Range);
+    client.send_request(Command::GET_SIZE, extra);
+
+    Poll();
+
+    PropertyId id;
+    client._extra.get(id);
+
+    RangeAccess access;
+    client._extra.get(access);
+
+    uint16_t size;
+    client._extra.get(size);
+    EXPECT_EQ(size, 2 * sizeof(float));
+}
+
+TEST_F(TRange, GetSize_Absolute)
+{
+    Extra extra;
+    extra.add<PropertyId>(0);
+    extra.add(RangeAccess::Absolute);
+    client.send_request(Command::GET_SIZE, extra);
+
+    Poll();
+
+    PropertyId id;
+    client._extra.get(id);
+
+    RangeAccess access;
+    client._extra.get(access);
+
+    uint16_t size;
+    client._extra.get(size);
+    EXPECT_EQ(size, 2 * sizeof(float));
 }
