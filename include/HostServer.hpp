@@ -61,35 +61,6 @@ struct PropertyHolderBase
     virtual PropertyId    at(size_t idx) const     = 0;
 };
 
-template <size_t _size>
-struct PropertyHolder : public PropertyHolderBase
-{
-    using PropertyMap = frozen::map<PropertyId, PropertyBase*, _size>;
-    const PropertyMap& map;
-
-    PropertyHolder(const PropertyMap& map)
-        : map(map)
-    {
-    }
-
-    virtual PropertyBase* get(PropertyId id) const
-    {
-        auto it = map.find(id);
-        if (it == map.end()) return nullptr;
-        return (*it).second;
-    }
-
-    virtual size_t size() const
-    {
-        return _size;
-    }
-
-    virtual PropertyId at(size_t idx) const
-    {
-        return map.items_.at(idx).first;
-    }
-};
-
 struct PropertyIds : public PropertyAccess<Access::READ>
 {
     PropertyHolderBase* holder = nullptr;
@@ -108,6 +79,36 @@ struct PropertyIds : public PropertyAccess<Access::READ>
     {
         extra.add(holder->size());
         return ErrorCode::S_OK;
+    }
+};
+
+template <size_t _size>
+struct PropertyHolder : public PropertyHolderBase
+{
+    using PropertyMap = frozen::map<PropertyId, PropertyBase*, _size>;
+    const PropertyMap& map;
+
+    PropertyHolder(const PropertyMap& map, PropertyIds& ids)
+        : map(map)
+    {
+        ids.holder = this;
+    }
+
+    virtual PropertyBase* get(PropertyId id) const
+    {
+        auto it = map.find(id);
+        if (it == map.end()) return nullptr;
+        return (*it).second;
+    }
+
+    virtual size_t size() const
+    {
+        return _size;
+    }
+
+    virtual PropertyId at(size_t idx) const
+    {
+        return map.items_.at(idx).first;
     }
 };
 
