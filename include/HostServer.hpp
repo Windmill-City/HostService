@@ -113,7 +113,7 @@ struct PropertyHolder : public PropertyHolderBase
 
     virtual PropertyId at(size_t idx) const
     {
-        return map.items_.at(idx).first;
+        return map.begin()[idx].first;
     }
 };
 
