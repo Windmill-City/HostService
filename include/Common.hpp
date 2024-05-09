@@ -23,7 +23,8 @@ enum class ErrorCode : uint8_t
 
 enum class Signal : uint8_t
 {
-    LOG = 0, // CMD, log字符串
+    LOG      = 0, // CMD, log字符串
+    POWER_UP = 1, // CMD, Application/Bootloader
 };
 
 enum class Command : uint8_t
