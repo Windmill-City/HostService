@@ -95,7 +95,7 @@ enum class Command : uint8_t
      */
     GET_DESC,
     /**
-     * @brief 信号
+     * @brief 信号(仅服务端发送)
      *
      * 请求: CMD,S_OK,信号Id,信号参数
      * 应答: 无
