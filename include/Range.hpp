@@ -172,8 +172,6 @@ struct Range : public Struct<_Range<T>, access>
         switch (access)
         {
         case RangeAccess::Range:
-            extra.add<uint16_t>(2 * sizeof(T));
-            return ErrorCode::S_OK;
         case RangeAccess::Absolute:
             extra.add<uint16_t>(2 * sizeof(T));
             return ErrorCode::S_OK;
@@ -417,8 +415,6 @@ struct RangedProperty : public Property<T, val>
             extra.add<uint16_t>(sizeof(T));
             return ErrorCode::S_OK;
         case RangeAccess::Range:
-            extra.add<uint16_t>(2 * sizeof(T));
-            return ErrorCode::S_OK;
         case RangeAccess::Absolute:
             extra.add<uint16_t>(2 * sizeof(T));
             return ErrorCode::S_OK;
