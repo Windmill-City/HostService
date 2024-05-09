@@ -97,7 +97,7 @@ enum class Command : uint8_t
     /**
      * @brief 信号
      *
-     * 请求: CMD,信号Id,信号参数
+     * 请求: CMD,S_OK,信号Id,信号参数
      * 应答: 无
      */
     SIGNAL,
