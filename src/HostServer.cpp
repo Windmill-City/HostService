@@ -9,24 +9,24 @@
  * @return true 成功处理一帧
  * @return false 没有接收一帧/帧无效
  */
-bool HostServerBase::poll()
+bool HostServer::poll()
 {
-    Command cmd;
-    Extra&  extra = _extra;
+    Command   cmd;
+    ErrorCode err;
+    Extra&    extra = _extra;
     if (!recv_request(cmd, extra)) return false;
 
     // 检查加密标记
     if (IS_ENCRYPTED(cmd))
     {
         extra.encrypted() = true;
-        if (!extra.decrypt(Nonce, Key))
+        if (!extra.decrypt(_secret.nonce, _secret.key))
         {
             // 清空附加参数
             extra.reset();
             send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
             return false;
         }
-        update_nonce();
     }
 
     switch (REMOVE_ENCRYPT_MARK(cmd))
@@ -36,60 +36,47 @@ bool HostServerBase::poll()
         // 读取全部数据, 防止截断
         extra.readall();
         // 将收到的数据再发回去
-        send_response(cmd, ErrorCode::S_OK, extra);
-        return true;
+        err = ErrorCode::S_OK;
+        send_response(cmd, err, extra);
+        break;
     }
     case Command::GET_PROPERTY:
     {
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra))) return false;
         // 读取属性值
-        ErrorCode err = prop->get(extra);
+        err = prop->get(extra);
         send_response(cmd, err, extra);
-        return err == ErrorCode::S_OK;
+        break;
     }
     case Command::SET_PROPERTY:
     {
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra))) return false;
         // 写入属性值
-        ErrorCode err = prop->set(extra);
+        err = prop->set(extra);
         send_response(cmd, err, extra);
-        return err == ErrorCode::S_OK;
-    }
-    case Command::GET_MEMORY:
-    {
-        PropertyBase* prop;
-        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
-        // 读取内存
-        ErrorCode err = prop->get_mem(extra);
-        send_response(cmd, err, extra);
-        return err == ErrorCode::S_OK;
-    }
-    case Command::SET_MEMORY:
-    {
-        PropertyBase* prop;
-        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
-        // 写入内存
-        ErrorCode err = prop->set_mem(extra);
-        send_response(cmd, err, extra);
-        return err == ErrorCode::S_OK;
+        break;
     }
     case Command::GET_SIZE:
     {
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra))) return false;
         // 读取Size
-        ErrorCode err = prop->get_size(extra);
+        err = prop->get_size(extra);
         send_response(cmd, err, extra);
-        return err == ErrorCode::S_OK;
+        break;
     }
     case Command::GET_DESC:
     default:
-        send_response(cmd, ErrorCode::E_NO_IMPLEMENT, extra);
-        return false;
+        err = ErrorCode::E_NO_IMPLEMENT;
+        send_response(cmd, err, extra);
+        break;
     }
-    return false;
+
+    // 发送响应后再更新随机数
+    if (IS_ENCRYPTED(cmd)) _secret.update_nonce();
+    return err == ErrorCode::S_OK;
 }
 
 /**
@@ -100,7 +87,7 @@ bool HostServerBase::poll()
  * @return true 成功接收一帧
  * @return false 没有接收一帧
  */
-bool HostServerBase::recv_request(Command& cmd, Extra& extra)
+bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
     _buf.push(rx());
     if (!_buf.verify()) return false;
@@ -133,12 +120,12 @@ bool HostServerBase::recv_request(Command& cmd, Extra& extra)
  * @param err 错误码
  * @param extra 附加参数
  */
-void HostServerBase::send_response(const Command cmd, const ErrorCode err, Extra& extra)
+void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& extra)
 {
     // 截断多余的数据
     extra.truncate();
     // 若有加密标记, 则对参数进行加密
-    if (IS_ENCRYPTED(cmd)) extra.encrypt(Nonce, Key);
+    if (IS_ENCRYPTED(cmd)) extra.encrypt(_secret.nonce, _secret.key);
     Response rep;
     rep.address = address;
     rep.cmd     = cmd;
@@ -147,14 +134,14 @@ void HostServerBase::send_response(const Command cmd, const ErrorCode err, Extra
     _encode((uint8_t*)&rep, sizeof(rep), &extra, rep.size);
 }
 
-PropertyBase* HostServerBase::_acquire_and_verify(Command& cmd, Extra& extra)
+PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
 {
     // 解析Id
     PropertyId id;
     extra.get(id);
     // 查找属性值
     PropertyBase* prop;
-    if (!(prop = get(id)))
+    if (!(prop = _holder.get(id)))
     {
         send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
         return nullptr;
@@ -165,11 +152,9 @@ PropertyBase* HostServerBase::_acquire_and_verify(Command& cmd, Extra& extra)
     {
     case Command::GET_DESC:
     case Command::GET_SIZE:
-    case Command::GET_MEMORY:
     case Command::GET_PROPERTY:
         err = prop->check_read(IS_ENCRYPTED(cmd));
         break;
-    case Command::SET_MEMORY:
     case Command::SET_PROPERTY:
         err = prop->check_write(IS_ENCRYPTED(cmd));
         break;

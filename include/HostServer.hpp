@@ -18,65 +18,125 @@ struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
     }
 };
 
-struct HostServerBase : public HostBase
+struct SecretHolder
 {
-    // 帧头缓冲区
-    Sync<Request>         _buf;
-    // 附加参数缓冲区
-    Extra                 _extra;
-
     // 加密通信随机数, 用来防止重放攻击
-    // 每次成功接收一个加密数据包, 就更新此随机数
-    // 如果MCU没有随机数外设, 可以使用加密后的唯一ID作为静态随机数
-    // 可以防止不同设备间的重放攻击
-    PropertyNonce         Nonce;
+    PropertyNonce nonce;
     // 加密通信密钥
-    PropertyKey           Key;
+    PropertyKey   key;
 
-    virtual bool          poll() override;
-    bool                  recv_request(Command& cmd, Extra& extra);
-    void                  send_response(const Command cmd, const ErrorCode err, Extra& extra);
-    /* 属性值获取与鉴权 */
-    PropertyBase*         _acquire_and_verify(Command& cmd, Extra& extra);
-    /* 获取属性值 */
-    virtual PropertyBase* get(PropertyId id) = 0;
-    /* 更新随机数 */
-    virtual void          update_nonce()     = 0;
+    /**
+     * @brief 更新随机数
+     *
+     * @note 随机数应当使用随机数外设生成, 若没有对应的外设, 应当使用MCU的唯一Id作为随机数
+     * @note 此随机数应当保证不同设备间是不同的
+     * @note 在响应完毕一个加密的数据包之后, 此方法会被调用
+     */
+    virtual void  update_nonce()
+    {
+    }
+};
+
+struct PropertyHolderBase
+{
+    /**
+     * @brief 根据属性id获取属性值
+     *
+     * @param id 属性id
+     * @return PropertyBase* 指向属性值的指针
+     */
+    virtual PropertyBase* get(PropertyId id) const = 0;
+    /**
+     * @brief 获取属性值个数
+     *
+     * @return size_t 属性值个数
+     */
+    virtual size_t        size() const             = 0;
+    /**
+     * @brief 获取指定index处的属性id
+     *
+     * @param idx 属性id的index
+     * @return PropertyId 属性id
+     */
+    virtual PropertyId    at(size_t idx) const     = 0;
 };
 
 template <size_t _size>
-struct HostServer : public HostServerBase
+struct PropertyHolder : public PropertyHolderBase
 {
-    using PropertyHolder = frozen::map<PropertyId, PropertyBase*, _size + 2>;
+    using PropertyMap = frozen::map<PropertyId, PropertyBase*, _size>;
+    const PropertyMap& map;
 
-    const PropertyHolder          _props;
-
-    constexpr std::array<Item, 2> get_defaults()
-    {
-        return std::array<Item, 2>({
-            {1, &(PropertyBase&)Nonce},
-            {2,   &(PropertyBase&)Key},
-        });
-    }
-
-    constexpr std::array<Item, _size + 2> merge(std::array<Item, 2> defaults, std::initializer_list<Item> items)
-    {
-        std::array<Item, _size + 2> merged;
-
-        std::copy(defaults.begin(), defaults.end(), merged.begin());
-        std::copy(items.begin(), items.end(), merged.begin() + defaults.size());
-        return merged;
-    }
-
-    HostServer(std::initializer_list<Item> items)
-        : _props(merge(get_defaults(), items))
+    PropertyHolder(const PropertyMap& map)
+        : map(map)
     {
     }
 
-    virtual PropertyBase* get(PropertyId id) override
+    virtual PropertyBase* get(PropertyId id) const
     {
-        auto it = _props.find(id);
-        if (it == _props.end()) return nullptr;
+        auto it = map.find(id);
+        if (it == map.end()) return nullptr;
         return (*it).second;
     }
+
+    virtual size_t size() const
+    {
+        return _size;
+    }
+
+    virtual PropertyId at(size_t idx) const
+    {
+        return map.items_.at(idx).first;
+    }
+};
+
+struct PropertyIds : public PropertyAccess<Access::READ>
+{
+    const PropertyHolderBase& holder;
+
+    PropertyIds(PropertyHolderBase& holder)
+        : holder(holder)
+    {
+    }
+
+    virtual ErrorCode get(Extra& extra) override
+    {
+        size_t index;
+        if (!extra.get(index)) return ErrorCode::E_INVALID_ARG;
+        if (!(index < holder.size())) return ErrorCode::E_OUT_OF_INDEX;
+
+        extra.add(holder.at(index));
+        return ErrorCode::S_OK;
+    }
+
+    virtual ErrorCode get_size(Extra& extra) override
+    {
+        extra.add(holder.size());
+        return ErrorCode::S_OK;
+    }
+};
+
+struct HostServer : public HostBase
+{
+    HostServer(const PropertyHolderBase& holder, SecretHolder& secret)
+        : _secret(secret)
+        , _holder(holder)
+    {
+    }
+
+    virtual bool  poll() override;
+    bool          recv_request(Command& cmd, Extra& extra);
+    void          send_response(const Command cmd, const ErrorCode err, Extra& extra);
+    /* 属性值获取与鉴权 */
+    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
+
+  public:
+    // 帧头缓冲区
+    Sync<Request>             _buf;
+    // 附加参数缓冲区
+    Extra                     _extra;
+    // 密钥容器
+    SecretHolder&             _secret;
+    // 属性值容器
+    const PropertyHolderBase& _holder;
 };

@@ -40,26 +40,12 @@ struct PropertyBase
      */
     virtual ErrorCode set(Extra& extra);
     /**
-     * @brief 设置属性值(内存)
-     *
-     * @param extra [in]附加参数
-     * @return ErrorCode 错误码
-     */
-    virtual ErrorCode set_mem(Extra& extra);
-    /**
      * @brief 读取属性值
      *
      * @param extra [in/out]附加参数
      * @return ErrorCode 错误码
      */
     virtual ErrorCode get(Extra& extra);
-    /**
-     * @brief 读取属性值(内存)
-     *
-     * @param extra [in/out]附加参数
-     * @return ErrorCode 错误码
-     */
-    virtual ErrorCode get_mem(Extra& extra);
     /**
      * @brief 获取属性长度
      *

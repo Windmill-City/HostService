@@ -10,7 +10,7 @@ struct HostClientImpl : public HostClient
     FixedQueue<1024>* Q_Server;
     FixedQueue<1024>  Q_Client;
 
-    virtual uint8_t  rx() override
+    virtual uint8_t   rx() override
     {
         uint8_t res;
         Q_Client.pop(&res);
@@ -26,16 +26,13 @@ struct HostClientImpl : public HostClient
     }
 };
 
-template <size_t _size>
-struct HostServerImpl : public HostServer<_size>
+struct HostServerImpl : public HostServer
 {
-    using parent = HostServer<_size>;
-
     FixedQueue<1024>  Q_Server;
     FixedQueue<1024>* Q_Client;
 
-    HostServerImpl(std::initializer_list<Item> items)
-        : parent(items)
+    HostServerImpl(const PropertyHolderBase& holder, SecretHolder& secret)
+        : HostServer(holder, secret)
     {
     }
 
@@ -53,20 +50,16 @@ struct HostServerImpl : public HostServer<_size>
             Q_Client->push(buf[i]);
         }
     }
-
-    virtual void update_nonce() override
-    {
-    }
 };
 
-template <size_t _size = 0>
-struct HostCS
+struct HostCSBase
 {
-    HostServerImpl<_size> server;
-    HostClientImpl        client;
+    SecretHolder   secret;
+    HostServerImpl server;
+    HostClientImpl client;
 
-    HostCS(std::initializer_list<Item> items = {})
-        : server(items)
+    HostCSBase(const PropertyHolderBase& holder)
+        : server(holder, secret)
     {
         server.Q_Client = &client.Q_Client;
         client.Q_Server = &server.Q_Server;

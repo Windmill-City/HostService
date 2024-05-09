@@ -24,9 +24,6 @@ bool HostClient::poll()
     case Command::GET_PROPERTY:
     case Command::SET_PROPERTY:
         break;
-    case Command::GET_MEMORY:
-    case Command::SET_MEMORY:
-        break;
     case Command::SIGNAL:
         break;
     }

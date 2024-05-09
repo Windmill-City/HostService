@@ -10,11 +10,8 @@ TEST(Property, sizeof)
 
 TEST(Property, Assign)
 {
-    Property<bool> prop_1;
-    Property<bool> prop_2;
-
-    prop_1 = true;
-    prop_2 = false;
+    Property<bool> prop_1 = true;
+    Property<bool> prop_2 = false;
 
     EXPECT_EQ(prop_1, true);
     EXPECT_EQ(prop_2, false);
@@ -25,11 +22,8 @@ TEST(Property, Assign)
 
 TEST(Property, Calc)
 {
-    Property<float> prop_1;
-    Property<float> prop_2;
-
-    prop_1 = 5;
-    prop_2 = 7;
+    Property<float> prop_1 = 5;
+    Property<float> prop_2 = 7;
 
     EXPECT_EQ(prop_1 + 8, 5 + 8.f);
     EXPECT_EQ(prop_1 - 8, 5 - 8.f);
@@ -42,105 +36,70 @@ TEST(Property, Calc)
     EXPECT_EQ(prop_1 / prop_2, 5 / 7.f);
 }
 
-TEST(HostCS, Property_GetProperty)
+static Property<float> prop;
+using PropertyMap                = frozen::map<PropertyId, PropertyBase*, 1>;
+// 静态初始化
+static constexpr PropertyMap map = {
+    {0, &(PropertyBase&)prop}
+};
+
+static PropertyHolder holder(map);
+
+struct TProperty
+    : public HostCSBase
+    , public testing::Test
 {
-    Property<float> prop = 18.8f;
-    HostCS<1>       cs({
-        {5, &(PropertyBase&)prop}
-    });
+    TProperty()
+        : HostCSBase(holder)
+    {
+    }
+};
 
-    Extra           extra;
-    extra.add<PropertyId>(0x05);
-    cs.client.send_request(Command::GET_PROPERTY, extra);
+TEST_F(TProperty, Get)
+{
+    prop = 18.8f;
 
-    cs.Poll();
+    Extra extra;
+    extra.add<PropertyId>(0);
+    client.send_request(Command::GET_PROPERTY, extra);
+
+    Poll();
 
     PropertyId id;
-    cs.client._extra.get(id);
+    client._extra.get(id);
 
     float recv;
-    cs.client._extra.get(recv);
+    client._extra.get(recv);
 
     EXPECT_EQ(recv, 18.8f);
 }
 
-TEST(HostCS, Property_SetProperty)
+TEST_F(TProperty, Set)
 {
-    Property<float> prop;
-    HostCS<1>       cs({
-        {5, &(PropertyBase&)prop}
-    });
+    prop = 0.0f;
 
-    Extra           extra;
-    extra.add<PropertyId>(0x05);
+    Extra extra;
+    extra.add<PropertyId>(0);
     extra.add(18.8f);
-    cs.client.send_request(Command::SET_PROPERTY, extra);
+    client.send_request(Command::SET_PROPERTY, extra);
 
-    cs.Poll();
+    Poll();
 
     EXPECT_EQ(prop, 18.8f);
 }
 
-TEST(HostCS, Property_SetMemory)
+TEST_F(TProperty, GetSize)
 {
-    Property<float> prop;
-    HostCS<1>       cs({
-        {5, &(PropertyBase&)prop}
-    });
-
-    MemoryAccess    access;
-    access.offset = 0;
-    access.size   = sizeof(float);
-
     Extra extra;
-    extra.add<PropertyId>(0x05);
-    extra.add(access);
-    extra.add(18.8f); // data
-    cs.client.send_request(Command::SET_MEMORY, extra);
+    extra.add<PropertyId>(0);
+    client.send_request(Command::GET_SIZE, extra);
 
-    cs.Poll(false);
-
-    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
-}
-
-TEST(HostCS, Property_GetMemory)
-{
-    Property<float> prop;
-    HostCS<1>       cs({
-        {5, &(PropertyBase&)prop}
-    });
-
-    MemoryAccess    access;
-    access.offset = 0;
-    access.size   = sizeof(float);
-
-    Extra extra;
-    extra.add<PropertyId>(0x05);
-    extra.add(access);
-    cs.client.send_request(Command::GET_MEMORY, extra);
-
-    cs.Poll(false);
-
-    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
-}
-
-TEST(HostCS, Property_GetSize)
-{
-    Property<float> prop;
-    HostCS<1>       cs({
-        {5, &(PropertyBase&)prop}
-    });
-
-    Extra           extra;
-    extra.add<PropertyId>(0x05);
-    cs.client.send_request(Command::GET_SIZE, extra);
-
-    cs.Poll();
+    Poll();
 
     PropertyId id;
-    cs.client._extra.get(id);
+    client._extra.get(id);
 
     uint16_t size;
-    cs.client._extra.get(size);
+    client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }

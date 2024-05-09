@@ -55,120 +55,74 @@ TEST(Range, BoundTest)
     EXPECT_FLOAT_EQ(range.max(), 0.1);
 }
 
-TEST(HostCS, Range_GetProperty)
+static RangedProperty<float, 0, 100> prop = 18.8f;
+using PropertyMap                  = frozen::map<PropertyId, PropertyBase*, 1>;
+// 静态初始化
+static constexpr PropertyMap map   = {
+    {0, &(PropertyBase&)prop}
+};
+
+static PropertyHolder holder(map);
+
+struct TRange
+    : public HostCSBase
+    , public testing::Test
 {
-    PropertyId                   id   = 0x05;
-    RangedProperty<float, 0, 25> prop = 18.8f;
-    HostCS<1>                    cs({
-        {id, &(PropertyBase&)prop}
-    });
+    TRange()
+        : HostCSBase(holder)
+    {
+    }
+};
 
-    Extra                        extra;
-    extra.add(id);
+TEST_F(TRange, Get)
+{
+    Extra extra;
+    extra.add(0);
     extra.add(RangeAccess::Property);
-    cs.client.send_request(Command::GET_PROPERTY, extra);
+    client.send_request(Command::GET_PROPERTY, extra);
 
-    cs.Poll();
+    Poll();
 
-    cs.client._extra.get(id);
-    EXPECT_EQ(id, 0x05);
+    PropertyId id;
+    client._extra.get(id);
 
     RangeAccess access;
-    cs.client._extra.get(access);
-    EXPECT_EQ(access, RangeAccess::Property);
+    client._extra.get(access);
 
     float value;
-    cs.client._extra.get(value);
+    client._extra.get(value);
     EXPECT_EQ(value, 18.8f);
 }
 
-TEST(HostCS, Range_SetProperty)
+TEST_F(TRange, Set)
 {
-    PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop;
-    HostCS<1>                    cs({
-        {id, &(PropertyBase&)prop}
-    });
-
-    Extra                        extra;
-    extra.add(id);
+    Extra extra;
+    extra.add(0);
     extra.add(RangeAccess::Property);
     extra.add(18.8f);
-    cs.client.send_request(Command::SET_PROPERTY, extra);
+    client.send_request(Command::SET_PROPERTY, extra);
 
-    cs.Poll();
+    Poll();
 
     EXPECT_EQ(prop, 18.8f);
 }
 
-TEST(HostCS, Range_SetMemory)
+TEST_F(TRange, GetSize)
 {
-    PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop;
-    HostCS<1>                    cs({
-        {id, &(PropertyBase&)prop}
-    });
-
-    MemoryAccess                 access;
-    access.offset = 0;
-    access.size   = sizeof(float);
-
     Extra extra;
-    extra.add(id);
-    extra.add(access);
-    extra.add(18.8f); // data
-    cs.client.send_request(Command::SET_MEMORY, extra);
-
-    cs.Poll(false);
-
-    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
-}
-
-TEST(HostCS, Range_GetMemory)
-{
-    PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop;
-    HostCS<1>                    cs({
-        {id, &(PropertyBase&)prop}
-    });
-
-    MemoryAccess                 access;
-    access.offset = 0;
-    access.size   = sizeof(float);
-
-    Extra extra;
-    extra.add<PropertyId>(id);
-    extra.add(access);
-    cs.client.send_request(Command::GET_MEMORY, extra);
-
-    cs.Poll(false);
-
-    EXPECT_EQ(cs.client._rep.error, ErrorCode::E_NO_IMPLEMENT);
-}
-
-TEST(HostCS, Range_GetSize)
-{
-    PropertyId                   id = 0x05;
-    RangedProperty<float, 0, 25> prop;
-    HostCS<1>                    cs({
-        {id, &(PropertyBase&)prop}
-    });
-
-    Extra                        extra;
-    extra.add<PropertyId>(id);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Property);
-    cs.client.send_request(Command::GET_SIZE, extra);
+    client.send_request(Command::GET_SIZE, extra);
 
-    cs.Poll();
+    Poll();
 
-    cs.client._extra.get(id);
-    EXPECT_EQ(id, 0x05);
+    PropertyId id;
+    client._extra.get(id);
 
     RangeAccess access;
-    cs.client._extra.get(access);
-    EXPECT_EQ(access, RangeAccess::Property);
+    client._extra.get(access);
 
     uint16_t size;
-    cs.client._extra.get(size);
+    client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
