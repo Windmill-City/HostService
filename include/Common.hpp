@@ -21,10 +21,16 @@ enum class ErrorCode : uint8_t
     E_ILLEGAL_STATE,   // 非法状态
 };
 
+enum class ServerType : uint8_t
+{
+    BOOT = 0,
+    APP,
+};
+
 enum class Signal : uint8_t
 {
     LOG      = 0, // CMD, log字符串
-    POWER_UP = 1, // CMD, Application/Bootloader
+    POWER_UP = 1, // CMD, ServerType
 };
 
 enum class Command : uint8_t
