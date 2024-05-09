@@ -88,6 +88,11 @@ struct PropertyHolder : public PropertyHolderBase
     using PropertyMap = frozen::map<PropertyId, PropertyBase*, _size>;
     const PropertyMap& map;
 
+    PropertyHolder(const PropertyMap& map)
+        : map(map)
+    {
+    }
+
     PropertyHolder(const PropertyMap& map, PropertyIds& ids)
         : map(map)
     {
