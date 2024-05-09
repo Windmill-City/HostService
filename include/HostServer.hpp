@@ -92,26 +92,21 @@ struct PropertyHolder : public PropertyHolderBase
 
 struct PropertyIds : public PropertyAccess<Access::READ>
 {
-    const PropertyHolderBase& holder;
+    PropertyHolderBase* holder = nullptr;
 
-    PropertyIds(PropertyHolderBase& holder)
-        : holder(holder)
-    {
-    }
-
-    virtual ErrorCode get(Extra& extra) override
+    virtual ErrorCode   get(Extra& extra) override
     {
         size_t index;
         if (!extra.get(index)) return ErrorCode::E_INVALID_ARG;
-        if (!(index < holder.size())) return ErrorCode::E_OUT_OF_INDEX;
+        if (!(index < holder->size())) return ErrorCode::E_OUT_OF_INDEX;
 
-        extra.add(holder.at(index));
+        extra.add(holder->at(index));
         return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get_size(Extra& extra) override
     {
-        extra.add(holder.size());
+        extra.add(holder->size());
         return ErrorCode::S_OK;
     }
 };
