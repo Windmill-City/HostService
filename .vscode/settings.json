@@ -80,6 +80,7 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "future": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "random": "cpp"
     }
 }
