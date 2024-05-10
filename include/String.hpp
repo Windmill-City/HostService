@@ -2,7 +2,7 @@
 #include <array>
 #include <stdint.h>
 
-template <size_t _len>
+template <size_t _size>
 struct String
 {
     String(const char* str = "")
@@ -63,10 +63,9 @@ struct String
      */
     size_t capacity() const
     {
-        static_assert(_len >= 1);
-        return _len - 1;
+        return _size;
     }
 
   protected:
-    std::array<char, _len> _str;
+    std::array<char, _size + 1> _str;
 };
