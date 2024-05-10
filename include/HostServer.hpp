@@ -68,11 +68,11 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
 
     virtual ErrorCode   get(Extra& extra) override
     {
-        size_t index;
-        if (!extra.get(index)) return ErrorCode::E_INVALID_ARG;
-        if (index >= holder->size()) return ErrorCode::E_OUT_OF_INDEX;
+        PropertyId id;
+        if (!extra.get(id)) return ErrorCode::E_INVALID_ARG;
+        if (id >= holder->size()) return ErrorCode::E_OUT_OF_INDEX;
 
-        frozen::string desc = holder->get_desc(index);
+        frozen::string desc = holder->get_desc(id);
         extra.add(desc.data(), desc.size());
         return ErrorCode::S_OK;
     }
