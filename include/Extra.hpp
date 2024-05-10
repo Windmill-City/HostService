@@ -8,6 +8,7 @@
 template <typename T>
 concept Data    = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
 
+using TagType   = std::array<uint8_t, 16>;
 using NonceType = std::array<uint8_t, 12>;
 using KeyType   = std::array<uint8_t, 256 / 8>;
 
@@ -113,11 +114,11 @@ struct Extra
         if (!_encrypted) return false;
         _encrypted = false;
         // 数据长度至少为 1
-        if (_tag_len >= size()) return false;
-        seek(_tag_len);
+        if (sizeof(TagType) >= size()) return false;
+        seek(sizeof(TagType));
 
         size_t   data_len = remain();
-        uint8_t* _data    = &_buf[_tag_len];
+        uint8_t* _data    = &_buf[sizeof(TagType)];
         uint8_t* _tag     = &_buf[0];
         return UAES_CCM_SimpleDecrypt(key.data(),
                                       key.size(),
@@ -129,7 +130,7 @@ struct Extra
                                       _data,
                                       data_len,
                                       _tag,
-                                      _tag_len);
+                                      sizeof(TagType));
     }
 
     /**
@@ -144,11 +145,11 @@ struct Extra
         if (_encrypted) return;
         _encrypted = true;
         // 数据长度至少为 1
-        if (_tag_len >= size()) return;
-        seek(_tag_len);
+        if (sizeof(TagType) >= size()) return;
+        seek(sizeof(TagType));
 
         size_t   data_len = remain();
-        uint8_t* _data    = &_buf[_tag_len];
+        uint8_t* _data    = &_buf[sizeof(TagType)];
         uint8_t* _tag     = &_buf[0];
         UAES_CCM_SimpleEncrypt(key.data(),
                                key.size(),
@@ -160,7 +161,7 @@ struct Extra
                                _data,
                                data_len,
                                _tag,
-                               _tag_len);
+                               sizeof(TagType));
     }
 
     /**
@@ -189,7 +190,7 @@ struct Extra
      */
     void reserve_tag()
     {
-        seek(_tag_len);
+        seek(sizeof(TagType));
     }
 
     /**
@@ -286,8 +287,6 @@ struct Extra
     }
 
   protected:
-    // 校验位长度
-    static const uint8_t                            _tag_len   = 16;
     // 数据是否加密
     bool                                            _encrypted = false;
     // 缓冲区长度
