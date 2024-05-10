@@ -79,7 +79,8 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
 
     virtual ErrorCode get_size(Extra& extra) override
     {
-        extra.add(holder->size());
+        if (holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
+        extra.add<PropertyId>(holder->size());
         return ErrorCode::S_OK;
     }
 };
