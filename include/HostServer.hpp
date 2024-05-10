@@ -7,7 +7,8 @@
 #include <HostBase.hpp>
 #include <Struct.hpp>
 
-using Item          = std::pair<PropertyId, PropertyBase*>;
+template <size_t _size>
+using PropertyMap   = frozen::map<frozen::string, PropertyBase*, _size>;
 using PropertyNonce = Struct<NonceType, Access::READ>;
 
 struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
@@ -87,15 +88,15 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
 template <size_t _size>
 struct PropertyHolder : public PropertyHolderBase
 {
-    using PropertyMap = frozen::map<frozen::string, PropertyBase*, _size>;
-    const PropertyMap& map;
+    using Map = PropertyMap<_size>;
+    const Map& map;
 
-    PropertyHolder(const PropertyMap& map)
+    PropertyHolder(const Map& map)
         : map(map)
     {
     }
 
-    PropertyHolder(const PropertyMap& map, PropertySymbols& ids)
+    PropertyHolder(const Map& map, PropertySymbols& ids)
         : map(map)
     {
         ids.holder = this;

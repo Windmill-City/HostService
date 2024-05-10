@@ -36,10 +36,9 @@ TEST(Property, Calc)
     EXPECT_EQ(prop_1 / prop_2, 5 / 7.f);
 }
 
-static Property<float> prop;
-using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 1>;
+static Property<float>          prop;
 // 静态初始化
-static constexpr PropertyMap map = {
+static constexpr PropertyMap<1> map = {
     {"prop", &(PropertyBase&)prop}
 };
 

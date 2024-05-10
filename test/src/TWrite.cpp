@@ -7,9 +7,8 @@ static Property<float, Access::READ_WRITE>         prop2;
 static Property<float, Access::READ_PROTECT>       prop3;
 static Property<float, Access::WRITE_PROTECT>      prop4;
 static Property<float, Access::READ_WRITE_PROTECT> prop5;
-using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 5>;
 // 静态初始化
-static constexpr PropertyMap map = {
+static constexpr PropertyMap<5>                    map = {
     {"prop1", &(PropertyBase&)prop1},
     {"prop2", &(PropertyBase&)prop2},
     {"prop3", &(PropertyBase&)prop3},

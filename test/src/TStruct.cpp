@@ -13,10 +13,9 @@ TEST(Struct, sizeof)
     EXPECT_EQ(sizeof(Struct<FloatSt>), 8);
 }
 
-static Struct<FloatSt> prop;
-using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 1>;
+static Struct<FloatSt>          prop;
 // 静态初始化
-static constexpr PropertyMap map = {
+static constexpr PropertyMap<1> map = {
     {"prop", &(PropertyBase&)prop}
 };
 

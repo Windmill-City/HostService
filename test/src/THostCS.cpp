@@ -12,10 +12,9 @@ TEST(Response, sizeof)
     ASSERT_EQ(sizeof(Response), 6);
 }
 
-static SecretHolder secret;
-using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 1>;
+static SecretHolder             secret;
 // 静态初始化
-static constexpr PropertyMap map = {
+static constexpr PropertyMap<1> map = {
     {"nonce", &(PropertyBase&)secret.nonce}
 };
 
