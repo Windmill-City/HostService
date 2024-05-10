@@ -15,11 +15,8 @@ TEST(Struct, sizeof)
 
 static Struct<FloatSt>          prop;
 // 静态初始化
-static constexpr PropertyMap<1> map = {
-    {"prop", &(PropertyBase&)prop}
-};
-
-static PropertyHolder holder(map);
+static constexpr PropertyMap<1> map = {{{"prop", &(PropertyBase&)prop}}};
+static PropertyHolder           holder(map);
 
 struct TStruct
     : public HostCSBase

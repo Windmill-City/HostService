@@ -14,11 +14,8 @@ TEST(Response, sizeof)
 
 static SecretHolder             secret;
 // 静态初始化
-static constexpr PropertyMap<1> map = {
-    {"nonce", &(PropertyBase&)secret.nonce}
-};
-
-static PropertyHolder holder(map);
+static constexpr PropertyMap<1> map = {{{"nonce", &(PropertyBase&)secret.nonce}}};
+static PropertyHolder           holder(map);
 
 struct HostCS
     : public HostCSBase

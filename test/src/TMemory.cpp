@@ -15,11 +15,8 @@ TEST(MemoryAccess, sizeof)
 
 static Memory<std::array<uint8_t, 1024>> mem;
 // 静态初始化
-static constexpr PropertyMap<1>          map = {
-    {"mem", &(PropertyBase&)mem}
-};
-
-static PropertyHolder holder(map);
+static constexpr PropertyMap<1>          map = {{{"mem", &(PropertyBase&)mem}}};
+static PropertyHolder                    holder(map);
 
 struct TMemory
     : public HostCSBase

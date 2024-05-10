@@ -9,13 +9,12 @@ static Property<float, Access::WRITE_PROTECT>      prop4;
 static Property<float, Access::READ_WRITE_PROTECT> prop5;
 // 静态初始化
 static constexpr PropertyMap<5>                    map = {
-    {"prop1", &(PropertyBase&)prop1},
-    {"prop2", &(PropertyBase&)prop2},
-    {"prop3", &(PropertyBase&)prop3},
-    {"prop4", &(PropertyBase&)prop4},
-    {"prop5", &(PropertyBase&)prop5},
+    {{"prop1", &(PropertyBase&)prop1},
+     {"prop2", &(PropertyBase&)prop2},
+     {"prop3", &(PropertyBase&)prop3},
+     {"prop4", &(PropertyBase&)prop4},
+     {"prop5", &(PropertyBase&)prop5}}
 };
-
 static PropertyHolder holder(map);
 
 struct TWrite

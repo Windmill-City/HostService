@@ -8,7 +8,7 @@
 #include <Struct.hpp>
 
 template <size_t _size>
-using PropertyMap   = frozen::map<frozen::string, PropertyBase*, _size>;
+using PropertyMap   = std::array<std::pair<frozen::string, PropertyBase*>, _size>;
 using PropertyNonce = Struct<NonceType, Access::READ>;
 
 struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
@@ -105,13 +105,13 @@ struct PropertyHolder : public PropertyHolderBase
     virtual PropertyBase* get(PropertyId id) const override
     {
         if (id >= map.size()) return nullptr;
-        return map.begin()[id].second;
+        return map[id].second;
     }
 
     virtual frozen::string get_desc(PropertyId id) const override
     {
         if (id >= map.size()) return "";
-        return map.begin()[id].first;
+        return map[id].first;
     }
 
     virtual size_t size() const override

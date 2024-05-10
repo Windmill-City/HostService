@@ -38,10 +38,7 @@ TEST(Property, Calc)
 
 static Property<float>          prop;
 // 静态初始化
-static constexpr PropertyMap<1> map = {
-    {"prop", &(PropertyBase&)prop}
-};
-
+static constexpr PropertyMap<1> map = {{{"prop", &(PropertyBase&)prop}}};
 static PropertyHolder holder(map);
 
 struct TProperty
