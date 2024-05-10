@@ -84,17 +84,6 @@ enum class Command : uint8_t
      */
     GET_SIZE,
     /**
-     * @brief 获取属性值描述
-     *
-     * 请求: CMD,属性Id
-     * 应答:
-     * CMD,S_OK,属性Id,属性描述
-     * CMD,E_INVALID_ARG,属性Id
-     * CMD,E_ID_NOT_EXIST,属性Id
-     * CMD,E_NO_PERMISSION,属性Id
-     */
-    GET_DESC,
-    /**
      * @brief 信号(仅服务端发送)
      *
      * 请求: CMD,S_OK,信号Id,信号参数

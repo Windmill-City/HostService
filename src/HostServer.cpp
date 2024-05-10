@@ -67,7 +67,6 @@ bool HostServer::poll()
         send_response(cmd, err, extra);
         break;
     }
-    case Command::GET_DESC:
     default:
         err = ErrorCode::E_NO_IMPLEMENT;
         send_response(cmd, err, extra);
@@ -154,7 +153,6 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
     ErrorCode err;
     switch (REMOVE_ENCRYPT_MARK(cmd))
     {
-    case Command::GET_DESC:
     case Command::GET_SIZE:
     case Command::GET_PROPERTY:
         err = prop->check_read(IS_ENCRYPTED(cmd));

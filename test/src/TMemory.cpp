@@ -14,10 +14,10 @@ TEST(MemoryAccess, sizeof)
 }
 
 static Memory<std::array<uint8_t, 1024>> mem;
-using PropertyMap                = frozen::map<PropertyId, PropertyBase*, 1>;
+using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 1>;
 // 静态初始化
 static constexpr PropertyMap map = {
-    {0, &(PropertyBase&)mem}
+    {"mem", &(PropertyBase&)mem}
 };
 
 static PropertyHolder holder(map);

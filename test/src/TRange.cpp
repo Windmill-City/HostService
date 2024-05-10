@@ -57,11 +57,11 @@ TEST(Range, BoundTest)
 
 static RangedProperty<float, 0, 100> prop1;
 static Range<float, 0, 100>          prop2;
-using PropertyMap                = frozen::map<PropertyId, PropertyBase*, 2>;
+using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 2>;
 // 静态初始化
 static constexpr PropertyMap map = {
-    {0, &(PropertyBase&)prop1},
-    {1, &(PropertyBase&)prop2},
+    {"prop1", &(PropertyBase&)prop1},
+    {"prop2", &(PropertyBase&)prop2},
 };
 
 static PropertyHolder holder(map);

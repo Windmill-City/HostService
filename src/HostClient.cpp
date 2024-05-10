@@ -19,7 +19,6 @@ bool HostClient::poll()
     {
     case Command::ECHO:
         break;
-    case Command::GET_DESC:
     case Command::GET_SIZE:
     case Command::GET_PROPERTY:
     case Command::SET_PROPERTY:

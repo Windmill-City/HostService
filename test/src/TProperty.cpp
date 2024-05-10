@@ -37,10 +37,10 @@ TEST(Property, Calc)
 }
 
 static Property<float> prop;
-using PropertyMap                = frozen::map<PropertyId, PropertyBase*, 1>;
+using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 1>;
 // 静态初始化
 static constexpr PropertyMap map = {
-    {0, &(PropertyBase&)prop}
+    {"prop", &(PropertyBase&)prop}
 };
 
 static PropertyHolder holder(map);

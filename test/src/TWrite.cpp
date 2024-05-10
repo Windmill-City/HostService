@@ -7,14 +7,14 @@ static Property<float, Access::READ_WRITE>         prop2;
 static Property<float, Access::READ_PROTECT>       prop3;
 static Property<float, Access::WRITE_PROTECT>      prop4;
 static Property<float, Access::READ_WRITE_PROTECT> prop5;
-using PropertyMap                = frozen::map<PropertyId, PropertyBase*, 5>;
+using PropertyMap                = frozen::map<frozen::string, PropertyBase*, 5>;
 // 静态初始化
 static constexpr PropertyMap map = {
-    {0, &(PropertyBase&)prop1},
-    {1, &(PropertyBase&)prop2},
-    {2, &(PropertyBase&)prop3},
-    {3, &(PropertyBase&)prop4},
-    {4, &(PropertyBase&)prop5},
+    {"prop1", &(PropertyBase&)prop1},
+    {"prop2", &(PropertyBase&)prop2},
+    {"prop3", &(PropertyBase&)prop3},
+    {"prop4", &(PropertyBase&)prop4},
+    {"prop5", &(PropertyBase&)prop5},
 };
 
 static PropertyHolder holder(map);

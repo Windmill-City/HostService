@@ -3,6 +3,7 @@
 #include <Extra.hpp>
 #include <FixedQueue.hpp>
 #include <frozen/map.h>
+#include <frozen/string.h>
 #include <HostBase.hpp>
 #include <Struct.hpp>
 
@@ -45,23 +46,23 @@ struct PropertyHolderBase
      * @param id 属性id
      * @return PropertyBase* 指向属性值的指针
      */
-    virtual PropertyBase* get(PropertyId id) const = 0;
+    virtual PropertyBase*  get(PropertyId id) const      = 0;
+    /**
+     * @brief 根据属性id获取属性值描述
+     *
+     * @param id 属性id
+     * @return 属性值描述
+     */
+    virtual frozen::string get_desc(PropertyId id) const = 0;
     /**
      * @brief 获取属性值个数
      *
      * @return size_t 属性值个数
      */
-    virtual size_t        size() const             = 0;
-    /**
-     * @brief 获取指定index处的属性id
-     *
-     * @param idx 属性id的index
-     * @return PropertyId 属性id
-     */
-    virtual PropertyId    at(size_t idx) const     = 0;
+    virtual size_t         size() const                  = 0;
 };
 
-struct PropertyIds : public PropertyAccess<Access::READ>
+struct PropertySymbols : public PropertyAccess<Access::READ>
 {
     PropertyHolderBase* holder = nullptr;
 
@@ -69,9 +70,10 @@ struct PropertyIds : public PropertyAccess<Access::READ>
     {
         size_t index;
         if (!extra.get(index)) return ErrorCode::E_INVALID_ARG;
-        if (!(index < holder->size())) return ErrorCode::E_OUT_OF_INDEX;
+        if (index >= holder->size()) return ErrorCode::E_OUT_OF_INDEX;
 
-        extra.add(holder->at(index));
+        frozen::string desc = holder->get_desc(index);
+        extra.add(desc.data(), desc.size());
         return ErrorCode::S_OK;
     }
 
@@ -85,7 +87,7 @@ struct PropertyIds : public PropertyAccess<Access::READ>
 template <size_t _size>
 struct PropertyHolder : public PropertyHolderBase
 {
-    using PropertyMap = frozen::map<PropertyId, PropertyBase*, _size>;
+    using PropertyMap = frozen::map<frozen::string, PropertyBase*, _size>;
     const PropertyMap& map;
 
     PropertyHolder(const PropertyMap& map)
@@ -93,27 +95,27 @@ struct PropertyHolder : public PropertyHolderBase
     {
     }
 
-    PropertyHolder(const PropertyMap& map, PropertyIds& ids)
+    PropertyHolder(const PropertyMap& map, PropertySymbols& ids)
         : map(map)
     {
         ids.holder = this;
     }
 
-    virtual PropertyBase* get(PropertyId id) const
+    virtual PropertyBase* get(PropertyId id) const override
     {
-        auto it = map.find(id);
-        if (it == map.end()) return nullptr;
-        return (*it).second;
+        if (id >= map.size()) return nullptr;
+        return map.begin()[id].second;
     }
 
-    virtual size_t size() const
+    virtual frozen::string get_desc(PropertyId id) const override
     {
-        return _size;
+        if (id >= map.size()) return "";
+        return map.begin()[id].first;
     }
 
-    virtual PropertyId at(size_t idx) const
+    virtual size_t size() const override
     {
-        return map.begin()[idx].first;
+        return map.size();
     }
 };
 
