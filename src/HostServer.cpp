@@ -109,6 +109,9 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
     // 验证数据
     if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
 
+    // 验证地址
+    if (_req.address != address) return false;
+
     return true;
 }
 
