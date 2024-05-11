@@ -12,6 +12,53 @@ using PropertyNonce = Struct<NonceType, Access::READ>;
 
 struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
 {
+    using parent = Struct<KeyType, Access::READ_WRITE_PROTECT>;
+
+    PropertyKey(KeyType value = {0})
+        : parent(value)
+    {
+    }
+
+    /**
+     * @brief 读取属性值
+     *
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
+     *
+     * @return 密钥
+     */
+    operator KeyType() const
+    {
+        return safe_get();
+    }
+
+    /**
+     * @brief 获取属性的地址
+     *
+     * @note 此方法非线程安全
+     *
+     * @return T* 属性地址
+     */
+    uint8_t* operator&()
+    {
+        return this->_value.data();
+    }
+
+    /**
+     * @brief 写入属性值
+     *
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
+     *
+     * @param other 要写的值
+     * @return auto& 自身的引用
+     */
+    auto& operator=(const KeyType other)
+    {
+        safe_set(other);
+        return *this;
+    }
+
     virtual ErrorCode get(Extra& extra) override
     {
         // 不允许回读密钥
