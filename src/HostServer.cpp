@@ -99,7 +99,12 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
     size          = _req.size;
 
     // 数据为空, 跳过接收
-    if (size == 0) return true;
+    if (size == 0)
+    {
+        // 验证地址
+        if (_req.address != address) return false;
+        return true;
+    }
 
     // 读取数据
     for (size_t i = 0; i < size + sizeof(Chksum); i++)
