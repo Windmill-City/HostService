@@ -12,7 +12,8 @@ using TagType   = std::array<uint8_t, 16>;
 using NonceType = std::array<uint8_t, 12>;
 using KeyType   = std::array<uint8_t, 256 / 8>;
 
-struct Extra
+template <size_t _size>
+struct ExtraT
 {
   public:
     /**
@@ -288,11 +289,13 @@ struct Extra
 
   protected:
     // 数据是否加密
-    bool                                            _encrypted = false;
+    bool                                        _encrypted = false;
     // 缓冲区长度
-    uint8_t                                         _tail      = 0;
+    uint8_t                                     _tail      = 0;
     // 未读取数据的偏移
-    uint8_t                                         _data      = 0;
+    uint8_t                                     _data      = 0;
     // 缓冲区
-    std::array<uint8_t, UINT8_MAX + sizeof(Chksum)> _buf;
+    std::array<uint8_t, _size + sizeof(Chksum)> _buf;
 };
+
+using Extra = ExtraT<UINT8_MAX>;
