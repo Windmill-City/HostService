@@ -58,12 +58,12 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
     if (!_buf.verify()) return false;
 
     extra.reset();
-    _rep          = _buf.get();
+    _rep           = _buf.get();
 
-    uint8_t& size = extra.size();
-    cmd           = _rep.cmd;
-    size          = _rep.size;
-    err           = _rep.error;
+    uint16_t& size = extra.size();
+    cmd            = _rep.cmd;
+    size           = _rep.size;
+    err            = _rep.error;
 
     // 数据为空, 跳过接收
     if (size == 0) return true;

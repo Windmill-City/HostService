@@ -92,11 +92,11 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
     if (!_buf.verify()) return false;
 
     extra.reset();
-    Request  _req = _buf.get();
+    Request   _req = _buf.get();
 
-    uint8_t& size = extra.size();
-    cmd           = _req.cmd;
-    size          = _req.size;
+    uint16_t& size = extra.size();
+    cmd            = _req.cmd;
+    size           = _req.size;
 
     // 数据为空, 跳过接收
     if (size == 0)

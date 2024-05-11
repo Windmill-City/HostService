@@ -3,7 +3,7 @@
 
 TEST(Extra, sizeof)
 {
-    ASSERT_EQ(sizeof(Extra), 260);
+    ASSERT_EQ(sizeof(Extra), 264);
 }
 
 TEST(Extra, read_write)
