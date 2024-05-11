@@ -28,7 +28,7 @@ struct ExtraT
     bool add(const T value)
     {
         // 检查是否超长
-        if (sizeof(value) + _data > UINT8_MAX) return false;
+        if (sizeof(value) + _data > _size) return false;
         // 复制数据
         memcpy(&_buf[_data], (uint8_t*)&value, sizeof(value));
         seek(_data + sizeof(value));
@@ -48,7 +48,7 @@ struct ExtraT
     bool add(const T* value, const size_t size)
     {
         // 检查是否超长
-        if (size + _data > UINT8_MAX) return false;
+        if (size + _data > _size) return false;
         // 复制数据
         memcpy(&_buf[_data], (uint8_t*)value, size);
         seek(_data + size);
@@ -170,7 +170,7 @@ struct ExtraT
      *
      * @param offset 指针偏移
      */
-    void seek(uint8_t offset)
+    void seek(uint16_t offset)
     {
         _data = offset;
         if (_tail < _data) _tail = _data;
@@ -230,7 +230,7 @@ struct ExtraT
      *
      * @return uint8_t 数据长度
      */
-    uint8_t remain() const
+    uint16_t remain() const
     {
         return _tail - _data;
     }
@@ -240,9 +240,9 @@ struct ExtraT
      *
      * @return uint8_t 空闲区域的长度
      */
-    uint8_t spare() const
+    uint16_t spare() const
     {
-        return UINT8_MAX - _tail;
+        return _size - _tail;
     }
 
     /**
@@ -261,7 +261,7 @@ struct ExtraT
      *
      * @return uint8_t 缓冲区长度
      */
-    uint8_t& size()
+    uint16_t& size()
     {
         return _tail;
     }
@@ -291,9 +291,9 @@ struct ExtraT
     // 数据是否加密
     bool                                        _encrypted = false;
     // 缓冲区长度
-    uint8_t                                     _tail      = 0;
+    uint16_t                                    _tail      = 0;
     // 未读取数据的偏移
-    uint8_t                                     _data      = 0;
+    uint16_t                                    _data      = 0;
     // 缓冲区
     std::array<uint8_t, _size + sizeof(Chksum)> _buf;
 };
