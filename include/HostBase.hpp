@@ -1,6 +1,7 @@
 #pragma once
 #include <Common.hpp>
 #include <FixedQueue.hpp>
+#include <Property.hpp>
 
 template <typename T>
 struct Sync : public FixedQueue<sizeof(T), PopAction::PopOnPush>
@@ -40,10 +41,17 @@ struct Sync : public FixedQueue<sizeof(T), PopAction::PopOnPush>
     }
 };
 
+using PropertyAddress = Property<uint8_t>;
+
 struct HostBase
 {
     // 从机地址
-    uint8_t         address;
+    const PropertyAddress& address;
+
+    HostBase(const PropertyAddress& addr)
+        : address(addr)
+    {
+    }
 
     /**
      * @brief 轮询解析请求/响应

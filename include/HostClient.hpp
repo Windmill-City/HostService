@@ -12,7 +12,12 @@ struct HostClient : public HostBase
     // 附加参数缓冲区
     Extra          _extra;
 
-    virtual bool   poll() override;
-    void           send_request(const Command cmd, Extra& extra);
-    bool           recv_response(Command& cmd, ErrorCode& err, Extra& extra);
+    HostClient(const PropertyAddress& addr)
+        : HostBase(addr)
+    {
+    }
+
+    virtual bool poll() override;
+    void         send_request(const Command cmd, Extra& extra);
+    bool         recv_response(Command& cmd, ErrorCode& err, Extra& extra);
 };

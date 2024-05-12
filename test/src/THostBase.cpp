@@ -12,8 +12,14 @@
 struct HostBaseImpl : public HostBase
 {
     std::queue<uint8_t> Q;
+    PropertyAddress     addr;
 
-    virtual bool        poll() override
+    HostBaseImpl()
+        : HostBase(addr)
+    {
+    }
+
+    virtual bool poll() override
     {
         return true;
     }

@@ -169,8 +169,9 @@ struct PropertyHolder : public PropertyHolderBase
 
 struct HostServer : public HostBase
 {
-    HostServer(const PropertyHolderBase& holder, SecretHolder& secret)
-        : _secret(secret)
+    HostServer(const PropertyAddress& addr, const PropertyHolderBase& holder, SecretHolder& secret)
+        : HostBase(addr)
+        , _secret(secret)
         , _holder(holder)
     {
     }

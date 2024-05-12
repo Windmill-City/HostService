@@ -10,7 +10,14 @@ struct HostClientImpl : public HostClient
     FixedQueue<1024>* Q_Server;
     FixedQueue<1024>  Q_Client;
 
-    virtual uint8_t   rx() override
+    PropertyAddress   addr;
+
+    HostClientImpl()
+        : HostClient(addr)
+    {
+    }
+
+    virtual uint8_t rx() override
     {
         uint8_t res;
         Q_Client.pop(&res);
@@ -31,8 +38,10 @@ struct HostServerImpl : public HostServer
     FixedQueue<1024>  Q_Server;
     FixedQueue<1024>* Q_Client;
 
+    PropertyAddress   addr;
+
     HostServerImpl(const PropertyHolderBase& holder, SecretHolder& secret)
-        : HostServer(holder, secret)
+        : HostServer(addr, holder, secret)
     {
     }
 
