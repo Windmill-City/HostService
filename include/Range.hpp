@@ -17,6 +17,9 @@ enum class RangeAccess : uint8_t
     Absolute      // 绝对范围
 };
 
+template <typename T>
+concept Number = std::is_arithmetic_v<T>;
+
 /**
  * @brief 存放范围属性的结构体
  *

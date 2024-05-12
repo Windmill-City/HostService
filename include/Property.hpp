@@ -3,7 +3,7 @@
 #include <type_traits>
 
 template <typename T>
-concept Number = std::is_arithmetic_v<T>;
+concept PropertyVal = std::is_standard_layout_v<T>;
 
 /**
  * @brief 属性值模板
@@ -12,7 +12,7 @@ concept Number = std::is_arithmetic_v<T>;
  * @tparam T 数值类型
  * @tparam access 访问级别
  */
-template <Number T, Access access = Access::READ_WRITE>
+template <PropertyVal T, Access access = Access::READ_WRITE>
 struct Property : public PropertyAccess<access>
 {
     Property(T value = 0)
@@ -80,23 +80,6 @@ struct Property : public PropertyAccess<access>
     }
 
     /**
-     * @brief 写入属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @tparam K
-     * @param other
-     * @return auto&
-     */
-    template <Number K>
-    auto& operator=(const K other)
-    {
-        safe_set(other);
-        return *this;
-    }
-
-    /**
      * @brief 获取属性值的地址
      *
      * @note 此方法非线程安全
@@ -106,6 +89,23 @@ struct Property : public PropertyAccess<access>
     T* operator&()
     {
         return (T*)&_value;
+    }
+
+    /**
+     * @brief 写入属性值
+     *
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
+     *
+     * @tparam K
+     * @param other
+     * @return auto&
+     */
+    template <PropertyVal K>
+    auto& operator=(const K other)
+    {
+        safe_set(other);
+        return *this;
     }
 
     virtual ErrorCode get(Extra& extra) override
