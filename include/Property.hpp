@@ -15,7 +15,7 @@ concept PropertyVal = std::is_standard_layout_v<T>;
 template <PropertyVal T, Access access = Access::READ_WRITE>
 struct Property : public PropertyAccess<access>
 {
-    Property(T value = 0)
+    Property(T value = {0})
     {
         safe_set(value);
     }

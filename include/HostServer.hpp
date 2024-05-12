@@ -4,15 +4,14 @@
 #include <FixedQueue.hpp>
 #include <frozen/string.h>
 #include <HostBase.hpp>
-#include <Struct.hpp>
 
 template <size_t _size>
 using PropertyMap   = std::array<std::pair<frozen::string, PropertyBase*>, _size>;
-using PropertyNonce = Struct<NonceType, Access::READ>;
+using PropertyNonce = Property<NonceType, Access::READ>;
 
-struct PropertyKey : public Struct<KeyType, Access::READ_WRITE_PROTECT>
+struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
 {
-    using parent = Struct<KeyType, Access::READ_WRITE_PROTECT>;
+    using parent = Property<KeyType, Access::READ_WRITE_PROTECT>;
 
     PropertyKey(KeyType value = {0})
         : parent(value)

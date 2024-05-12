@@ -5,7 +5,7 @@
 TEST(RangedProperty, sizeof)
 {
     EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 16);
-    EXPECT_EQ(sizeof(_Range<float>), 8);
+    EXPECT_EQ(sizeof(RangeVal<float>), 8);
 }
 
 TEST(RangedProperty, Mode)
@@ -50,7 +50,7 @@ TEST(Range, BoundTest)
     Range<float, 0, 0.1> range;
 
     // 测试是否拦截赋值
-    range = _Range<float>{-100, 100};
+    range = RangeVal<float>{-100, 100};
     EXPECT_FLOAT_EQ(range.min(), 0);
     EXPECT_FLOAT_EQ(range.max(), 0.1);
 }

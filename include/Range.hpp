@@ -1,6 +1,5 @@
 #pragma once
 #include "Property.hpp"
-#include "Struct.hpp"
 #include <algorithm>
 
 enum class RangeMode : uint8_t
@@ -26,7 +25,7 @@ concept Number = std::is_arithmetic_v<T>;
  * @tparam T 属性的类型
  */
 template <Number T>
-struct _Range
+struct RangeVal
 {
     T min;
     T max;
@@ -47,7 +46,7 @@ struct _Range
  * @tparam access 访问级别
  */
 template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
-struct Range : public Struct<_Range<T>, access>
+struct Range : public Property<RangeVal<T>, access>
 {
     explicit Range(T min = AbsMin, T max = AbsMax)
     {
@@ -98,7 +97,7 @@ struct Range : public Struct<_Range<T>, access>
         return value >= min() && value <= max();
     }
 
-    virtual ErrorCode safe_set(const _Range<T> value) override
+    virtual ErrorCode safe_set(const RangeVal<T> value) override
     {
 #ifndef NO_LOCK
         std::lock_guard lock(PropertyBase::Mutex);
@@ -121,7 +120,7 @@ struct Range : public Struct<_Range<T>, access>
      * @param other 要设置的属性值
      * @return auto& 自身的引用
      */
-    auto& operator=(const _Range<T> other)
+    auto& operator=(const RangeVal<T> other)
     {
         safe_set(other);
         return *this;
@@ -135,7 +134,7 @@ struct Range : public Struct<_Range<T>, access>
         switch (access)
         {
         case RangeAccess::Range:
-            _Range<T> value;
+            RangeVal<T> value;
             if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
 
             safe_set(value);
@@ -362,7 +361,7 @@ struct RangedProperty : public Property<T, val>
         }
         case RangeAccess::Range:
         {
-            _Range<T> value;
+            RangeVal<T> value;
             if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
 
             if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
@@ -428,5 +427,5 @@ struct RangedProperty : public Property<T, val>
     }
 
   protected:
-    _Range<T> _range;
+    RangeVal<T> _range;
 };
