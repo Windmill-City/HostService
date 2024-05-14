@@ -54,6 +54,7 @@ void HostClient::send_request(const Command cmd, Extra& extra)
  */
 bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 {
+Start:
     while (_buf.size() < sizeof(Response))
     {
         uint8_t byte;
@@ -76,7 +77,12 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
     err            = rep.error;
 
     // 数据为空, 跳过接收
-    if (size == 0) return true;
+    if (size == 0)
+    {
+        // 验证地址
+        if (rep.address != address) goto Start;
+        return true;
+    }
 
     // 读取数据
     for (size_t i = 0; i < size + sizeof(Chksum); i++)
@@ -86,7 +92,10 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
         extra[i] = byte;
     }
     // 验证数据
-    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
+    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) goto Start;
+
+    // 验证地址
+    if (rep.address != address) goto Start;
 
     return true;
 }

@@ -88,6 +88,7 @@ bool HostServer::poll()
  */
 bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
+Start:
     while (_buf.size() < sizeof(Request))
     {
         uint8_t byte;
@@ -112,7 +113,7 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
     if (size == 0)
     {
         // 验证地址
-        if (_req.address != address) return false;
+        if (_req.address != address) goto Start;
         return true;
     }
 
@@ -124,10 +125,10 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
         extra[i] = byte;
     }
     // 验证数据
-    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;
+    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) goto Start;
 
     // 验证地址
-    if (_req.address != address) return false;
+    if (_req.address != address) goto Start;
 
     return true;
 }
