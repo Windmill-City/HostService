@@ -79,19 +79,11 @@ struct HostCSBase
      */
     void Poll(bool ok = true)
     {
-        for (size_t i = 0; i < sizeof(Request) - 1; i++)
-        {
-            ASSERT_FALSE(server.poll());
-        }
         if (ok)
             ASSERT_TRUE(server.poll());
         else
             ASSERT_FALSE(server.poll());
 
-        for (size_t i = 0; i < sizeof(Response) - 1; i++)
-        {
-            ASSERT_FALSE(client.poll());
-        }
         ASSERT_TRUE(client.poll());
     }
 };

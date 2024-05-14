@@ -54,12 +54,14 @@ void HostClient::send_request(const Command cmd, Extra& extra)
  */
 bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 {
+    _buf.reset();
+    while (_buf.size() < sizeof(Response))
     {
         uint8_t byte;
         if (!rx(byte)) return false; // 接收超时
         _buf.push(byte);
-        if (!_buf.verify()) return false;
     }
+    if (!_buf.verify()) return false;
 
     extra.reset();
     rep            = _buf.get();
