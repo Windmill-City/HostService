@@ -88,14 +88,18 @@ bool HostServer::poll()
  */
 bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
-    _buf.reset();
     while (_buf.size() < sizeof(Request))
     {
         uint8_t byte;
         if (!rx(byte)) return false; // 接收超时
         _buf.push(byte);
     }
-    if (!_buf.verify()) return false;
+    while (!_buf.verify())
+    {
+        uint8_t byte;
+        if (!rx(byte)) return false; // 接收超时
+        _buf.push(byte);
+    }
 
     extra.reset();
     Request   _req = _buf.get();
