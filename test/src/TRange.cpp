@@ -4,15 +4,16 @@
 
 TEST(RangedProperty, sizeof)
 {
-    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 16);
+    EXPECT_EQ(sizeof(RangedProperty<float, 0, 0>), 12);
     EXPECT_EQ(sizeof(RangeVal<float>), 8);
 }
 
 TEST(RangedProperty, Mode)
 {
-    RangedProperty<int, 0, 10, RangeMode::Hard>  hard;
-    RangedProperty<int, 0, 10, RangeMode::Soft>  soft;
-    RangedProperty<int, 0, 10, RangeMode::Clamp> clamp;
+    Range<int, 0, 10>                            range;
+    RangedProperty<int, 0, 10, RangeMode::Hard>  hard(range);
+    RangedProperty<int, 0, 10, RangeMode::Soft>  soft(range);
+    RangedProperty<int, 0, 10, RangeMode::Clamp> clamp(range);
 
     // 测试边界能否赋值
     hard = 10;
@@ -55,8 +56,8 @@ TEST(Range, BoundTest)
     EXPECT_FLOAT_EQ(range.max(), 0.1);
 }
 
-static RangedProperty<float, 0, 100> prop1;
-static Range<float, 0, 100>          prop2;
+static Range<float, 0, 100>          prop1;
+static RangedProperty<float, 0, 100> prop2(prop1);
 // 静态初始化
 static constexpr PropertyMap<2>      map = {
     {{"prop1", &(PropertyBase&)prop1}, {"prop2", &(PropertyBase&)prop2}}
@@ -75,59 +76,29 @@ struct TRange
 
 TEST_F(TRange, Get_Property)
 {
-    prop1 = 18.8f;
+    prop2 = 18.8f;
 
     Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Property);
+    extra.add<PropertyId>(1);
     client.send_request(Command::GET_PROPERTY, extra);
 
     Poll();
 
     PropertyId id;
     client._extra.get(id);
-
-    RangeAccess access;
-    client._extra.get(access);
 
     float value;
     client._extra.get(value);
     EXPECT_EQ(value, 18.8f);
 }
 
-TEST_F(TRange, Get_Range_P)
-{
-    prop1.min() = 10;
-    prop1.max() = 80;
-
-    Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Range);
-    client.send_request(Command::GET_PROPERTY, extra);
-
-    Poll();
-
-    PropertyId id;
-    client._extra.get(id);
-
-    RangeAccess access;
-    client._extra.get(access);
-
-    float min;
-    float max;
-    client._extra.get(min);
-    client._extra.get(max);
-    EXPECT_EQ(min, 10);
-    EXPECT_EQ(max, 80);
-}
-
 TEST_F(TRange, Get_Range_R)
 {
-    prop2.min() = 10;
-    prop2.max() = 80;
+    prop1.min() = 10;
+    prop1.max() = 80;
 
     Extra extra;
-    extra.add<PropertyId>(1);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Range);
     client.send_request(Command::GET_PROPERTY, extra);
 
@@ -145,41 +116,15 @@ TEST_F(TRange, Get_Range_R)
     client._extra.get(max);
     EXPECT_EQ(min, 10);
     EXPECT_EQ(max, 80);
-}
-
-TEST_F(TRange, Get_Absolute_P)
-{
-    prop1.min() = 10;
-    prop1.max() = 80;
-
-    Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Absolute);
-    client.send_request(Command::GET_PROPERTY, extra);
-
-    Poll();
-
-    PropertyId id;
-    client._extra.get(id);
-
-    RangeAccess access;
-    client._extra.get(access);
-
-    float min;
-    float max;
-    client._extra.get(min);
-    client._extra.get(max);
-    EXPECT_EQ(min, 0);
-    EXPECT_EQ(max, 100);
 }
 
 TEST_F(TRange, Get_Absolute_R)
 {
-    prop2.min() = 10;
-    prop2.max() = 80;
+    prop1.min() = 10;
+    prop1.max() = 80;
 
     Extra extra;
-    extra.add<PropertyId>(1);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Absolute);
     client.send_request(Command::GET_PROPERTY, extra);
 
@@ -202,17 +147,16 @@ TEST_F(TRange, Get_Absolute_R)
 TEST_F(TRange, Set_Property)
 {
     Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Property);
+    extra.add<PropertyId>(1);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
     Poll();
 
-    EXPECT_EQ(prop1, 18.8f);
+    EXPECT_EQ(prop2, 18.8f);
 }
 
-TEST_F(TRange, Set_Range_P)
+TEST_F(TRange, Set_Range_R)
 {
     prop1.min() = 0;
     prop1.max() = 100;
@@ -230,40 +174,10 @@ TEST_F(TRange, Set_Range_P)
     EXPECT_EQ(prop1.max(), 80.f);
 }
 
-TEST_F(TRange, Set_Range_R)
-{
-    prop2.min() = 0;
-    prop2.max() = 100;
-
-    Extra extra;
-    extra.add<PropertyId>(1);
-    extra.add(RangeAccess::Range);
-    extra.add(10.f);
-    extra.add(80.f);
-    client.send_request(Command::SET_PROPERTY, extra);
-
-    Poll();
-
-    EXPECT_EQ(prop2.min(), 10.f);
-    EXPECT_EQ(prop2.max(), 80.f);
-}
-
-TEST_F(TRange, Set_Absolute_P)
-{
-    Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Absolute);
-    client.send_request(Command::SET_PROPERTY, extra);
-
-    Poll(false);
-
-    EXPECT_EQ(client._rep.error, ErrorCode::E_READ_ONLY);
-}
-
 TEST_F(TRange, Set_Absolute_R)
 {
     Extra extra;
-    extra.add<PropertyId>(1);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Absolute);
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -275,68 +189,24 @@ TEST_F(TRange, Set_Absolute_R)
 TEST_F(TRange, GetSize_Property)
 {
     Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Property);
+    extra.add<PropertyId>(1);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
 
     PropertyId id;
     client._extra.get(id);
-
-    RangeAccess access;
-    client._extra.get(access);
 
     uint16_t size;
     client._extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
 
-TEST_F(TRange, GetSize_Range_P)
-{
-    Extra extra;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Range);
-    client.send_request(Command::GET_SIZE, extra);
-
-    Poll();
-
-    PropertyId id;
-    client._extra.get(id);
-
-    RangeAccess access;
-    client._extra.get(access);
-
-    uint16_t size;
-    client._extra.get(size);
-    EXPECT_EQ(size, 2 * sizeof(float));
-}
-
 TEST_F(TRange, GetSize_Range_R)
 {
     Extra extra;
-    extra.add<PropertyId>(1);
-    extra.add(RangeAccess::Range);
-    client.send_request(Command::GET_SIZE, extra);
-
-    Poll();
-
-    PropertyId id;
-    client._extra.get(id);
-
-    RangeAccess access;
-    client._extra.get(access);
-
-    uint16_t size;
-    client._extra.get(size);
-    EXPECT_EQ(size, 2 * sizeof(float));
-}
-
-TEST_F(TRange, GetSize_Absolute_P)
-{
-    Extra extra;
     extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Absolute);
+    extra.add(RangeAccess::Range);
     client.send_request(Command::GET_SIZE, extra);
 
     Poll();
@@ -355,7 +225,7 @@ TEST_F(TRange, GetSize_Absolute_P)
 TEST_F(TRange, GetSize_Absolute_R)
 {
     Extra extra;
-    extra.add<PropertyId>(1);
+    extra.add<PropertyId>(0);
     extra.add(RangeAccess::Absolute);
     client.send_request(Command::GET_SIZE, extra);
 
