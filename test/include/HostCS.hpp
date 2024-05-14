@@ -17,11 +17,10 @@ struct HostClientImpl : public HostClient
     {
     }
 
-    virtual uint8_t rx() override
+    virtual bool rx(uint8_t& byte) override
     {
-        uint8_t res;
-        Q_Client.pop(&res);
-        return res;
+        Q_Client.pop(&byte);
+        return true;
     }
 
     virtual void tx(const uint8_t* buf, const size_t size) override
@@ -45,11 +44,10 @@ struct HostServerImpl : public HostServer
     {
     }
 
-    virtual uint8_t rx() override
+    virtual bool rx(uint8_t& byte) override
     {
-        uint8_t res;
-        Q_Server.pop(&res);
-        return res;
+        Q_Server.pop(&byte);
+        return true;
     }
 
     virtual void tx(const uint8_t* buf, const size_t size) override

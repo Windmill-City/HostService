@@ -77,14 +77,14 @@ TEST_F(TMemory, Get)
 
     // 读取 id
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
     // 读取 access
-    client._extra.get(access);
+    client.extra.get(access);
 
     // 读取数组
     std::vector<uint8_t> recv;
     recv.resize(access.size);
-    client._extra.get(recv.data(), recv.size());
+    client.extra.get(recv.data(), recv.size());
     EXPECT_TRUE(memcmp(recv.data(), &mem, access.size) == 0);
 }
 
@@ -103,7 +103,7 @@ TEST_F(TMemory, Set_OutOfRange)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_OUT_OF_INDEX);
 }
 
 TEST_F(TMemory, Get_OutOfRange)
@@ -120,7 +120,7 @@ TEST_F(TMemory, Get_OutOfRange)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_INDEX);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_OUT_OF_INDEX);
 }
 
 TEST_F(TMemory, Get_OutOfBuffer)
@@ -137,7 +137,7 @@ TEST_F(TMemory, Get_OutOfBuffer)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_OUT_OF_BUFFER);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_OUT_OF_BUFFER);
 }
 
 TEST_F(TMemory, GetSize)
@@ -149,9 +149,9 @@ TEST_F(TMemory, GetSize)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     uint16_t size;
-    client._extra.get(size);
+    client.extra.get(size);
     EXPECT_EQ(size, 1024);
 }

@@ -287,6 +287,16 @@ struct ExtraT
         return _encrypted;
     }
 
+    /**
+     * @brief 返回缓冲区最大容量
+     *
+     * @return uint16_t 最大容量
+     */
+    uint16_t capacity()
+    {
+        return _size;
+    }
+
   protected:
     // 数据是否加密
     bool                                        _encrypted = false;

@@ -85,10 +85,10 @@ TEST_F(TRange, Get_Property)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     float value;
-    client._extra.get(value);
+    client.extra.get(value);
     EXPECT_EQ(value, 18.8f);
 }
 
@@ -105,15 +105,15 @@ TEST_F(TRange, Get_Range_R)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     RangeAccess access;
-    client._extra.get(access);
+    client.extra.get(access);
 
     float min;
     float max;
-    client._extra.get(min);
-    client._extra.get(max);
+    client.extra.get(min);
+    client.extra.get(max);
     EXPECT_EQ(min, 10);
     EXPECT_EQ(max, 80);
 }
@@ -131,15 +131,15 @@ TEST_F(TRange, Get_Absolute_R)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     RangeAccess access;
-    client._extra.get(access);
+    client.extra.get(access);
 
     float min;
     float max;
-    client._extra.get(min);
-    client._extra.get(max);
+    client.extra.get(min);
+    client.extra.get(max);
     EXPECT_EQ(min, 0);
     EXPECT_EQ(max, 100);
 }
@@ -183,7 +183,7 @@ TEST_F(TRange, Set_Absolute_R)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_READ_ONLY);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_READ_ONLY);
 }
 
 TEST_F(TRange, GetSize_Property)
@@ -195,10 +195,10 @@ TEST_F(TRange, GetSize_Property)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     uint16_t size;
-    client._extra.get(size);
+    client.extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
 
@@ -212,13 +212,13 @@ TEST_F(TRange, GetSize_Range_R)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     RangeAccess access;
-    client._extra.get(access);
+    client.extra.get(access);
 
     uint16_t size;
-    client._extra.get(size);
+    client.extra.get(size);
     EXPECT_EQ(size, 2 * sizeof(float));
 }
 
@@ -232,12 +232,12 @@ TEST_F(TRange, GetSize_Absolute_R)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     RangeAccess access;
-    client._extra.get(access);
+    client.extra.get(access);
 
     uint16_t size;
-    client._extra.get(size);
+    client.extra.get(size);
     EXPECT_EQ(size, 2 * sizeof(float));
 }

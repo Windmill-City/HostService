@@ -62,10 +62,10 @@ TEST_F(TProperty, Get)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     float recv;
-    client._extra.get(recv);
+    client.extra.get(recv);
 
     EXPECT_EQ(recv, 18.8f);
 }
@@ -93,9 +93,9 @@ TEST_F(TProperty, GetSize)
     Poll();
 
     PropertyId id;
-    client._extra.get(id);
+    client.extra.get(id);
 
     uint16_t size;
-    client._extra.get(size);
+    client.extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }

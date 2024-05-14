@@ -24,11 +24,11 @@ struct HostBaseImpl : public HostBase
         return true;
     }
 
-    virtual uint8_t rx() override
+    virtual bool rx(uint8_t& byte) override
     {
-        uint8_t res = Q.front();
+        byte = Q.front();
         Q.pop();
-        return res;
+        return true;
     }
 
     virtual void tx(const uint8_t* buf, const size_t size) override
@@ -58,7 +58,9 @@ TEST(HostBase, tx_rx)
     // 接收数据
     for (size_t i = 0; i < sizeof(data_tx); i++)
     {
-        data_rx[i] = hs.rx();
+        uint8_t byte;
+        hs.rx(byte);
+        data_rx[i] = byte;
     }
 
     // 验证收发数据是否一致

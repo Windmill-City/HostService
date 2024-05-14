@@ -8,9 +8,9 @@ struct HostClient : public HostBase
     // 帧头缓冲区
     Sync<Response> _buf;
     // 帧头
-    Response       _rep;
+    Response       rep;
     // 附加参数缓冲区
-    Extra          _extra;
+    Extra          extra;
 
     HostClient(const PropertyAddress& addr)
         : HostBase(addr)

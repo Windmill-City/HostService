@@ -11,7 +11,7 @@
 bool HostClient::poll()
 {
     Command   cmd;
-    Extra&    extra = _extra;
+    Extra&    extra = this->extra;
     ErrorCode err;
     if (!recv_response(cmd, err, extra)) return false;
 
@@ -54,16 +54,20 @@ void HostClient::send_request(const Command cmd, Extra& extra)
  */
 bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 {
-    _buf.push(rx());
-    if (!_buf.verify()) return false;
+    {
+        uint8_t byte;
+        if (!rx(byte)) return false; // 接收超时
+        _buf.push(byte);
+        if (!_buf.verify()) return false;
+    }
 
     extra.reset();
-    _rep           = _buf.get();
+    rep            = _buf.get();
 
     uint16_t& size = extra.size();
-    cmd            = _rep.cmd;
-    size           = _rep.size;
-    err            = _rep.error;
+    cmd            = rep.cmd;
+    size           = rep.size;
+    err            = rep.error;
 
     // 数据为空, 跳过接收
     if (size == 0) return true;
@@ -71,7 +75,9 @@ bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
     // 读取数据
     for (size_t i = 0; i < size + sizeof(Chksum); i++)
     {
-        extra[i] = rx();
+        uint8_t byte;
+        if (!rx(byte)) return false; // 接收超时
+        extra[i] = byte;
     }
     // 验证数据
     if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;

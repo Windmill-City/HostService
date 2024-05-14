@@ -37,5 +37,5 @@ TEST_F(HostCS, request)
 
     Poll();
 
-    ASSERT_TRUE(memcmp(client._extra.data(), data, sizeof(data)) == 0);
+    ASSERT_TRUE(memcmp(client.extra.data(), data, sizeof(data)) == 0);
 }

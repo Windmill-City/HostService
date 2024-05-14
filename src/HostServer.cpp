@@ -88,8 +88,12 @@ bool HostServer::poll()
  */
 bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
-    _buf.push(rx());
-    if (!_buf.verify()) return false;
+    {
+        uint8_t byte;
+        if (!rx(byte)) return false; // 接收超时
+        _buf.push(byte);
+        if (!_buf.verify()) return false;
+    }
 
     extra.reset();
     Request   _req = _buf.get();
@@ -109,7 +113,9 @@ bool HostServer::recv_request(Command& cmd, Extra& extra)
     // 读取数据
     for (size_t i = 0; i < size + sizeof(Chksum); i++)
     {
-        extra[i] = rx();
+        uint8_t byte;
+        if (!rx(byte)) return false; // 接收超时
+        extra[i] = byte;
     }
     // 验证数据
     if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) return false;

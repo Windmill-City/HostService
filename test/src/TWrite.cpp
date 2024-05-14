@@ -36,7 +36,7 @@ TEST_F(TWrite, Read)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_READ_ONLY);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_READ_ONLY);
 }
 
 TEST_F(TWrite, Read_Write)
@@ -48,7 +48,7 @@ TEST_F(TWrite, Read_Write)
 
     Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
 }
 
 TEST_F(TWrite, Read_Protect_NotPrivileged)
@@ -60,7 +60,7 @@ TEST_F(TWrite, Read_Protect_NotPrivileged)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TWrite, Read_Protect_Privileged)
@@ -74,7 +74,7 @@ TEST_F(TWrite, Read_Protect_Privileged)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_READ_ONLY);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_READ_ONLY);
 }
 
 TEST_F(TWrite, Write_Protect_NotPrivileged)
@@ -86,7 +86,7 @@ TEST_F(TWrite, Write_Protect_NotPrivileged)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TWrite, Write_Protect_Privileged)
@@ -100,7 +100,7 @@ TEST_F(TWrite, Write_Protect_Privileged)
 
     Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
 }
 
 TEST_F(TWrite, Read_Write_Protect_NotPrivileged)
@@ -112,7 +112,7 @@ TEST_F(TWrite, Read_Write_Protect_NotPrivileged)
 
     Poll(false);
 
-    EXPECT_EQ(client._rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TWrite, Read_Write_Protect_Privileged)
@@ -126,5 +126,5 @@ TEST_F(TWrite, Read_Write_Protect_Privileged)
 
     Poll();
 
-    EXPECT_EQ(client._rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
 }
