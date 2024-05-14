@@ -29,7 +29,7 @@ struct TRead
 
 TEST_F(TRead, Read)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_PROPERTY, extra);
@@ -42,7 +42,7 @@ TEST_F(TRead, Read)
 
 TEST_F(TRead, Read_Write)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(1);
     client.send_request(Command::GET_PROPERTY, extra);
@@ -55,7 +55,7 @@ TEST_F(TRead, Read_Write)
 
 TEST_F(TRead, Read_Protect_NotPrivileged)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(2);
     client.send_request(Command::GET_PROPERTY, extra);
@@ -68,12 +68,11 @@ TEST_F(TRead, Read_Protect_NotPrivileged)
 
 TEST_F(TRead, Read_Protect_Privileged)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(2);
-    extra.encrypt(server._secret.nonce, server._secret.key);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send_request(Command::GET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -83,7 +82,7 @@ TEST_F(TRead, Read_Protect_Privileged)
 
 TEST_F(TRead, Write_Protect_NotPrivileged)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(3);
     client.send_request(Command::GET_PROPERTY, extra);
@@ -96,12 +95,11 @@ TEST_F(TRead, Write_Protect_NotPrivileged)
 
 TEST_F(TRead, Write_Protect_Privileged)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(3);
-    extra.encrypt(server._secret.nonce, server._secret.key);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send_request(Command::GET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -111,7 +109,7 @@ TEST_F(TRead, Write_Protect_Privileged)
 
 TEST_F(TRead, Read_Write_Protect_NotPrivileged)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(4);
     client.send_request(Command::GET_PROPERTY, extra);
@@ -124,12 +122,11 @@ TEST_F(TRead, Read_Write_Protect_NotPrivileged)
 
 TEST_F(TRead, Read_Write_Protect_Privileged)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(4);
-    extra.encrypt(server._secret.nonce, server._secret.key);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send_request(Command::GET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);

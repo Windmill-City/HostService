@@ -13,7 +13,7 @@ void HostClient::send_request(const Command cmd, Extra& extra, bool encrypt)
     if (encrypt) extra.encrypt(nonce, key);
     Request req;
     req.address = address;
-    req.cmd     = encrypt || extra.encrypted() ? ADD_ENCRYPT_MARK(cmd) : cmd;
+    req.cmd     = extra.encrypted() ? ADD_ENCRYPT_MARK(cmd) : cmd;
     req.size    = extra.size();
     _encode((uint8_t*)&req, sizeof(req), &extra, req.size);
 }

@@ -76,8 +76,7 @@ TEST_F(TWrite, Read_Protect_Privileged)
     extra.reserve_tag();
     extra.add<PropertyId>(2);
     extra.add(0.0f);
-    extra.encrypt(server._secret.nonce, server._secret.key);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send_request(Command::SET_PROPERTY, extra, true);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -106,8 +105,7 @@ TEST_F(TWrite, Write_Protect_Privileged)
     extra.reserve_tag();
     extra.add<PropertyId>(3);
     extra.add(0.0f);
-    extra.encrypt(server._secret.nonce, server._secret.key);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send_request(Command::SET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -136,8 +134,7 @@ TEST_F(TWrite, Read_Write_Protect_Privileged)
     extra.reserve_tag();
     extra.add<PropertyId>(4);
     extra.add(0.0f);
-    extra.encrypt(server._secret.nonce, server._secret.key);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send_request(Command::SET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
