@@ -199,8 +199,8 @@ struct Range : public Property<RangeVal<T>, access>
  * @tparam AbsMin 绝对最小值
  * @tparam AbsMax 绝对最大值
  * @tparam mode 限制模式
- * @tparam range 范围的访问级
- * @tparam val 属性值的访问级
+ * @tparam range 范围的访问级(有效的值: 所有)
+ * @tparam val 属性值的访问级(有效的值: READ,READ_WRITE)
  */
 template <Number    T,
           int       AbsMin,
@@ -208,7 +208,7 @@ template <Number    T,
           RangeMode mode  = RangeMode::Hard,
           Access    range = Access::READ_WRITE,
           Access    val   = Access::READ_WRITE>
-struct RangedProperty : public Property<T, val>
+struct RangedProperty : public Property<T, range>
 {
     RangedProperty(T value = (AbsMin + AbsMax) / 2, T min = AbsMin, T max = AbsMax)
     {
@@ -353,6 +353,7 @@ struct RangedProperty : public Property<T, val>
         {
         case RangeAccess::Property:
         {
+            if (val == Access::READ) return ErrorCode::E_READ_ONLY;
             T value;
             if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
 
