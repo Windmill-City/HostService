@@ -84,7 +84,7 @@ bool HostServer::poll()
  * @param cmd [out]接收到的命令
  * @param extra [out]附加参数
  * @return true 成功接收一帧
- * @return false 没有接收一帧
+ * @return false 接收超时
  */
 bool HostServer::recv_request(Command& cmd, Extra& extra)
 {

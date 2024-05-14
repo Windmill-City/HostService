@@ -50,7 +50,7 @@ void HostClient::send_request(const Command cmd, Extra& extra)
  * @param cmd [out]响应的命令
  * @param extra [out]附加参数
  * @return true 成功接收一帧
- * @return false 没有接收一帧
+ * @return false 接收超时
  */
 bool HostClient::recv_response(Command& cmd, ErrorCode& err, Extra& extra)
 {
