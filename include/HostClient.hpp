@@ -7,17 +7,18 @@ struct HostClient : public HostBase
 {
     // 帧头缓冲区
     Sync<Response> _buf;
-    // 帧头
-    Response       rep;
     // 附加参数缓冲区
     Extra          extra;
+    // 随机数
+    NonceType      nonce;
+    // 通信密钥
+    KeyType        key;
 
     HostClient(const PropertyAddress& addr)
         : HostBase(addr)
     {
     }
 
-    virtual bool poll() override;
-    void         send_request(const Command cmd, Extra& extra);
-    bool         recv_response(Command& cmd, ErrorCode& err, Extra& extra);
+    void send_request(const Command cmd, Extra& extra, bool encrypt = false);
+    bool recv_response(Command cmd, ErrorCode& err, Extra& extra);
 };

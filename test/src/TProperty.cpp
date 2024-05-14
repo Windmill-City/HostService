@@ -56,10 +56,12 @@ TEST_F(TProperty, Get)
     prop = 18.8f;
 
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);
@@ -75,11 +77,13 @@ TEST_F(TProperty, Set)
     prop = 0.0f;
 
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
     EXPECT_EQ(prop, 18.8f);
 }
@@ -87,10 +91,12 @@ TEST_F(TProperty, Set)
 TEST_F(TProperty, GetSize)
 {
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_SIZE, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);

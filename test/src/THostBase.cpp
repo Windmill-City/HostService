@@ -19,11 +19,6 @@ struct HostBaseImpl : public HostBase
     {
     }
 
-    virtual bool poll() override
-    {
-        return true;
-    }
-
     virtual bool rx(uint8_t& byte) override
     {
         byte = Q.front();

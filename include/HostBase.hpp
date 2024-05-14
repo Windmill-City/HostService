@@ -54,13 +54,6 @@ struct HostBase
     }
 
     /**
-     * @brief 轮询解析请求/响应
-     *
-     * @return true 成功解析一帧
-     * @return false 没有接收到数据 或 请求/解析无效
-     */
-    virtual bool poll()                                    = 0;
-    /**
      * @brief 底层数据接收方法, 接收 1 字节数据
      *
      * @param rx 接收数据的变量

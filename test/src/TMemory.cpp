@@ -30,7 +30,8 @@ struct TMemory
 
 TEST_F(TMemory, Set)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
 
     MemoryAccess access;
@@ -50,7 +51,8 @@ TEST_F(TMemory, Set)
 
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
     EXPECT_TRUE(memcmp(&mem, data.data(), data.size()) == 0);
 }
@@ -63,7 +65,8 @@ TEST_F(TMemory, Get)
         mem[i] = i;
     }
 
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
 
     MemoryAccess access;
@@ -73,7 +76,8 @@ TEST_F(TMemory, Get)
 
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
     // 读取 id
     PropertyId id;
@@ -90,7 +94,8 @@ TEST_F(TMemory, Get)
 
 TEST_F(TMemory, Set_OutOfRange)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
 
     MemoryAccess access;
@@ -101,14 +106,16 @@ TEST_F(TMemory, Set_OutOfRange)
 
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_OUT_OF_INDEX);
+    EXPECT_EQ(err, ErrorCode::E_OUT_OF_INDEX);
 }
 
 TEST_F(TMemory, Get_OutOfRange)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
 
     MemoryAccess access;
@@ -118,9 +125,10 @@ TEST_F(TMemory, Get_OutOfRange)
 
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_OUT_OF_INDEX);
+    EXPECT_EQ(err, ErrorCode::E_OUT_OF_INDEX);
 }
 
 TEST_F(TMemory, Get_OutOfBuffer)
@@ -129,24 +137,28 @@ TEST_F(TMemory, Get_OutOfBuffer)
     access.offset = 0;
     access.size   = 255; // 加上Id和内存参数, 超出最大帧长限制
 
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(access);
 
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_OUT_OF_BUFFER);
+    EXPECT_EQ(err, ErrorCode::E_OUT_OF_BUFFER);
 }
 
 TEST_F(TMemory, GetSize)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_SIZE, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);

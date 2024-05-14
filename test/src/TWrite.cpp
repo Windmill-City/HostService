@@ -29,102 +29,118 @@ struct TWrite
 
 TEST_F(TWrite, Read)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_READ_ONLY);
+    EXPECT_EQ(err, ErrorCode::E_READ_ONLY);
 }
 
 TEST_F(TWrite, Read_Write)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(1);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TWrite, Read_Protect_NotPrivileged)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(2);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(err, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TWrite, Read_Protect_Privileged)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(2);
     extra.add(0.0f);
     extra.encrypt(server._secret.nonce, server._secret.key);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_READ_ONLY);
+    EXPECT_EQ(err, ErrorCode::E_READ_ONLY);
 }
 
 TEST_F(TWrite, Write_Protect_NotPrivileged)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(3);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(err, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TWrite, Write_Protect_Privileged)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(3);
     extra.add(0.0f);
     extra.encrypt(server._secret.nonce, server._secret.key);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TWrite, Read_Write_Protect_NotPrivileged)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(4);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(err, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TWrite, Read_Write_Protect_Privileged)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(4);
     extra.add(0.0f);
     extra.encrypt(server._secret.nonce, server._secret.key);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }

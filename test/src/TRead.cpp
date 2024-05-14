@@ -30,93 +30,109 @@ struct TRead
 TEST_F(TRead, Read)
 {
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TRead, Read_Write)
 {
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(1);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TRead, Read_Protect_NotPrivileged)
 {
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(2);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(err, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TRead, Read_Protect_Privileged)
 {
     Extra extra;
+    ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(2);
     extra.encrypt(server._secret.nonce, server._secret.key);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TRead, Write_Protect_NotPrivileged)
 {
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(3);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TRead, Write_Protect_Privileged)
 {
     Extra extra;
+    ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(3);
     extra.encrypt(server._secret.nonce, server._secret.key);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }
 
 TEST_F(TRead, Read_Write_Protect_NotPrivileged)
 {
     Extra extra;
+    ErrorCode err;
     extra.add<PropertyId>(4);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_NO_PERMISSION);
+    EXPECT_EQ(err, ErrorCode::E_NO_PERMISSION);
 }
 
 TEST_F(TRead, Read_Write_Protect_Privileged)
 {
     Extra extra;
+    ErrorCode err;
     extra.reserve_tag();
     extra.add<PropertyId>(4);
     extra.encrypt(server._secret.nonce, server._secret.key);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::S_OK);
+    EXPECT_EQ(err, ErrorCode::S_OK);
 }

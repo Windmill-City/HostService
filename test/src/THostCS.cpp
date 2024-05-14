@@ -29,13 +29,15 @@ struct HostCS
 
 TEST_F(HostCS, request)
 {
-    uint8_t data[] = {0x01, 0x02, 0x03};
+    uint8_t   data[] = {0x01, 0x02, 0x03};
 
-    Extra   extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add(data, sizeof(data));
     client.send_request(Command::ECHO, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::ECHO, err, client.extra);
 
     ASSERT_TRUE(memcmp(client.extra.data(), data, sizeof(data)) == 0);
 }

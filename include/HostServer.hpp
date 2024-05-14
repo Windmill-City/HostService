@@ -175,7 +175,7 @@ struct HostServer : public HostBase
     {
     }
 
-    virtual bool  poll() override;
+    bool          poll();
     bool          recv_request(Command& cmd, Extra& extra);
     void          send_response(const Command cmd, const ErrorCode err, Extra& extra);
     /* 属性值获取与鉴权 */

@@ -10,6 +10,7 @@ enum class ErrorCode : uint8_t
 {
     S_OK = 0,          // 执行成功
     E_FAIL,            // 执行失败
+    E_TIMEOUT,         // 执行超时
     E_NO_IMPLEMENT,    // 方法未实现
     E_INVALID_ARG,     // 参数有误
     E_ID_NOT_EXIST,    // Id不存在

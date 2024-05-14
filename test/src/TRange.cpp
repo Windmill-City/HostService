@@ -78,11 +78,13 @@ TEST_F(TRange, Get_Property)
 {
     prop2 = 18.8f;
 
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(1);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);
@@ -97,12 +99,14 @@ TEST_F(TRange, Get_Range_R)
     prop1.min() = 10;
     prop1.max() = 80;
 
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(RangeAccess::Range);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);
@@ -123,12 +127,14 @@ TEST_F(TRange, Get_Absolute_R)
     prop1.min() = 10;
     prop1.max() = 80;
 
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(RangeAccess::Absolute);
     client.send_request(Command::GET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);
@@ -146,12 +152,14 @@ TEST_F(TRange, Get_Absolute_R)
 
 TEST_F(TRange, Set_Property)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(1);
     extra.add(18.8f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
     EXPECT_EQ(prop2, 18.8f);
 }
@@ -161,14 +169,16 @@ TEST_F(TRange, Set_Range_R)
     prop1.min() = 0;
     prop1.max() = 100;
 
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(RangeAccess::Range);
     extra.add(10.f);
     extra.add(80.f);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
     EXPECT_EQ(prop1.min(), 10.f);
     EXPECT_EQ(prop1.max(), 80.f);
@@ -176,23 +186,27 @@ TEST_F(TRange, Set_Range_R)
 
 TEST_F(TRange, Set_Absolute_R)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(RangeAccess::Absolute);
     client.send_request(Command::SET_PROPERTY, extra);
 
-    Poll(false);
+    ASSERT_FALSE(server.poll());
+    client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(client.rep.error, ErrorCode::E_READ_ONLY);
+    EXPECT_EQ(err, ErrorCode::E_READ_ONLY);
 }
 
 TEST_F(TRange, GetSize_Property)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(1);
     client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_SIZE, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);
@@ -204,12 +218,14 @@ TEST_F(TRange, GetSize_Property)
 
 TEST_F(TRange, GetSize_Range_R)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(RangeAccess::Range);
     client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_SIZE, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);
@@ -224,12 +240,14 @@ TEST_F(TRange, GetSize_Range_R)
 
 TEST_F(TRange, GetSize_Absolute_R)
 {
-    Extra extra;
+    Extra     extra;
+    ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(RangeAccess::Absolute);
     client.send_request(Command::GET_SIZE, extra);
 
-    Poll();
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_SIZE, err, client.extra);
 
     PropertyId id;
     client.extra.get(id);

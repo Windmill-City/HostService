@@ -71,19 +71,4 @@ struct HostCSBase
         server.Q_Client = &client.Q_Client;
         client.Q_Server = &server.Q_Server;
     }
-
-    /**
-     * @brief 轮询处理请求和响应
-     *
-     * @param ok 请求是否会失败?
-     */
-    void Poll(bool ok = true)
-    {
-        if (ok)
-            ASSERT_TRUE(server.poll());
-        else
-            ASSERT_FALSE(server.poll());
-
-        ASSERT_TRUE(client.poll());
-    }
 };
