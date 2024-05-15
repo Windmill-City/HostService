@@ -16,8 +16,9 @@ struct TCMemory
     : public HostCSBase
     , public testing::Test
 {
-    volatile bool     Running = true;
-    std::future<void> future;
+    volatile bool      Running = true;
+    std::promise<bool> start;
+    std::promise<bool> end;
 
     TCMemory()
         : HostCSBase(holder, cholder)
@@ -26,20 +27,24 @@ struct TCMemory
 
     virtual void SetUp()
     {
-        future = std::async(std::launch::async,
-                            [this]()
-                            {
-                                while (Running)
-                                {
-                                    server.poll();
-                                }
-                            });
+        std::thread(
+            [this]()
+            {
+                start.set_value(true);
+                while (Running)
+                {
+                    server.poll();
+                }
+                end.set_value(true);
+            })
+            .detach();
+        start.get_future().get();
     }
 
     virtual void TearDown()
     {
         Running = false;
-        future.get();
+        end.get_future().get();
     }
 };
 
@@ -53,5 +58,18 @@ TEST_F(TCMemory, Set)
     }
 
     EXPECT_EQ(c_mem.set(client), ErrorCode::S_OK);
+    EXPECT_TRUE(memcmp(&c_mem, &mem, 1024) == 0);
+}
+
+TEST_F(TCMemory, Get)
+{
+    CMemory<std::array<uint8_t, 1024>> c_mem("mem");
+
+    for (size_t i = 0; i < 1024; i++)
+    {
+        mem[i] = i;
+    }
+
+    EXPECT_EQ(c_mem.get(client), ErrorCode::S_OK);
     EXPECT_TRUE(memcmp(&c_mem, &mem, 1024) == 0);
 }

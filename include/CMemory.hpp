@@ -74,6 +74,37 @@ struct CMemory
         // 接收响应
         if (!client.recv_response(Command::SET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
+        // 自增偏移
+        access.offset += access.size;
+        return ErrorCode::S_OK;
+    }
+
+    ErrorCode get_block(HostClient& client, MemoryAccess& access, uint8_t* data, bool encrypt)
+    {
+        ErrorCode err;
+        Extra&    extra = client.extra;
+        extra.reset();
+        // 预留tag
+        if (encrypt) extra.reserve_tag();
+        // 添加id
+        PropertyId id;
+        err = client.holder.get_id_by_name(name, id);
+        if (err != ErrorCode::S_OK) return err;
+        extra.add(id);
+        // 添加访问参数
+        extra.add(access);
+        // 发送请求
+        client.send_request(Command::GET_PROPERTY, extra, encrypt);
+        // 接收响应
+        if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
+        if (err != ErrorCode::S_OK) return err;
+        // 接收数据
+        PropertyId   id_r;
+        MemoryAccess access_r;
+        if (!extra.get(id_r) || id != id_r) return ErrorCode::E_FAIL;
+        if (!extra.get(access_r) || access != access_r) return ErrorCode::E_FAIL;
+        if (!extra.get(data + access.offset, access.size)) return ErrorCode::E_FAIL;
+        // 自增偏移
         access.offset += access.size;
         return ErrorCode::S_OK;
     }
@@ -115,6 +146,33 @@ struct CMemory
 
     ErrorCode get(HostClient& client)
     {
+        Extra&   extra   = client.extra;
+        // 是否需要加密
+        bool     encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::READ_PROTECT;
+        // 每次同步的最大长度
+        uint16_t space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
+        if (encrypt) space -= sizeof(TagType);
+        // 内存访问参数
+        MemoryAccess access;
+        access.size   = space;
+        access.offset = 0;
+        // 本地数据访问指针
+        uint8_t* data = (uint8_t*)&_value;
+
+        // 分块读取数据 - 整数倍部分
+        for (size_t i = 0; i < sizeof(_value) / space; i++)
+        {
+            ErrorCode err = get_block(client, access, data, encrypt);
+            if (err != ErrorCode::S_OK) return err;
+        }
+
+        // 分块读取数据 - 余下的部分
+        if (access.offset != sizeof(_value))
+        {
+            access.size   = sizeof(_value) - access.offset;
+            ErrorCode err = get_block(client, access, data, encrypt);
+            if (err != ErrorCode::S_OK) return err;
+        }
         return ErrorCode::S_OK;
     }
 
