@@ -26,8 +26,13 @@ concept Number = std::is_arithmetic_v<T>;
 template <Number T>
 struct RangeVal
 {
-    T min;
-    T max;
+    T    min;
+    T    max;
+
+    bool operator==(const RangeVal& range) const
+    {
+        return this->min == range.min && this->max == range.max;
+    }
 };
 
 /**

@@ -46,8 +46,12 @@ struct CPropertyHolder : public CPropertyHolderBase
 
     virtual ErrorCode get_id_by_name(const frozen::string name, PropertyId& id) override
     {
-        id = map.at(name);
-        return ErrorCode::S_OK;
+        if (map.contains(name))
+        {
+            id = map.at(name);
+            return ErrorCode::S_OK;
+        }
+        return ErrorCode::E_ID_NOT_EXIST;
     }
 
     virtual ErrorCode refresh(HostClient& client) override
