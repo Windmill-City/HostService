@@ -14,10 +14,10 @@
 template <MemoryData T, Access _access = Access::READ_WRITE>
 struct CMemory
 {
-    // 需要访问的属性名称
-    frozen::string name;
+    // 绑定的属性名称
+    const frozen::string name;
 
-    CMemory(frozen::string name)
+    CMemory(const frozen::string name)
         : name(name)
     {
     }
