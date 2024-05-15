@@ -4,7 +4,7 @@
 #include <Range.hpp>
 
 /**
- * @brief 范围属性值模板
+ * @brief 范围属性值模板(客户端)
  *
  * 设置命令:
  * Range,Min,Max

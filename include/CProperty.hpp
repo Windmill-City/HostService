@@ -4,7 +4,7 @@
 #include <Property.hpp>
 
 /**
- * @brief 属性值模板
+ * @brief 属性值模板(客户端)
  *
  *
  * @tparam T 数值类型
