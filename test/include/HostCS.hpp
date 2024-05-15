@@ -19,7 +19,8 @@ struct HostClientImpl : public HostClient
 
     virtual bool rx(uint8_t& byte) override
     {
-        Q_Client.pop(&byte);
+        while (!Q_Client.pop(&byte))
+            std::this_thread::yield();
         return true;
     }
 
@@ -46,8 +47,7 @@ struct HostServerImpl : public HostServer
 
     virtual bool rx(uint8_t& byte) override
     {
-        Q_Server.pop(&byte);
-        return true;
+        return Q_Server.pop(&byte);
     }
 
     virtual void tx(const uint8_t* buf, const size_t size) override
