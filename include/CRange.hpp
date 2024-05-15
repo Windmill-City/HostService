@@ -34,8 +34,6 @@ struct CRange
     /**
      * @brief 获取最小值的引用
      *
-     * @note 此方法非线程安全
-     *
      * @return T& 最小值的引用
      */
     T& min()
@@ -45,8 +43,6 @@ struct CRange
 
     /**
      * @brief 获取最大值的引用
-     *
-     * @note 此方法非线程安全
      *
      * @return T& 最大值的引用
      */
@@ -58,38 +54,27 @@ struct CRange
     /**
      * @brief 检查数值是否在范围内
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @param value 要检查的数值
      * @return true 在范围内
      * @return false 不在范围内
      */
     bool in_range(T value)
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
         return value >= min() && value <= max();
     }
 
     /**
      * @brief 读取属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @return T 属性值
      */
     operator RangeVal<T>() const
     {
-        return safe_get();
+        return get();
     }
 
     /**
      * @brief 获取属性的引用
-     *
-     * @note 此方法非线程安全
      *
      * @return T& 属性值引用
      */
@@ -101,8 +86,6 @@ struct CRange
     /**
      * @brief 获取属性值的地址
      *
-     * @note 此方法非线程安全
-     *
      * @return T* 属性值地址
      */
     RangeVal<T>* operator&()
@@ -113,33 +96,21 @@ struct CRange
     /**
      * @brief 读取属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @return T 属性值
      */
-    virtual RangeVal<T> safe_get() const
+    virtual RangeVal<T> get() const
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
         return _value;
     }
 
     /**
      * @brief 设置属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @param value 要写入的值
      * @return ErrorCode 错误码
      */
-    ErrorCode safe_set(const RangeVal<T> value)
+    ErrorCode set(const RangeVal<T> value)
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
         if (value.min < Absolute.min) return ErrorCode::E_INVALID_ARG;
         if (value.max > Absolute.max) return ErrorCode::E_INVALID_ARG;
         if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
@@ -160,7 +131,7 @@ struct CRange
      */
     auto& operator=(const RangeVal<T> other)
     {
-        safe_set(other);
+        set(other);
         return *this;
     }
 
@@ -234,7 +205,7 @@ struct CRange
         switch (range)
         {
         case RangeAccess::Range:
-            return safe_set(value);
+            return set(value);
         case RangeAccess::Absolute:
             Absolute = value;
             break;

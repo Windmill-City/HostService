@@ -56,7 +56,7 @@ struct TCRange
 TEST_F(TCRange, Set_R)
 {
     CRange<float> c_prop("prop1", {0, 100});
-    c_prop.safe_set({16, 17});
+    c_prop.set({16, 17});
 
     EXPECT_EQ(c_prop.set(client), ErrorCode::S_OK);
     EXPECT_TRUE(c_prop == prop1);

@@ -24,33 +24,21 @@ struct CProperty
     /**
      * @brief 读取属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @return T 属性值
      */
-    virtual T safe_get() const
+    T get() const
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
         return _value;
     }
 
     /**
      * @brief 设置属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @param value 要写入的值
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode safe_set(T value)
+    ErrorCode set(T value)
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
         _value = value;
         return ErrorCode::S_OK;
     }
@@ -58,20 +46,15 @@ struct CProperty
     /**
      * @brief 读取属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @return T 属性值
      */
     operator T() const
     {
-        return safe_get();
+        return get();
     }
 
     /**
      * @brief 获取属性的引用
-     *
-     * @note 此方法非线程安全
      *
      * @return T& 属性值引用
      */
@@ -83,8 +66,6 @@ struct CProperty
     /**
      * @brief 获取属性值的地址
      *
-     * @note 此方法非线程安全
-     *
      * @return T* 属性值地址
      */
     T* operator&()
@@ -95,9 +76,6 @@ struct CProperty
     /**
      * @brief 写入属性值
      *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
      * @tparam K
      * @param other
      * @return auto&
@@ -105,7 +83,7 @@ struct CProperty
     template <PropertyVal K>
     auto& operator=(const K other)
     {
-        safe_set(other);
+        set(other);
         return *this;
     }
 
@@ -134,7 +112,7 @@ struct CProperty
         if (!extra.get(id_r) || id != id_r) return ErrorCode::E_FAIL;
         T value;
         if (!extra.get(value)) return ErrorCode::E_FAIL;
-        safe_set(value);
+        set(value);
         return ErrorCode::S_OK;
     }
 
