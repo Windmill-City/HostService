@@ -12,6 +12,11 @@ struct MemoryAccess
 {
     uint16_t offset; // 地址偏移
     uint8_t  size;   // 数据长度
+
+    bool     operator==(const MemoryAccess& access) const
+    {
+        return this->offset == access.offset && this->size == access.size;
+    }
 };
 
 #pragma pack()
