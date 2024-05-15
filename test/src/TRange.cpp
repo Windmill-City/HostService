@@ -10,7 +10,7 @@ TEST(RangedProperty, sizeof)
 
 TEST(RangedProperty, Mode)
 {
-    Range<int, 0, 10>                     range;
+    Range<int>                            range({0, 10});
     RangedProperty<int, RangeMode::Hard>  hard(range.ref());
     RangedProperty<int, RangeMode::Soft>  soft(range.ref());
     RangedProperty<int, RangeMode::Clamp> clamp(range.ref());
@@ -48,7 +48,7 @@ TEST(RangedProperty, Mode)
 
 TEST(Range, BoundTest)
 {
-    Range<float, 0, 0.1> range;
+    Range<float> range({0, 0.1});
 
     // 测试是否拦截赋值
     range = RangeVal<float>{-100, 100};
@@ -56,7 +56,7 @@ TEST(Range, BoundTest)
     EXPECT_FLOAT_EQ(range.max(), 0.1);
 }
 
-static Range<float, 0, 100>     prop1;
+static Range<float>             prop1({0, 100});
 static RangedProperty<float>    prop2(prop1.ref());
 // 静态初始化
 static constexpr PropertyMap<2> map = {

@@ -40,18 +40,17 @@ struct RangeVal
  * Absolute,Min,Max
  *
  * @tparam T 数值类型
- * @tparam AbsMin 绝对最小值
- * @tparam AbsMax 绝对最大值
  * @tparam access 访问级别
  */
-template <Number T, T AbsMin, T AbsMax, Access access = Access::READ_WRITE>
+template <Number T, Access access = Access::READ_WRITE>
 struct Range : public Property<RangeVal<T>, access>
 {
-    explicit Range(T min = AbsMin, T max = AbsMax)
+    const RangeVal<T> Absolute;
+
+    explicit Range(const RangeVal<T> abs)
+        : Absolute(abs)
     {
-        this->min() = AbsMin;
-        this->max() = AbsMax;
-        safe_set({min, max});
+        safe_set(Absolute);
     }
 
     /**
@@ -101,8 +100,8 @@ struct Range : public Property<RangeVal<T>, access>
 #ifndef NO_LOCK
         std::lock_guard lock(PropertyBase::Mutex);
 #endif
-        if (value.min < AbsMin) return ErrorCode::E_INVALID_ARG;
-        if (value.max > AbsMax) return ErrorCode::E_INVALID_ARG;
+        if (value.min < Absolute.min) return ErrorCode::E_INVALID_ARG;
+        if (value.max > Absolute.max) return ErrorCode::E_INVALID_ARG;
         if (value.min > value.max) return ErrorCode::E_INVALID_ARG;
 
         this->_value = value;
@@ -157,8 +156,7 @@ struct Range : public Property<RangeVal<T>, access>
             extra.add(this->safe_get());
             return ErrorCode::S_OK;
         case RangeAccess::Absolute:
-            extra.add<T>(AbsMin);
-            extra.add<T>(AbsMax);
+            extra.add(Absolute);
             return ErrorCode::S_OK;
         default:
             return ErrorCode::E_NO_IMPLEMENT;
@@ -174,7 +172,7 @@ struct Range : public Property<RangeVal<T>, access>
         {
         case RangeAccess::Range:
         case RangeAccess::Absolute:
-            extra.add<uint16_t>(2 * sizeof(T));
+            extra.add<uint16_t>(sizeof(this->_value));
             return ErrorCode::S_OK;
         default:
             return ErrorCode::E_NO_IMPLEMENT;
