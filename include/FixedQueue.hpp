@@ -32,7 +32,7 @@ struct FixedQueue
      */
     bool push(uint8_t item)
     {
-        if (full() && action == PopOnPush) pop();
+        if (action == PopOnPush && full()) pop();
         if (!full())
         {
             _buf[_empty] = item;
