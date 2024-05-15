@@ -188,21 +188,16 @@ struct Range : public Property<RangeVal<T>, access>
  *
  * @tparam T 属性值类型
  * @tparam mode 限制模式
- * @tparam val 属性值的访问级
- * @tparam access 范围的访问级
+ * @tparam access 属性值的访问级
  */
-template <Number    T,
-          T         AbsMin,
-          T         AbsMax,
-          RangeMode mode   = RangeMode::Hard,
-          Access    val    = Access::READ_WRITE,
-          Access    access = Access::READ_WRITE>
-struct RangedProperty : public Property<T, val>
+template <Number T, RangeMode mode = RangeMode::Hard, Access access = Access::READ_WRITE>
+struct RangedProperty : public Property<T, access>
 {
-    RangedProperty(Range<T, AbsMin, AbsMax, access>& range, T val = (AbsMin + AbsMax) / 2)
+    RangedProperty(const RangeVal<T>& range, T val = 0)
         : _range(range)
     {
         this->_value = val;
+        clamp();
     }
 
     /**
@@ -214,7 +209,7 @@ struct RangedProperty : public Property<T, val>
      */
     T min()
     {
-        return _range.min();
+        return _range.min;
     }
 
     /**
@@ -226,7 +221,7 @@ struct RangedProperty : public Property<T, val>
      */
     T max()
     {
-        return _range.max();
+        return _range.max;
     }
 
     /**
@@ -333,5 +328,5 @@ struct RangedProperty : public Property<T, val>
     }
 
   protected:
-    Range<T, AbsMin, AbsMax, access>& _range;
+    const RangeVal<T>& _range;
 };
