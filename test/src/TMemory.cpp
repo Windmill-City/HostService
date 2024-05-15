@@ -18,12 +18,15 @@ static Memory<std::array<uint8_t, 1024>> mem;
 static constexpr PropertyMap<1>          map = {{{"mem", &(PropertyBase&)mem}}};
 static PropertyHolder                    holder(map);
 
+static constinit CPropertyMap<1>         cmap = {{{"mem", 0}}};
+static CPropertyHolder                   cholder(cmap);
+
 struct TMemory
     : public HostCSBase
     , public testing::Test
 {
     TMemory()
-        : HostCSBase(holder)
+        : HostCSBase(holder, cholder)
     {
     }
 };

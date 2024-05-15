@@ -56,20 +56,25 @@ TEST(Range, BoundTest)
     EXPECT_FLOAT_EQ(range.max(), 0.1);
 }
 
-static Range<float, 0, 100>          prop1;
-static RangedProperty<float> prop2(prop1.ref());
+static Range<float, 0, 100>     prop1;
+static RangedProperty<float>    prop2(prop1.ref());
 // 静态初始化
-static constexpr PropertyMap<2>      map = {
+static constexpr PropertyMap<2> map = {
     {{"prop1", &(PropertyBase&)prop1}, {"prop2", &(PropertyBase&)prop2}}
 };
-static PropertyHolder holder(map);
+static PropertyHolder            holder(map);
+
+static constinit CPropertyMap<1> cmap = {
+    {{"prop1", 0}, {"prop2", 1}}
+};
+static CPropertyHolder cholder(cmap);
 
 struct TRange
     : public HostCSBase
     , public testing::Test
 {
     TRange()
-        : HostCSBase(holder)
+        : HostCSBase(holder, cholder)
     {
     }
 };

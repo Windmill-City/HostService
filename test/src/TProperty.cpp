@@ -36,17 +36,20 @@ TEST(Property, Calc)
     EXPECT_EQ(prop_1 / prop_2, 5 / 7.f);
 }
 
-static Property<float>          prop;
+static Property<float>           prop;
 // 静态初始化
-static constexpr PropertyMap<1> map = {{{"prop", &(PropertyBase&)prop}}};
-static PropertyHolder holder(map);
+static constexpr PropertyMap<1>  map = {{{"prop", &(PropertyBase&)prop}}};
+static PropertyHolder            holder(map);
+
+static constinit CPropertyMap<1> cmap = {{{"prop", 0}}};
+static CPropertyHolder           cholder(cmap);
 
 struct TProperty
     : public HostCSBase
     , public testing::Test
 {
     TProperty()
-        : HostCSBase(holder)
+        : HostCSBase(holder, cholder)
     {
     }
 };
@@ -55,7 +58,7 @@ TEST_F(TProperty, Get)
 {
     prop = 18.8f;
 
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_PROPERTY, extra);
@@ -76,7 +79,7 @@ TEST_F(TProperty, Set)
 {
     prop = 0.0f;
 
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(18.8f);
@@ -90,7 +93,7 @@ TEST_F(TProperty, Set)
 
 TEST_F(TProperty, GetSize)
 {
-    Extra extra;
+    Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
     client.send_request(Command::GET_SIZE, extra);

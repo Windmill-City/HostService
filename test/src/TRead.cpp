@@ -15,14 +15,19 @@ static constexpr PropertyMap<5>                    map = {
      {"prop4", &(PropertyBase&)prop4},
      {"prop5", &(PropertyBase&)prop5}}
 };
-static PropertyHolder holder(map);
+static PropertyHolder            holder(map);
+
+static constinit CPropertyMap<1> cmap = {
+    {{"prop1", 0}, {"prop2", 1}, {"prop3", 2}, {"prop4", 3}, {"prop5", 4}}
+};
+static CPropertyHolder cholder(cmap);
 
 struct TRead
     : public HostCSBase
     , public testing::Test
 {
     TRead()
-        : HostCSBase(holder)
+        : HostCSBase(holder, cholder)
     {
     }
 };

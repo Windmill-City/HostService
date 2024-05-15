@@ -12,17 +12,20 @@ TEST(Response, sizeof)
     ASSERT_EQ(sizeof(Response), 6);
 }
 
-static SecretHolder             secret;
+static SecretHolder              secret;
 // 静态初始化
-static constexpr PropertyMap<1> map = {{{"nonce", &(PropertyBase&)secret.nonce}}};
-static PropertyHolder           holder(map);
+static constexpr PropertyMap<1>  map = {{{"nonce", &(PropertyBase&)secret.nonce}}};
+static PropertyHolder            holder(map);
+
+static constinit CPropertyMap<1> cmap = {{{"nonce", 0}}};
+static CPropertyHolder           cholder(cmap);
 
 struct HostCS
     : public HostCSBase
     , public testing::Test
 {
     HostCS()
-        : HostCSBase(holder)
+        : HostCSBase(holder, cholder)
     {
     }
 };
