@@ -3,8 +3,6 @@
 #include <HostClient.hpp>
 #include <HostServer.hpp>
 
-#include <queue>
-
 struct HostClientImpl : public HostClient
 {
     FixedQueue<1024>* Q_Server;
