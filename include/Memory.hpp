@@ -40,11 +40,11 @@ struct Memory : public PropertyAccess<access>
     /**
      * @brief 获取属性值首地址
      *
-     * @return T*
+     * @return uint8_t*
      */
-    T* operator&()
+    uint8_t* operator&()
     {
-        return &_value;
+        return (uint8_t*)&_value;
     }
 
     /**
