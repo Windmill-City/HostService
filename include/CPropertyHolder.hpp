@@ -68,6 +68,7 @@ struct CPropertyHolder : public CPropertyHolderBase
     {
         ErrorCode err;
         uint16_t  size;
+        uint16_t  not_found = map.size();
         if ((err = get_size(client, size)) != ErrorCode::S_OK) return err;
         for (size_t i = 0; i < size; i++)
         {
@@ -77,8 +78,9 @@ struct CPropertyHolder : public CPropertyHolderBase
             // 允许服务端拥有比客户端更多的属性
             if (!map.contains(name)) continue;
             map.at(name) = i;
+            not_found--;
         }
 
-        return ErrorCode::S_OK;
+        return not_found == 0 ? ErrorCode::S_OK : ErrorCode::E_FAIL;
     }
 };
