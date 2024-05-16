@@ -1,4 +1,5 @@
 #pragma once
+#include <CPropertyHolder.hpp>
 #include <Extra.hpp>
 #include <HostClient.hpp>
 #include <HostServer.hpp>

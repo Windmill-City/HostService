@@ -33,33 +33,6 @@ struct CPropertyHolderBase
     virtual ErrorCode refresh(HostClient& client)                               = 0;
 };
 
-template <size_t _size>
-struct CPropertyHolder : public CPropertyHolderBase
-{
-    using Map = CPropertyMap<_size>;
-    Map& map;
-
-    CPropertyHolder(Map& map)
-        : map(map)
-    {
-    }
-
-    virtual ErrorCode get_id_by_name(const frozen::string name, PropertyId& id) override
-    {
-        if (map.contains(name))
-        {
-            id = map.at(name);
-            return ErrorCode::S_OK;
-        }
-        return ErrorCode::E_ID_NOT_EXIST;
-    }
-
-    virtual ErrorCode refresh(HostClient& client) override
-    {
-        return ErrorCode::S_OK;
-    }
-};
-
 struct HostClient : public HostBase
 {
     // 帧头缓冲区
