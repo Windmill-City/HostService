@@ -118,9 +118,7 @@ struct Property : public PropertyAccess<access>
     {
         T value;
         if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
-
-        safe_set(value);
-        return ErrorCode::S_OK;
+        return safe_set(value);
     }
 
     virtual ErrorCode get_size(Extra& extra) override

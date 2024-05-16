@@ -1,4 +1,5 @@
 #pragma once
+#include <CProperty.hpp>
 #include <cstddef>
 #include <HostClient.hpp>
 #include <Range.hpp>
@@ -232,4 +233,143 @@ struct CRange
 
   protected:
     RangeVal<T> _value;
+};
+
+/**
+ * @brief 带范围限制的属性值模板
+ *
+ * @tparam T 属性值类型
+ * @tparam mode 限制模式
+ * @tparam access 属性值的访问级
+ */
+template <Number T, RangeMode mode = RangeMode::Hard, Access access = Access::READ_WRITE>
+struct CRangedProperty : public CProperty<T, access>
+{
+    using parent = CProperty<T, access>;
+
+    CRangedProperty(const frozen::string name, const RangeVal<T>& range, T val = 0)
+        : parent(name)
+        , _range(range)
+    {
+        this->_value = val;
+        clamp();
+    }
+
+    /**
+     * @brief 获取最小值
+     *
+     * @return T 最小值
+     */
+    T min()
+    {
+        return _range.min;
+    }
+
+    /**
+     * @brief 获取最大值
+     *
+     * @return T 最大值
+     */
+    T max()
+    {
+        return _range.max;
+    }
+
+    /**
+     * @brief 检查数值是否在范围内
+     *
+     * @return true 在范围内
+     * @return false 不在范围内
+     */
+    bool in_range()
+    {
+        return this->_value >= min() && this->_value <= max();
+    }
+
+    /**
+     * @brief 将数值限定到范围内
+     *
+     * @return 自身的引用
+     */
+    auto& clamp()
+    {
+        this->_value = std::clamp(this->_value, min(), max());
+        return *this;
+    }
+
+    /**
+     * @brief 设置属性值
+     *
+     * 支持不同类型的数值赋值
+     *
+     * @tparam K 数值类型
+     * @param other 要设置的属性值
+     * @return auto& 自身的引用
+     */
+    template <Number K>
+    auto& operator=(const K other)
+    {
+        safe_set(other);
+        return *this;
+    }
+
+    /**
+     * @brief 设置属性值
+     *
+     * 支持不同类型的RangedProperty的赋值
+     *
+     * @note 此方法线程安全
+     * @note 不能在中断函数内使用
+     *
+     * @tparam K 数值类型
+     * @param other 要设置的属性值
+     * @return auto& 自身的引用
+     */
+    template <Number K>
+    auto& operator=(const Property<K>& other)
+    {
+        set(other);
+        return *this;
+    }
+
+    ErrorCode set(T value)
+    {
+        if (mode == RangeMode::Soft)
+        {
+            this->_value = value;
+            return ErrorCode::S_OK;
+        }
+
+        if (mode == RangeMode::Clamp)
+        {
+            // 限定到范围内
+            this->_value = std::clamp(value, min(), max());
+            return ErrorCode::S_OK;
+        }
+
+        if (mode == RangeMode::Hard)
+        {
+            // 阻止超范围的赋值
+            if (value < min()) return ErrorCode::E_OVER_LOW_LIMIT;
+            if (value > max()) return ErrorCode::E_OVER_HIGH_LIMIT;
+
+            this->_value = value;
+            return ErrorCode::S_OK;
+        }
+
+        return ErrorCode::E_NO_IMPLEMENT;
+    }
+
+    ErrorCode set(HostClient& client)
+    {
+        return parent::set(client);
+    }
+
+    ErrorCode get(HostClient& client)
+    {
+        return parent::get(client);
+    }
+
+  protected:
+    const RangeVal<T>& _range;
 };

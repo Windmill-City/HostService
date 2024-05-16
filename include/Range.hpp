@@ -137,11 +137,11 @@ struct Range : public Property<RangeVal<T>, access>
         switch (access)
         {
         case RangeAccess::Range:
+        {
             RangeVal<T> value;
             if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
-
-            safe_set(value);
-            return ErrorCode::S_OK;
+            return safe_set(value);
+        }
         case RangeAccess::Absolute:
             return ErrorCode::E_READ_ONLY;
         default:
