@@ -16,9 +16,8 @@ struct TCProperty
     : public HostCSBase
     , public testing::Test
 {
-    volatile bool      Running = true;
-    std::promise<bool> start;
-    std::promise<bool> end;
+    volatile bool     Running = true;
+    std::future<void> end;
 
     TCProperty()
         : HostCSBase(holder, cholder)
@@ -27,24 +26,20 @@ struct TCProperty
 
     virtual void SetUp()
     {
-        std::thread(
-            [this]()
-            {
-                start.set_value(true);
-                while (Running)
-                {
-                    server.poll();
-                }
-                end.set_value(true);
-            })
-            .detach();
-        start.get_future().get();
+        end = std::async(std::launch::async,
+                         [this]()
+                         {
+                             while (Running)
+                             {
+                                 server.poll();
+                             }
+                         });
     }
 
     virtual void TearDown()
     {
         Running = false;
-        end.get_future().get();
+        end.get();
     }
 };
 
