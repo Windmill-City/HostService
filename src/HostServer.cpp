@@ -24,6 +24,8 @@ bool HostServer::poll()
         {
             // 清空附加参数
             extra.reset();
+            // 去除加密标志
+            cmd = REMOVE_ENCRYPT_MARK(cmd);
             send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
             return false;
         }
