@@ -34,6 +34,7 @@ struct HostClientImpl : public HostClient
 
 struct HostServerImpl : public HostServer
 {
+    bool              Running = true;
     FixedQueue<1024>  Q_Server;
     FixedQueue<1024>* Q_Client;
 
@@ -46,7 +47,10 @@ struct HostServerImpl : public HostServer
 
     virtual bool rx(uint8_t& byte) override
     {
-        return Q_Server.pop(&byte);
+        if (Running)
+            return Q_Server.pop(&byte);
+        else
+            return false;
     }
 
     virtual void tx(const uint8_t* buf, const size_t size) override

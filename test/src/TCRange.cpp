@@ -21,7 +21,7 @@ struct TCRange
     : public HostCSBase
     , public testing::Test
 {
-    volatile bool     Running = true;
+    bool              Running = true;
     std::future<void> end;
 
     TCRange()
@@ -43,7 +43,8 @@ struct TCRange
 
     virtual void TearDown()
     {
-        Running = false;
+        Running        = false;
+        server.Running = false;
         end.get();
     }
 };

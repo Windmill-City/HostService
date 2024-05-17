@@ -16,7 +16,7 @@ struct TCMemory
     : public HostCSBase
     , public testing::Test
 {
-    volatile bool     Running = true;
+    bool              Running = true;
     std::future<void> end;
 
     TCMemory()
@@ -38,7 +38,8 @@ struct TCMemory
 
     virtual void TearDown()
     {
-        Running = false;
+        Running        = false;
+        server.Running = false;
         end.get();
     }
 };

@@ -16,7 +16,7 @@ struct TCProperty
     : public HostCSBase
     , public testing::Test
 {
-    volatile bool     Running = true;
+    bool              Running = true;
     std::future<void> end;
 
     TCProperty()
@@ -38,7 +38,8 @@ struct TCProperty
 
     virtual void TearDown()
     {
-        Running = false;
+        Running        = false;
+        server.Running = false;
         end.get();
     }
 };
