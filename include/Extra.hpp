@@ -182,7 +182,7 @@ struct ExtraT
      */
     void readall()
     {
-        seek(remain());
+        seek(size());
     }
 
     /**
