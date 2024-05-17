@@ -48,7 +48,11 @@ struct HostServerImpl : public HostServer
     virtual bool rx(uint8_t& byte) override
     {
         if (Running)
-            return Q_Server.pop(&byte);
+        {
+            while (Running && !Q_Server.pop(&byte))
+                std::this_thread::yield();
+            return true;
+        }
         else
             return false;
     }
