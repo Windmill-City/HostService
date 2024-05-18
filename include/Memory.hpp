@@ -29,8 +29,8 @@ struct MemoryAccess
  * @tparam T 标准布局类型
  * @tparam access 访问级别
  */
-template <MemoryData T, Access access = Access::READ_WRITE>
-struct Memory : public PropertyAccess<access>
+template <MemoryData T, Access _access = Access::READ_WRITE>
+struct Memory : public PropertyAccess<_access>
 {
     /**
      * @brief 获取内存区属性的字节长度
