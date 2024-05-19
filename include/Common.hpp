@@ -50,7 +50,7 @@ enum class Command : uint8_t
      *
      * 请求: CMD,属性Id
      * 应答:
-     * CMD,S_OK,属性Id,属性值
+     * CMD,S_OK,属性值
      * CMD,E_NO_IMPLEMENT,属性Id
      * CMD,E_INVALID_ARG,属性Id
      * CMD,E_ID_NOT_EXIST,属性Id
@@ -63,7 +63,7 @@ enum class Command : uint8_t
      *
      * 请求: CMD,属性Id,属性值
      * 应答:
-     * CMD,S_OK,属性Id
+     * CMD,S_OK
      * CMD,E_NO_IMPLEMENT,属性Id
      * CMD,E_INVALID_ARG,属性Id
      * CMD,E_ID_NOT_EXIST,属性Id
@@ -79,7 +79,7 @@ enum class Command : uint8_t
      *
      * 请求: CMD,属性Id
      * 应答:
-     * CMD,S_OK,属性Id,属性长度
+     * CMD,S_OK,属性长度
      * CMD,E_INVALID_ARG,属性Id
      * CMD,E_ID_NOT_EXIST,属性Id
      * CMD,E_NO_PERMISSION,属性Id

@@ -193,10 +193,6 @@ struct CRange
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
         // 接收数据
-        PropertyId id_r;
-        if (!extra.get(id_r) || id != id_r) return ErrorCode::E_FAIL;
-        RangeAccess range_r;
-        if (!extra.get(range_r) || range != range_r) return ErrorCode::E_FAIL;
         RangeVal<T> value;
         if (!extra.get(value)) return ErrorCode::E_FAIL;
         switch (range)

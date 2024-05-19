@@ -74,19 +74,13 @@ TEST_F(TMemory, Get)
 
     MemoryAccess access;
     access.offset = 0;
-    access.size   = extra.spare() - sizeof(access);
+    access.size   = extra.capacity();
     extra.add(access);
 
     client.send_request(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
-
-    // 读取 id
-    PropertyId id;
-    client.extra.get(id);
-    // 读取 access
-    client.extra.get(access);
 
     // 读取数组
     std::vector<uint8_t> recv;
@@ -134,25 +128,6 @@ TEST_F(TMemory, Get_OutOfRange)
     EXPECT_EQ(err, ErrorCode::E_OUT_OF_INDEX);
 }
 
-TEST_F(TMemory, Get_OutOfBuffer)
-{
-    MemoryAccess access;
-    access.offset = 0;
-    access.size   = 255; // 加上Id和内存参数, 超出最大帧长限制
-
-    Extra     extra;
-    ErrorCode err;
-    extra.add<PropertyId>(0);
-    extra.add(access);
-
-    client.send_request(Command::GET_PROPERTY, extra);
-
-    ASSERT_FALSE(server.poll());
-    client.recv_response(Command::GET_PROPERTY, err, client.extra);
-
-    EXPECT_EQ(err, ErrorCode::E_OUT_OF_BUFFER);
-}
-
 TEST_F(TMemory, GetSize)
 {
     Extra     extra;
@@ -162,9 +137,6 @@ TEST_F(TMemory, GetSize)
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
-
-    PropertyId id;
-    client.extra.get(id);
 
     uint16_t size;
     client.extra.get(size);

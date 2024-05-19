@@ -91,9 +91,6 @@ TEST_F(TRange, Get_Property)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    PropertyId id;
-    client.extra.get(id);
-
     float value;
     client.extra.get(value);
     EXPECT_EQ(value, 18.8f);
@@ -112,12 +109,6 @@ TEST_F(TRange, Get_Range_R)
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
-
-    PropertyId id;
-    client.extra.get(id);
-
-    RangeAccess access;
-    client.extra.get(access);
 
     float min;
     float max;
@@ -140,12 +131,6 @@ TEST_F(TRange, Get_Absolute_R)
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
-
-    PropertyId id;
-    client.extra.get(id);
-
-    RangeAccess access;
-    client.extra.get(access);
 
     float min;
     float max;
@@ -213,9 +198,6 @@ TEST_F(TRange, GetSize_Property)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
 
-    PropertyId id;
-    client.extra.get(id);
-
     uint16_t size;
     client.extra.get(size);
     EXPECT_EQ(size, sizeof(float));
@@ -232,12 +214,6 @@ TEST_F(TRange, GetSize_Range_R)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
 
-    PropertyId id;
-    client.extra.get(id);
-
-    RangeAccess access;
-    client.extra.get(access);
-
     uint16_t size;
     client.extra.get(size);
     EXPECT_EQ(size, 2 * sizeof(float));
@@ -253,12 +229,6 @@ TEST_F(TRange, GetSize_Absolute_R)
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
-
-    PropertyId id;
-    client.extra.get(id);
-
-    RangeAccess access;
-    client.extra.get(access);
 
     uint16_t size;
     client.extra.get(size);

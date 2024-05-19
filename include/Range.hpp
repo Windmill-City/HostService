@@ -140,6 +140,7 @@ struct Range : public Property<RangeVal<T>, access>
         {
             RangeVal<T> value;
             if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+            extra.reset();
             return safe_set(value);
         }
         case RangeAccess::Absolute:
@@ -154,6 +155,7 @@ struct Range : public Property<RangeVal<T>, access>
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+        extra.reset();
 
         switch (access)
         {
@@ -173,6 +175,7 @@ struct Range : public Property<RangeVal<T>, access>
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
+        extra.reset();
         switch (access)
         {
         case RangeAccess::Range:

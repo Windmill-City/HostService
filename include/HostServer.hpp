@@ -119,6 +119,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         if (id >= holder->size()) return ErrorCode::E_OUT_OF_INDEX;
 
         frozen::string desc = holder->get_desc(id);
+        extra.reset();
         extra.add(desc.data(), desc.size());
         return ErrorCode::S_OK;
     }
@@ -126,6 +127,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
     virtual ErrorCode get_size(Extra& extra) override
     {
         if (holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
+        extra.reset();
         extra.add<uint16_t>(holder->size());
         return ErrorCode::S_OK;
     }

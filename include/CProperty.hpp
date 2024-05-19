@@ -106,8 +106,6 @@ struct CProperty
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
         // 接收数据
-        PropertyId id_r;
-        if (!extra.get(id_r) || id != id_r) return ErrorCode::E_FAIL;
         T value;
         if (!extra.get(value)) return ErrorCode::E_FAIL;
         set(value);

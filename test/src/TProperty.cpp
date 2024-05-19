@@ -66,9 +66,6 @@ TEST_F(TProperty, Get)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
 
-    PropertyId id;
-    client.extra.get(id);
-
     float recv;
     client.extra.get(recv);
 
@@ -100,9 +97,6 @@ TEST_F(TProperty, GetSize)
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
-
-    PropertyId id;
-    client.extra.get(id);
 
     uint16_t size;
     client.extra.get(size);

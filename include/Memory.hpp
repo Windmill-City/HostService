@@ -72,6 +72,7 @@ struct Memory : public PropertyAccess<_access>
         if (sizeof(_value) < access.offset + access.size) return ErrorCode::E_OUT_OF_INDEX;
 
         memcpy((uint8_t*)&_value + access.offset, extra.curr(), access.size);
+        extra.reset();
         return ErrorCode::S_OK;
     }
 
@@ -85,6 +86,7 @@ struct Memory : public PropertyAccess<_access>
         {
             return ErrorCode::E_OUT_OF_INDEX;
         }
+        extra.reset();
 
         if (!extra.add((uint8_t*)&_value + access.offset, access.size)) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
@@ -92,6 +94,7 @@ struct Memory : public PropertyAccess<_access>
 
     virtual ErrorCode get_size(Extra& extra) override
     {
+        extra.reset();
         extra.add<uint16_t>(sizeof(_value));
         return ErrorCode::S_OK;
     }

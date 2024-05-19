@@ -95,10 +95,6 @@ struct CMemory
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
         // 接收数据
-        PropertyId   id_r;
-        MemoryAccess access_r;
-        if (!extra.get(id_r) || id != id_r) return ErrorCode::E_FAIL;
-        if (!extra.get(access_r) || access != access_r) return ErrorCode::E_FAIL;
         if (!extra.get(data + access.offset, access.size)) return ErrorCode::E_FAIL;
         // 自增偏移
         access.offset += access.size;
@@ -109,11 +105,11 @@ struct CMemory
     {
         if (_access == Access::READ || _access == Access::READ_PROTECT) return ErrorCode::E_READ_ONLY;
 
-        Extra&   extra   = client.extra;
+        Extra&       extra   = client.extra;
         // 是否需要加密
-        bool     encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::WRITE_PROTECT;
+        bool         encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::WRITE_PROTECT;
         // 每次同步的最大长度
-        uint16_t space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
+        uint16_t     space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
@@ -141,11 +137,11 @@ struct CMemory
 
     ErrorCode get(HostClient& client)
     {
-        Extra&   extra   = client.extra;
+        Extra&       extra   = client.extra;
         // 是否需要加密
-        bool     encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::READ_PROTECT;
+        bool         encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::READ_PROTECT;
         // 每次同步的最大长度
-        uint16_t space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
+        uint16_t     space   = extra.capacity();
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;

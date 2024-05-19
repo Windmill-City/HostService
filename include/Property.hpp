@@ -110,6 +110,7 @@ struct Property : public PropertyAccess<access>
 
     virtual ErrorCode get(Extra& extra) override
     {
+        extra.reset();
         if (!extra.add(safe_get())) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
@@ -118,11 +119,13 @@ struct Property : public PropertyAccess<access>
     {
         T value;
         if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+        extra.reset();
         return safe_set(value);
     }
 
     virtual ErrorCode get_size(Extra& extra) override
     {
+        extra.reset();
         extra.add<uint16_t>(sizeof(_value));
         return ErrorCode::S_OK;
     }
