@@ -17,79 +17,79 @@ struct ExtraT
 {
   public:
     /**
-     * @brief 添加数据
+     * @brief 向缓冲区中添加指定类型的数据
      *
      * @tparam T 数据类型
      * @param value 数据值
      * @return true 添加成功
-     * @return false 附加参数长度超出最大帧长限制
+     * @return false 缓冲区长度不足
      */
     template <Data T>
     bool add(const T value)
     {
         // 检查是否超长
-        if (sizeof(value) + _data > _size) return false;
+        if (sizeof(value) > spare()) return false;
         // 复制数据
-        memcpy(&_buf[_data], (uint8_t*)&value, sizeof(value));
+        memcpy(curr(), (uint8_t*)&value, sizeof(value));
         seek(_data + sizeof(value));
         return true;
     }
 
     /**
-     * @brief 添加数组
+     * @brief 向缓冲区中添加一个数组
      *
      * @tparam T 数据类型
      * @param value 数组指针
      * @param size 数组字节长度
      * @return true 添加成功
-     * @return false 附加参数长度超过最大帧长限制
+     * @return false 缓冲区长度不足
      */
     template <Data T>
     bool add(const T* value, const size_t size)
     {
         // 检查是否超长
-        if (size + _data > _size) return false;
+        if (size > spare()) return false;
         // 复制数据
-        memcpy(&_buf[_data], (uint8_t*)value, size);
+        memcpy(curr(), (uint8_t*)value, size);
         seek(_data + size);
         return true;
     }
 
     /**
-     * @brief 读取数据
+     * @brief 从缓冲区中获取指定类型的数据
      *
      * @tparam T 数据类型
-     * @param value 数据的引用
-     * @return true 成功读取
-     * @return false 数据长度不足
+     * @param value 接收数据的缓冲区引用
+     * @return true 成功获取
+     * @return false 缓冲区长度不足
      */
     template <Data T>
     bool get(T& value)
     {
-        // 检查长度是否过短
-        if (remain() < sizeof(T)) return false;
-        value = *(T*)&_buf[_data];
+        // 检查长度是否足够
+        if (sizeof(T) > remain()) return false;
+        value = *(T*)curr();
         // 更新数据指针
         _data += sizeof(T);
         return true;
     }
 
     /**
-     * @brief 读取数组
+     * @brief 从缓冲区中获取一个数组
      *
      * @tparam T 数据类型
-     * @param value 数组指针
+     * @param value 接收数据的缓冲区
      * @param size 数组字节长度
-     * @return true 成功读取
-     * @return false 数据长度不足
+     * @return true 成功获取
+     * @return false 缓冲区长度不足
      */
     template <Data T>
     bool get(T* value, size_t size)
     {
-        // 检查长度是否过短
-        if (remain() < size) return false;
+        // 检查长度是否足够
+        if (size > remain()) return false;
         // 拷贝数据
-        memcpy(value, data(), size);
+        memcpy(value, curr(), size);
         // 更新数据指针
         _data += size;
         return true;
@@ -98,77 +98,79 @@ struct ExtraT
     /**
      * @brief 解密缓冲区数据
      *
-     *
-     * @details
-     * 加密数据的结构:
-     * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
-     * [encrypted_data]: 加密后的数据
-     * 解密后数据的结构:
-     * [authentication_tag]:数据校验码, 长度: 同AES密钥长度
-     * [decrypted_data]:解密后的数据
-     *
+     * @param nonce 加密数据的随机数
+     * @param key 加密数据的密钥
      * @return true 解密成功
      * @return false 解密失败
      */
     bool decrypt(const NonceType& nonce, const KeyType& key)
     {
-        if (!_encrypted) return false;
-        _encrypted = false;
+        // 不能重复解密
+        if (!encrypted()) return false;
+        encrypted() = false;
         // 数据长度至少为 1
-        if (sizeof(TagType) >= size()) return false;
-        seek(sizeof(TagType));
+        if (size() == 0) return false;
 
-        size_t   data_len = remain();
-        uint8_t* _data    = &_buf[sizeof(TagType)];
-        uint8_t* _tag     = &_buf[0];
-        return UAES_CCM_SimpleDecrypt(key.data(),
-                                      key.size(),
-                                      nonce.data(),
-                                      nonce.size(),
-                                      NULL,
-                                      0,
-                                      _data,
-                                      _data,
-                                      data_len,
-                                      _tag,
-                                      sizeof(TagType));
+        if (!UAES_CCM_SimpleDecrypt(key.data(),
+                                    key.size(),
+                                    nonce.data(),
+                                    nonce.size(),
+                                    NULL,
+                                    0,
+                                    data(),
+                                    data(),
+                                    size(),
+                                    tag(),
+                                    sizeof(TagType)))
+        {
+            reset();
+            return false;
+        }
+        return true;
     }
 
     /**
      * @brief 加密缓冲区数据
      *
-     * @note 缓冲区前部需要预留数据校验码的空位
-     *
-     * @param aes AES加密数据
+     * @param nonce 加密数据的随机数
+     * @param key 加密数据的密钥
      */
     void encrypt(const NonceType& nonce, const KeyType& key)
     {
-        if (_encrypted) return;
-        _encrypted = true;
         // 数据长度至少为 1
-        if (sizeof(TagType) >= size()) return;
-        seek(sizeof(TagType));
+        if (size() == 0) return;
+        // 不能重复加密
+        if (encrypted()) return;
+        encrypted() = true;
 
-        size_t   data_len = remain();
-        uint8_t* _data    = &_buf[sizeof(TagType)];
-        uint8_t* _tag     = &_buf[0];
         UAES_CCM_SimpleEncrypt(key.data(),
                                key.size(),
                                nonce.data(),
                                nonce.size(),
                                NULL,
                                0,
-                               _data,
-                               _data,
-                               data_len,
-                               _tag,
+                               data(),
+                               data(),
+                               size(),
+                               tag(),
                                sizeof(TagType));
     }
 
     /**
-     * @brief 设置数据区偏移
+     * @brief 返回缓冲区是否加密的引用
      *
-     * @param offset 指针偏移
+     * @return true 已加密
+     * @return false 未加密
+     */
+    bool& encrypted()
+    {
+        return _encrypted;
+    }
+
+    /**
+     * @brief 设置当前数据指针
+     *
+     * @param offset 相对缓冲区基地址的偏移
      */
     void seek(uint16_t offset)
     {
@@ -177,58 +179,39 @@ struct ExtraT
     }
 
     /**
-     * @brief 将所有数据标记为已读取
+     * @brief 返回 tag的首地址
      *
+     * @return uint8_t* tag的首地址
      */
-    void readall()
+    uint8_t* tag()
     {
-        seek(size());
+        return _tag.data();
     }
 
     /**
-     * @brief 预留校验位的长度
+     * @brief 返回数据区的首地址
      *
+     * @return uint8_t* 数据区的首地址
      */
-    void reserve_tag()
-    {
-        seek(sizeof(TagType));
-    }
-
-    /**
-     * @brief 获取缓冲区的首地址
-     *
-     * @return uint8_t* 缓冲区的首地址
-     */
-    uint8_t* operator&()
+    uint8_t* data()
     {
         return _buf.data();
     }
 
     /**
-     * @brief 以数组下标的方式读写缓冲区的内容
+     * @brief 返回当前数据的指针
      *
-     * @param idx 下标
-     * @return uint8_t& 内容
+     * @return uint8_t* 当前数据指针
      */
-    uint8_t& operator[](size_t idx)
-    {
-        return _buf[idx];
-    }
-
-    /**
-     * @brief 获取未读取数据的首指针
-     *
-     * @return uint8_t* 未读取数据的首指针
-     */
-    uint8_t* data()
+    uint8_t* curr()
     {
         return &_buf[_data];
     }
 
     /**
-     * @brief 获取未读取数据的长度
+     * @brief 返回未读数据的长度
      *
-     * @return uint8_t 数据长度
+     * @return uint8_t 未读数据长度
      */
     uint16_t remain() const
     {
@@ -236,9 +219,9 @@ struct ExtraT
     }
 
     /**
-     * @brief 获取缓冲区空闲区域的长度
+     * @brief 返回空闲区域的长度
      *
-     * @return uint8_t 空闲区域的长度
+     * @return uint8_t 空闲区域长度
      */
     uint16_t spare() const
     {
@@ -246,24 +229,23 @@ struct ExtraT
     }
 
     /**
-     * @brief 丢弃未读取的内容
+     * @brief 返回缓冲区总长度
      *
-     * @return auto& 返回自身的引用
-     */
-    auto& truncate()
-    {
-        _tail = _data;
-        return *this;
-    }
-
-    /**
-     * @brief 获取缓冲区长度
-     *
-     * @return uint8_t 缓冲区长度
+     * @return uint8_t 缓冲区总长度
      */
     uint16_t& size()
     {
         return _tail;
+    }
+
+    /**
+     * @brief 返回缓冲区最大容量
+     *
+     * @return uint16_t 最大容量
+     */
+    uint16_t capacity()
+    {
+        return _size;
     }
 
     /**
@@ -277,35 +259,34 @@ struct ExtraT
     }
 
     /**
-     * @brief 数据区是否加密
+     * @brief 丢弃未读取的内容
      *
-     * @return true 已加密
-     * @return false 未加密
      */
-    bool& encrypted()
+    void truncate()
     {
-        return _encrypted;
+        _tail = _data;
     }
 
     /**
-     * @brief 返回缓冲区最大容量
+     * @brief 将所有数据标记为已读取
      *
-     * @return uint16_t 最大容量
      */
-    uint16_t capacity()
+    void readall()
     {
-        return _size;
+        seek(size());
     }
 
   protected:
-    // 数据是否加密
-    bool                                        _encrypted = false;
-    // 缓冲区长度
-    uint16_t                                    _tail      = 0;
-    // 未读取数据的偏移
-    uint16_t                                    _data      = 0;
+    // 缓冲区是否加密
+    bool                       _encrypted = false;
+    // 数据区长度
+    uint16_t                   _tail      = 0;
+    // 未读数据的偏移
+    uint16_t                   _data      = 0;
+    // Tag区
+    TagType                    _tag;
     // 缓冲区
-    std::array<uint8_t, _size + sizeof(Chksum)> _buf;
+    std::array<uint8_t, _size> _buf;
 };
 
 using Extra = ExtraT<UINT8_MAX>;

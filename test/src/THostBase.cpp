@@ -40,7 +40,7 @@ TEST(HostBase, sizeof)
     ASSERT_EQ(sizeof(HostBase), 8);
 }
 
-TEST(HostBase, tx_rx)
+TEST(HostBase, TxRx)
 {
     uint8_t      data_tx[] = {0x00, 0x01, 0x02};
     uint8_t      data_rx[sizeof(data_tx)];
@@ -65,7 +65,7 @@ TEST(HostBase, tx_rx)
     }
 }
 
-TEST(Sync, header)
+TEST(Sync, Sync)
 {
     struct Item
     {

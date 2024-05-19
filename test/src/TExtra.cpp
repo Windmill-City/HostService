@@ -3,7 +3,7 @@
 
 TEST(Extra, sizeof)
 {
-    ASSERT_EQ(sizeof(Extra), 264);
+    ASSERT_EQ(sizeof(Extra), 278);
 }
 
 TEST(Extra, read_write)
@@ -53,8 +53,6 @@ TEST(Extra, AES)
     }
 
     Extra extra;
-    // 预留校验位
-    extra.reserve_tag();
 
     // 将剩余空间填充满
     while (extra.spare() > 0)
@@ -68,7 +66,7 @@ TEST(Extra, AES)
     // 验证是否正确解密
     ASSERT_TRUE(extra.decrypt(nonce, key));
 
-    // 比对参数是否正确
+    // 比对内容是否正确
     while (extra.remain() > 0)
     {
         uint8_t val;

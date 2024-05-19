@@ -58,8 +58,6 @@ struct CMemory
         ErrorCode err;
         Extra&    extra = client.extra;
         extra.reset();
-        // 预留tag
-        if (encrypt) extra.reserve_tag();
         // 添加id
         PropertyId id;
         err = client.holder.get_id_by_name(name, id);
@@ -84,8 +82,6 @@ struct CMemory
         ErrorCode err;
         Extra&    extra = client.extra;
         extra.reset();
-        // 预留tag
-        if (encrypt) extra.reserve_tag();
         // 添加id
         PropertyId id;
         err = client.holder.get_id_by_name(name, id);
@@ -118,7 +114,6 @@ struct CMemory
         bool     encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::WRITE_PROTECT;
         // 每次同步的最大长度
         uint16_t space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
-        if (encrypt) space -= sizeof(TagType);
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
@@ -151,7 +146,6 @@ struct CMemory
         bool     encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::READ_PROTECT;
         // 每次同步的最大长度
         uint16_t space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
-        if (encrypt) space -= sizeof(TagType);
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;

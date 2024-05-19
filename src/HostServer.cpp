@@ -17,15 +17,10 @@ bool HostServer::poll()
     if (!recv_request(cmd, extra)) return false;
 
     // 检查加密标记
-    if (IS_ENCRYPTED(cmd))
+    if (extra.encrypted())
     {
-        extra.encrypted() = true;
         if (!extra.decrypt(_secret.nonce, _secret.key))
         {
-            // 清空附加参数
-            extra.reset();
-            // 去除加密标志
-            cmd = REMOVE_ENCRYPT_MARK(cmd);
             send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
             return false;
         }
@@ -91,12 +86,7 @@ bool HostServer::poll()
 bool HostServer::recv_request(Command& cmd, Extra& extra)
 {
 Start:
-    while (_buf.size() < sizeof(Request))
-    {
-        uint8_t byte;
-        if (!rx(byte)) return false; // 接收超时
-        _buf.push(byte);
-    }
+    // 帧同步
     while (!_buf.verify())
     {
         uint8_t byte;
@@ -104,33 +94,53 @@ Start:
         _buf.push(byte);
     }
 
+    Request req = _buf.get();
+    cmd         = req.cmd;
     extra.reset();
-    Request   _req = _buf.get();
+    extra.size()      = req.size;
+    extra.encrypted() = IS_ENCRYPTED(req.cmd) && extra.size() > 0;
 
-    uint16_t& size = extra.size();
-    cmd            = _req.cmd;
-    size           = _req.size;
-
-    // 数据为空, 跳过接收
-    if (size == 0)
+    // 数据长度为 0 则跳过读取
+    if (extra.size() == 0)
+        goto End;
+    else
     {
-        // 验证地址
-        if (_req.address != address) goto Start;
-        return true;
-    }
+        uint16_t chksum = CRC_START_CCITT_FFFF;
+        // 读取tag
+        if (extra.encrypted())
+        {
+            for (size_t i = 0; i < sizeof(TagType); i++)
+            {
+                uint8_t byte;
+                if (!rx(byte)) return false; // 接收超时
+                chksum         = update_crc_ccitt(chksum, byte);
+                extra.tag()[i] = byte;
+            }
+        }
 
-    // 读取数据
-    for (size_t i = 0; i < size + sizeof(Chksum); i++)
-    {
-        uint8_t byte;
-        if (!rx(byte)) return false; // 接收超时
-        extra[i] = byte;
-    }
-    // 验证数据
-    if (crc_ccitt_ffff(&extra, size + sizeof(Chksum)) != 0) goto Start;
+        // 读取数据
+        for (size_t i = 0; i < extra.size(); i++)
+        {
+            uint8_t byte;
+            if (!rx(byte)) return false; // 接收超时
+            chksum          = update_crc_ccitt(chksum, byte);
+            extra.data()[i] = byte;
+        }
 
+        // 读取校验和
+        for (size_t i = 0; i < sizeof(chksum); i++)
+        {
+            uint8_t byte;
+            if (!rx(byte)) return false; // 接收超时
+            chksum = update_crc_ccitt(chksum, byte);
+        }
+
+        // 验证数据
+        if (chksum != 0) goto Start;
+    }
+End:
     // 验证地址
-    if (_req.address != address) goto Start;
+    if (req.address != address) goto Start;
 
     return true;
 }
@@ -150,10 +160,13 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
     if (IS_ENCRYPTED(cmd)) extra.encrypt(_secret.nonce, _secret.key);
     Response rep;
     rep.address = address;
-    rep.cmd     = cmd;
+    rep.cmd     = extra.encrypted() ? ADD_ENCRYPT_MARK(cmd) : REMOVE_ENCRYPT_MARK(cmd);
     rep.error   = err;
     rep.size    = extra.size();
-    _encode((uint8_t*)&rep, sizeof(rep), &extra, rep.size);
+    if (extra.encrypted())
+        _encode((uint8_t*)&rep, sizeof(rep), extra.tag(), extra.size() + sizeof(TagType));
+    else
+        _encode((uint8_t*)&rep, sizeof(rep), extra.data(), extra.size());
 }
 
 PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)

@@ -157,8 +157,6 @@ struct CRange
         bool      encrypt = access == Access::READ_WRITE_PROTECT || access == Access::WRITE_PROTECT;
 
         extra.reset();
-        // 预留tag
-        if (encrypt) extra.reserve_tag();
         // 添加id
         PropertyId id;
         err = client.holder.get_id_by_name(name, id);
@@ -182,8 +180,6 @@ struct CRange
         ErrorCode err;
         Extra&    extra = client.extra;
         extra.reset();
-        // 预留tag
-        if (encrypt) extra.reserve_tag();
         // 添加id
         PropertyId id;
         err = client.holder.get_id_by_name(name, id);

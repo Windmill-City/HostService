@@ -71,7 +71,7 @@ struct Memory : public PropertyAccess<_access>
         // 检查是否超出内存区范围
         if (sizeof(_value) < access.offset + access.size) return ErrorCode::E_OUT_OF_INDEX;
 
-        memcpy((uint8_t*)&_value + access.offset, extra.data(), access.size);
+        memcpy((uint8_t*)&_value + access.offset, extra.curr(), access.size);
         return ErrorCode::S_OK;
     }
 

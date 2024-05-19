@@ -75,7 +75,6 @@ TEST_F(TRead, Read_Protect_Privileged)
 {
     Extra     extra;
     ErrorCode err;
-    extra.reserve_tag();
     extra.add<PropertyId>(2);
     client.send_request(Command::GET_PROPERTY, extra, true);
 
@@ -102,7 +101,6 @@ TEST_F(TRead, Write_Protect_Privileged)
 {
     Extra     extra;
     ErrorCode err;
-    extra.reserve_tag();
     extra.add<PropertyId>(3);
     client.send_request(Command::GET_PROPERTY, extra, true);
 
@@ -129,7 +127,6 @@ TEST_F(TRead, Read_Write_Protect_Privileged)
 {
     Extra     extra;
     ErrorCode err;
-    extra.reserve_tag();
     extra.add<PropertyId>(4);
     client.send_request(Command::GET_PROPERTY, extra, true);
 

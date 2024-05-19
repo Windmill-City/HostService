@@ -78,7 +78,6 @@ TEST_F(TWrite, Read_Protect_Privileged)
 {
     Extra     extra;
     ErrorCode err;
-    extra.reserve_tag();
     extra.add<PropertyId>(2);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra, true);
@@ -107,7 +106,6 @@ TEST_F(TWrite, Write_Protect_Privileged)
 {
     Extra     extra;
     ErrorCode err;
-    extra.reserve_tag();
     extra.add<PropertyId>(3);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra, true);
@@ -136,7 +134,6 @@ TEST_F(TWrite, Read_Write_Protect_Privileged)
 {
     Extra     extra;
     ErrorCode err;
-    extra.reserve_tag();
     extra.add<PropertyId>(4);
     extra.add(0.0f);
     client.send_request(Command::SET_PROPERTY, extra, true);
