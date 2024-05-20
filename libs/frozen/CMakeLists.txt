@@ -5,7 +5,7 @@ project(frozen)
 # Build files
 # ##############################################################################
 # includes
-set(INCLUDES frozen/include)
+set(INCLUDES include)
 
 # ##############################################################################
 # Targets
