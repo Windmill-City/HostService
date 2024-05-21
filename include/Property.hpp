@@ -117,10 +117,12 @@ struct Property : public PropertyAccess<access>
 
     virtual ErrorCode set(Extra& extra) override
     {
-        T value;
+        ErrorCode err;
+        T         value;
         if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+        if ((err = safe_set(value)) != ErrorCode::S_OK) return err;
         extra.reset();
-        return safe_set(value);
+        return ErrorCode::S_OK;
     }
 
     virtual ErrorCode get_size(Extra& extra) override

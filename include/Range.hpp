@@ -138,10 +138,12 @@ struct Range : public Property<RangeVal<T>, access>
         {
         case RangeAccess::Range:
         {
+            ErrorCode   err;
             RangeVal<T> value;
             if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
+            if ((err = safe_set(value)) != ErrorCode::S_OK) return err;
             extra.reset();
-            return safe_set(value);
+            return ErrorCode::S_OK;
         }
         case RangeAccess::Absolute:
             return ErrorCode::E_READ_ONLY;
