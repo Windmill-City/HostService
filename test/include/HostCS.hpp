@@ -79,7 +79,7 @@ struct HostCSBase
         server.Q_Client = &client.Q_Client;
         client.Q_Server = &server.Q_Server;
 
-        client.key      = server._secret.key;
-        client.nonce    = server._secret.nonce;
+        client.key      = server.secret.key;
+        client.nonce    = server.secret.nonce;
     }
 };

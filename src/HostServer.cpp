@@ -19,7 +19,7 @@ bool HostServer::poll()
     // 检查加密标记
     if (extra.encrypted())
     {
-        if (!extra.decrypt(_secret.nonce, _secret.key))
+        if (!extra.decrypt(secret.nonce, secret.key))
         {
             send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
             return false;
@@ -71,7 +71,7 @@ bool HostServer::poll()
     }
 
     // 发送响应后再更新随机数
-    if (IS_ENCRYPTED(cmd)) _secret.update_nonce();
+    if (IS_ENCRYPTED(cmd)) secret.update_nonce();
     return err == ErrorCode::S_OK;
 }
 
@@ -157,7 +157,7 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
     // 截断多余的数据
     extra.truncate();
     // 若有加密标记, 则对参数进行加密
-    if (IS_ENCRYPTED(cmd)) extra.encrypt(_secret.nonce, _secret.key);
+    if (IS_ENCRYPTED(cmd)) extra.encrypt(secret.nonce, secret.key);
     Response rep;
     rep.address = address;
     rep.cmd     = extra.encrypted() ? ADD_ENCRYPT_MARK(cmd) : REMOVE_ENCRYPT_MARK(cmd);

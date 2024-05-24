@@ -110,15 +110,13 @@ struct PropertyHolderBase
 
 struct PropertySymbols : public PropertyAccess<Access::READ>
 {
-    PropertyHolderBase* holder = nullptr;
-
-    virtual ErrorCode   get(Extra& extra) override
+    virtual ErrorCode get(Extra& extra) override
     {
         PropertyId id;
         if (!extra.get(id)) return ErrorCode::E_INVALID_ARG;
-        if (id >= holder->size()) return ErrorCode::E_OUT_OF_INDEX;
+        if (id >= _holder->size()) return ErrorCode::E_OUT_OF_INDEX;
 
-        frozen::string desc = holder->get_desc(id);
+        frozen::string desc = _holder->get_desc(id);
         extra.reset();
         extra.add(desc.data(), desc.size());
         return ErrorCode::S_OK;
@@ -126,11 +124,14 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
 
     virtual ErrorCode get_size(Extra& extra) override
     {
-        if (holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
+        if (_holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
         extra.reset();
-        extra.add<uint16_t>(holder->size());
+        extra.add<uint16_t>(_holder->size());
         return ErrorCode::S_OK;
     }
+
+  protected:
+    PropertyHolderBase* _holder = nullptr;
 };
 
 template <size_t _size>
@@ -147,7 +148,7 @@ struct PropertyHolder : public PropertyHolderBase
     PropertyHolder(const Map& map, PropertySymbols& ids)
         : map(map)
     {
-        ids.holder = this;
+        ids._holder = this;
     }
 
     virtual PropertyBase* get(PropertyId id) const override
@@ -170,9 +171,12 @@ struct PropertyHolder : public PropertyHolderBase
 
 struct HostServer : public HostBase
 {
+    // 密钥容器
+    SecretHolder& secret;
+
     HostServer(const PropertyAddress& addr, const PropertyHolderBase& holder, SecretHolder& secret)
         : HostBase(addr)
-        , _secret(secret)
+        , secret(secret)
         , _holder(holder)
     {
     }
@@ -185,13 +189,11 @@ struct HostServer : public HostBase
   protected:
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
 
-  public:
+  protected:
     // 帧头缓冲区
     Sync<Request>             _buf;
     // 附加参数缓冲区
     Extra                     _extra;
-    // 密钥容器
-    SecretHolder&             _secret;
     // 属性值容器
     const PropertyHolderBase& _holder;
 };
