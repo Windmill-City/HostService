@@ -23,6 +23,11 @@ enum class ErrorCode : uint8_t
     E_ILLEGAL_STATE,   // 非法状态
 };
 
+enum class Signal : uint8_t
+{
+    LOG = 0
+};
+
 enum class Command : uint8_t
 {
     /**
