@@ -177,10 +177,12 @@ struct HostServer : public HostBase
     {
     }
 
-    bool          poll();
-    bool          recv_request(Command& cmd, Extra& extra);
-    void          send_response(const Command cmd, const ErrorCode err, Extra& extra);
-    /* 属性值获取与鉴权 */
+    bool poll();
+    bool recv_request(Command& cmd, Extra& extra);
+    void send_response(const Command cmd, const ErrorCode err, Extra& extra);
+    void send_signal(Extra& extra);
+
+  protected:
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
 
   public:

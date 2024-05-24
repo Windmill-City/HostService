@@ -169,6 +169,16 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
         _encode((uint8_t*)&rep, sizeof(rep), extra.data(), extra.size());
 }
 
+/**
+ * @brief 发送信号
+ *
+ * @param extra 附加参数
+ */
+void HostServer::send_signal(Extra& extra)
+{
+    send_response(Command::SIGNAL, ErrorCode::S_OK, extra);
+}
+
 PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
 {
     // 解析Id
