@@ -173,6 +173,8 @@ struct HostServer : public HostBase
 {
     // 密钥容器
     SecretHolder& secret;
+    // Signal 发送缓冲区
+    Extra         sig_extra;
 
     HostServer(const PropertyAddress& addr, const PropertyHolderBase& holder, SecretHolder& secret)
         : HostBase(addr)
