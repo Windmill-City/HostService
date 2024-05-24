@@ -130,7 +130,6 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         return ErrorCode::S_OK;
     }
 
-  protected:
     PropertyHolderBase* _holder = nullptr;
 };
 
