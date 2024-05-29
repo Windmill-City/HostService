@@ -170,13 +170,19 @@ void HostServer::send_response(const Command cmd, const ErrorCode err, Extra& ex
 }
 
 /**
- * @brief 发送信号
+ * @brief 发送 Server log
  *
- * @param extra 附加参数
+ * @param log log信息
+ * @param size log大小
  */
-void HostServer::send_signal(Extra& extra)
+void HostServer::send_log(const char* log, size_t size)
 {
-    send_response(Command::SIGNAL, ErrorCode::S_OK, extra);
+    Response rep;
+    rep.address = address;
+    rep.cmd     = Command::LOG;
+    rep.error   = ErrorCode::S_OK;
+    rep.size    = size;
+    _encode((uint8_t*)&rep, sizeof(rep), (uint8_t*)log, size);
 }
 
 PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)

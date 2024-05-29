@@ -172,8 +172,6 @@ struct HostServer : public HostBase
 {
     // 密钥容器
     SecretHolder& secret;
-    // Signal 发送缓冲区
-    Extra         sig_extra;
 
     HostServer(const PropertyAddress& addr, const PropertyHolderBase& holder, SecretHolder& secret)
         : HostBase(addr)
@@ -185,7 +183,7 @@ struct HostServer : public HostBase
     bool poll();
     bool recv_request(Command& cmd, Extra& extra);
     void send_response(const Command cmd, const ErrorCode err, Extra& extra);
-    void send_signal(Extra& extra);
+    void send_log(const char* log, size_t size);
 
   protected:
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
