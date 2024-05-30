@@ -68,5 +68,5 @@ struct HostBase
      */
     virtual void tx(const uint8_t* buf, const size_t size) = 0;
     /* 帧编码 */
-    void         _encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint8_t size);
+    void         _encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint16_t size);
 };

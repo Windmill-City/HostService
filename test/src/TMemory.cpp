@@ -10,7 +10,7 @@ TEST(Memory, sizeof)
 
 TEST(MemoryAccess, sizeof)
 {
-    EXPECT_EQ(sizeof(MemoryAccess), 3);
+    EXPECT_EQ(sizeof(MemoryAccess), 4);
 }
 
 static Memory<std::array<uint8_t, 1024>> mem;
@@ -97,9 +97,9 @@ TEST_F(TMemory, Set_OutOfRange)
 
     MemoryAccess access;
     access.offset = 1024;
-    access.size   = extra.spare() - sizeof(access);
+    access.size   = 256;
     extra.add(access);
-    extra.seek(255);
+    extra.seek(256 + sizeof(PropertyId) + sizeof(access));
 
     client.send_request(Command::SET_PROPERTY, extra);
 
@@ -117,7 +117,7 @@ TEST_F(TMemory, Get_OutOfRange)
 
     MemoryAccess access;
     access.offset = 1024;
-    access.size   = 255;
+    access.size   = 256;
     extra.add(access);
 
     client.send_request(Command::GET_PROPERTY, extra);

@@ -11,7 +11,7 @@ concept MemoryData = std::is_standard_layout_v<T>;
 struct MemoryAccess
 {
     uint16_t offset; // 地址偏移
-    uint8_t  size;   // 数据长度
+    uint16_t size;   // 数据长度
 
     bool     operator==(const MemoryAccess& access) const
     {

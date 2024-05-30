@@ -1,5 +1,6 @@
 #include "HostClient.hpp"
 
+#include <algorithm>
 #include <checksum.h>
 
 /**
@@ -44,7 +45,7 @@ Start:
     cmd          = REMOVE_ENCRYPT_MARK(rep.cmd);
     err          = rep.error;
     extra.reset();
-    extra.size()      = rep.size;
+    extra.size()      = std::min(rep.size, extra.capacity());
     extra.encrypted() = IS_ENCRYPTED(rep.cmd) && extra.size() > 0;
 
     // 数据长度为 0 则跳过读取

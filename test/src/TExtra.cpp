@@ -3,7 +3,7 @@
 
 TEST(Extra, sizeof)
 {
-    ASSERT_EQ(sizeof(Extra), 278);
+    ASSERT_EQ(sizeof(Extra), 284);
 }
 
 TEST(Extra, read_write)
@@ -20,7 +20,7 @@ TEST(Extra, read_write)
     extra.reset();
     ASSERT_FALSE(extra.get(value));
     // 缓冲区满
-    extra.seek(255);
+    extra.seek(extra.capacity());
     ASSERT_FALSE(extra.add(value));
     // 数组读写
     extra.reset();
@@ -32,7 +32,7 @@ TEST(Extra, read_write)
     ASSERT_EQ(extra.remain(), 0);
     // 超长数组
     extra.reset();
-    std::array<float, 256> floats_large;
+    std::array<float, 1024> floats_large;
     ASSERT_FALSE(extra.add(floats_large.data(), sizeof(floats_large)));
     ASSERT_EQ(extra.remain(), 0);
     ASSERT_FALSE(extra.get(floats_large.data(), sizeof(floats_large)));

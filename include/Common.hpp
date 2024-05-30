@@ -92,17 +92,17 @@ using Chksum = uint16_t;
 
 struct Request
 {
-    uint8_t address; // 从机地址
-    Command cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
-    uint8_t size;    // 附加参数长度
-    Chksum  chksum;  // 帧头校验和
+    uint8_t  address; // 从机地址
+    Command  cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
+    uint16_t size;    // 附加参数长度
+    Chksum   chksum;  // 帧头校验和
 };
 
 struct Response
 {
     uint8_t   address; // 从机地址
     Command   cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
-    uint8_t   size;    // 附加参数长度
+    uint16_t  size;    // 附加参数长度
     ErrorCode error;   // 错误码
     Chksum    chksum;  // 帧头校验和
 };

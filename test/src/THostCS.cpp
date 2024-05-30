@@ -4,12 +4,12 @@
 
 TEST(Request, sizeof)
 {
-    ASSERT_EQ(sizeof(Request), 5);
+    ASSERT_EQ(sizeof(Request), 6);
 }
 
 TEST(Response, sizeof)
 {
-    ASSERT_EQ(sizeof(Response), 6);
+    ASSERT_EQ(sizeof(Response), 7);
 }
 
 static SecretHolder              secret;

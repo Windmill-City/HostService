@@ -1,5 +1,6 @@
 #include "HostServer.hpp"
 
+#include <algorithm>
 #include <array>
 #include <checksum.h>
 
@@ -97,7 +98,7 @@ Start:
     Request req = _buf.get();
     cmd         = req.cmd;
     extra.reset();
-    extra.size()      = req.size;
+    extra.size()      = std::min(req.size, extra.capacity());
     extra.encrypted() = IS_ENCRYPTED(req.cmd) && extra.size() > 0;
 
     // 数据长度为 0 则跳过读取

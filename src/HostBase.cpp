@@ -17,7 +17,7 @@
  * @param size 附加参数长度
  * @param tx 数据接收方法
  */
-void HostBase::_encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint8_t size)
+void HostBase::_encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint16_t size)
 {
     // 写入帧头校验和
     uint16_t* h_chksum = (uint16_t*)(head + h_size - sizeof(Chksum));
