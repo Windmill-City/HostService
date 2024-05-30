@@ -27,25 +27,18 @@ struct ExtraT
     template <Data T>
     bool add(const T value)
     {
-        // 检查是否超长
-        if (sizeof(value) > spare()) return false;
-        // 复制数据
-        memcpy(curr(), (uint8_t*)&value, sizeof(value));
-        seek(_data + sizeof(value));
-        return true;
+        return add(&value, sizeof(value));
     }
 
     /**
      * @brief 向缓冲区中添加一个数组
      *
-     * @tparam T 数据类型
      * @param value 数组指针
      * @param size 数组字节长度
      * @return true 添加成功
      * @return false 缓冲区长度不足
      */
-    template <Data T>
-    bool add(const T* value, const size_t size)
+    bool add(const void* value, const size_t size)
     {
         // 检查是否超长
         if (size > spare()) return false;
