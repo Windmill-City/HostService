@@ -59,25 +59,18 @@ struct ExtraT
     template <Data T>
     bool get(T& value)
     {
-        // 检查长度是否足够
-        if (sizeof(T) > remain()) return false;
-        value = *(T*)curr();
-        // 更新数据指针
-        _data += sizeof(T);
-        return true;
+        return get(&value, sizeof(value));
     }
 
     /**
      * @brief 从缓冲区中获取一个数组
      *
-     * @tparam T 数据类型
      * @param value 接收数据的缓冲区
      * @param size 数组字节长度
      * @return true 成功获取
      * @return false 缓冲区长度不足
      */
-    template <Data T>
-    bool get(T* value, size_t size)
+    bool get(void* value, size_t size)
     {
         // 检查长度是否足够
         if (size > remain()) return false;
