@@ -282,6 +282,10 @@ struct ExtraT
     std::array<uint8_t, _size> _buf;
 };
 
+#ifndef MEMORY_ACCESS_SIZE_MAX
+  #define MEMORY_ACCESS_SIZE_MAX 256
+#endif
+
 // sizeof(MemoryAccess) = 4
 // sizeof(PropertyId) = 2
-using Extra = ExtraT<256 + 2 + 4>;
+using Extra = ExtraT<MEMORY_ACCESS_SIZE_MAX + 2 + 4>;
