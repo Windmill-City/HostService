@@ -289,4 +289,6 @@ struct ExtraT
     std::array<uint8_t, _size> _buf;
 };
 
-using Extra = ExtraT<262>;
+// sizeof(MemoryAccess) = 4
+// sizeof(PropertyId) = 2
+using Extra = ExtraT<256 + 2 + 4>;
