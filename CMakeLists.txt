@@ -26,6 +26,7 @@ set(INCLUDES include)
 # ##############################################################################
 add_library(firmware.elf STATIC ${SOURCES})
 target_include_directories(firmware.elf PUBLIC ${INCLUDES})
+target_compile_definitions(firmware.elf PUBLIC NO_LOCK=1)
 
 # ##############################################################################
 # 依赖

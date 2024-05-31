@@ -4,8 +4,6 @@
 #include <Mutex.hpp>
 #include <stdint.h>
 
-#define NO_LOCK
-
 enum class Access : uint8_t
 {
     /**
