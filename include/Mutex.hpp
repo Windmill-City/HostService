@@ -7,21 +7,8 @@
  */
 struct Mutex
 {
-    /**
-     * @brief 获得锁
-     *
-     */
-    virtual void acquire()
-    {
-    }
-
-    /**
-     * @brief 释放锁
-     *
-     */
-    virtual void release()
-    {
-    }
+    virtual void lock()   = 0;
+    virtual void unlock() = 0;
 };
 
 /**
@@ -33,12 +20,12 @@ struct LockGuard
     LockGuard(Mutex& mutex)
         : _mutex(mutex)
     {
-        _mutex.acquire();
+        _mutex.lock();
     }
 
     ~LockGuard()
     {
-        _mutex.release();
+        _mutex.unlock();
     }
 
   protected:

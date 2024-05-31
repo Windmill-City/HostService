@@ -29,7 +29,7 @@ using PropertyId = uint16_t;
 
 struct PropertyBase
 {
-    static Mutex      MutexGlobal;
+    static Mutex&     MutexGlobal;
     /**
      * @brief 设置属性值
      *

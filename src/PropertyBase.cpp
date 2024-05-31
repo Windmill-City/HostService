@@ -1,8 +1,21 @@
 #include "PropertyBase.hpp"
+#include <mutex>
 
-Mutex     PropertyBase::MutexGlobal;
+struct MutexDefault : public Mutex
+{
+    virtual void lock() override
+    {
+    }
 
-ErrorCode PropertyBase::set(Extra& extra)
+    virtual void unlock() override
+    {
+    }
+};
+
+static MutexDefault LockDefault;
+Mutex&              PropertyBase::MutexGlobal = LockDefault;
+
+ErrorCode           PropertyBase::set(Extra& extra)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
