@@ -30,9 +30,7 @@ struct Property : public PropertyAccess<access>
      */
     virtual T safe_get() const
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
+        LockGuard lock(PropertyBase::MutexGlobal);
         return _value;
     }
 
@@ -47,9 +45,7 @@ struct Property : public PropertyAccess<access>
      */
     virtual ErrorCode safe_set(T value)
     {
-#ifndef NO_LOCK
-        std::lock_guard lock(PropertyBase::Mutex);
-#endif
+        LockGuard lock(PropertyBase::MutexGlobal);
         _value = value;
         return ErrorCode::S_OK;
     }

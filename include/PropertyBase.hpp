@@ -1,7 +1,7 @@
 #pragma once
 #include <Common.hpp>
 #include <Extra.hpp>
-#include <mutex>
+#include <Mutex.hpp>
 #include <stdint.h>
 
 #define NO_LOCK
@@ -29,9 +29,7 @@ using PropertyId = uint16_t;
 
 struct PropertyBase
 {
-#ifndef NO_LOCK
-    static std::recursive_mutex Mutex;
-#endif
+    static Mutex      MutexGlobal;
     /**
      * @brief 设置属性值
      *

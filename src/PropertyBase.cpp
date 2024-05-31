@@ -1,8 +1,6 @@
 #include "PropertyBase.hpp"
 
-#ifndef NO_LOCK
-std::recursive_mutex PropertyBase::Mutex;
-#endif
+Mutex     PropertyBase::MutexGlobal;
 
 ErrorCode PropertyBase::set(Extra& extra)
 {
