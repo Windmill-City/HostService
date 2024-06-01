@@ -37,7 +37,7 @@ struct CProperty
      * @param value 要写入的值
      * @return ErrorCode 错误码
      */
-    ErrorCode set(T value)
+    ErrorCode set(const T value)
     {
         _value = value;
         return ErrorCode::S_OK;
@@ -112,7 +112,7 @@ struct CProperty
         return ErrorCode::S_OK;
     }
 
-    ErrorCode set(HostClient& client)
+    ErrorCode set(HostClient& client) const
     {
         if (access == Access::READ || access == Access::READ_PROTECT) return ErrorCode::E_READ_ONLY;
 

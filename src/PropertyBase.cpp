@@ -24,12 +24,12 @@ ErrorCode PropertyBase::set(Extra& extra)
     return ErrorCode::E_NO_IMPLEMENT;
 }
 
-ErrorCode PropertyBase::get(Extra& extra)
+ErrorCode PropertyBase::get(Extra& extra) const
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
 
-ErrorCode PropertyBase::get_size(Extra& extra)
+ErrorCode PropertyBase::get_size(Extra& extra) const
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }

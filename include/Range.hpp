@@ -92,7 +92,7 @@ struct Range : public Property<RangeVal<T>, access>
      * @return true 在范围内
      * @return false 不在范围内
      */
-    bool in_range(T value)
+    bool in_range(const T value) const
     {
         LockGuard lock(PropertyBase::MutexGlobal);
         return value >= min() && value <= max();
@@ -149,7 +149,7 @@ struct Range : public Property<RangeVal<T>, access>
         return ErrorCode::E_INVALID_ARG;
     }
 
-    virtual ErrorCode get(Extra& extra) override
+    virtual ErrorCode get(Extra& extra) const override
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
@@ -169,7 +169,7 @@ struct Range : public Property<RangeVal<T>, access>
         return ErrorCode::E_INVALID_ARG;
     }
 
-    virtual ErrorCode get_size(Extra& extra) override
+    virtual ErrorCode get_size(Extra& extra) const override
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
@@ -211,7 +211,7 @@ struct RangedProperty : public Property<T, access>
      *
      * @return T 最小值
      */
-    T min()
+    T min() const
     {
         return _range.min;
     }
@@ -223,7 +223,7 @@ struct RangedProperty : public Property<T, access>
      *
      * @return T 最大值
      */
-    T max()
+    T max() const
     {
         return _range.max;
     }
@@ -237,7 +237,7 @@ struct RangedProperty : public Property<T, access>
      * @return true 在范围内
      * @return false 不在范围内
      */
-    bool in_range()
+    bool in_range() const
     {
         LockGuard lock(PropertyBase::MutexGlobal);
         return this->_value >= min() && this->_value <= max();
@@ -296,7 +296,7 @@ struct RangedProperty : public Property<T, access>
         return *this;
     }
 
-    virtual ErrorCode safe_set(T value) override
+    virtual ErrorCode safe_set(const T value) override
     {
         LockGuard lock(PropertyBase::MutexGlobal);
         if (mode == RangeMode::Soft)

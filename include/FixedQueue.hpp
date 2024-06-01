@@ -30,7 +30,7 @@ struct FixedQueue
      * @return true 成功
      * @return false 队列满
      */
-    bool push(uint8_t item)
+    bool push(const uint8_t item)
     {
         if (action == PopOnPush && full()) pop();
         if (!full())
@@ -68,10 +68,10 @@ struct FixedQueue
      * @param idx 下标
      * @return uint8_t 元素
      */
-    uint8_t& operator[](size_t idx)
+    uint8_t& operator[](const size_t idx)
     {
-        idx = (idx + _data) % (_size + 1);
-        return _buf[idx];
+        size_t _idx = (idx + _data) % (_size + 1);
+        return _buf[_idx];
     }
 
     /**
@@ -80,7 +80,7 @@ struct FixedQueue
      * @return true 满
      * @return false 未满
      */
-    bool full()
+    bool full() const
     {
         size_t next = (_empty + 1) % (_size + 1);
         return next == _data;
@@ -92,7 +92,7 @@ struct FixedQueue
      * @return true 空
      * @return false 非空
      */
-    bool empty()
+    bool empty() const
     {
         return _empty == _data;
     }
@@ -102,7 +102,7 @@ struct FixedQueue
      *
      * @return size_t 元素数量
      */
-    size_t size()
+    size_t size() const
     {
         if (_data <= _empty)
             return _empty - _data;
@@ -115,7 +115,7 @@ struct FixedQueue
      *
      * @return size_t 队列容量
      */
-    size_t capacity()
+    size_t capacity() const
     {
         return _size;
     }

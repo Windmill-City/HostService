@@ -93,7 +93,7 @@ void HostServer::send_log(const uint8_t* log, const size_t size)
     send(head, log, size);
 }
 
-PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, bool encrypted)
+PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, const bool encrypted)
 {
     // 解析Id
     PropertyId id;

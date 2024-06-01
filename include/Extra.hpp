@@ -70,7 +70,7 @@ struct ExtraT
      * @return true 成功获取
      * @return false 缓冲区长度不足
      */
-    bool get(void* value, size_t size)
+    bool get(void* value, const size_t size)
     {
         // 检查长度是否足够
         if (size > remain()) return false;
@@ -229,7 +229,7 @@ struct ExtraT
      *
      * @return uint16_t 最大容量
      */
-    uint16_t capacity()
+    uint16_t capacity() const
     {
         return _size;
     }

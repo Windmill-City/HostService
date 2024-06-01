@@ -48,12 +48,12 @@ struct CMemory
      * @param idx 下标
      * @return T& 内容
      */
-    auto& operator[](size_t idx)
+    auto& operator[](const size_t idx)
     {
         return _value[idx];
     }
 
-    ErrorCode set_block(HostClient& client, MemoryAccess& access, uint8_t* data, bool encrypt)
+    ErrorCode set_block(HostClient& client, MemoryAccess& access, const uint8_t* data, const bool encrypt) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -77,7 +77,7 @@ struct CMemory
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get_block(HostClient& client, MemoryAccess& access, uint8_t* data, bool encrypt)
+    ErrorCode get_block(HostClient& client, MemoryAccess& access, uint8_t* data, const bool encrypt)
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -101,7 +101,7 @@ struct CMemory
         return ErrorCode::S_OK;
     }
 
-    ErrorCode set(HostClient& client)
+    ErrorCode set(HostClient& client) const
     {
         if (_access == Access::READ || _access == Access::READ_PROTECT) return ErrorCode::E_READ_ONLY;
 

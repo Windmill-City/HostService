@@ -12,7 +12,7 @@ struct CPropertyHolder : public CPropertyHolderBase
     {
     }
 
-    virtual ErrorCode get_id_by_name(const frozen::string name, PropertyId& id) override
+    virtual ErrorCode get_id_by_name(const frozen::string name, PropertyId& id) const override
     {
         if (map.contains(name))
         {
@@ -22,7 +22,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         return ErrorCode::E_ID_NOT_EXIST;
     }
 
-    ErrorCode get_size(HostClient& client, uint16_t& size)
+    ErrorCode get_size(HostClient& client, uint16_t& size) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -42,7 +42,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get_name(HostClient& client, PropertyId id)
+    ErrorCode get_name(HostClient& client, const PropertyId id) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;

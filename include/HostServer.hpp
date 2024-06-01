@@ -34,7 +34,7 @@ struct PropertyHolderBase
 
 struct PropertySymbols : public PropertyAccess<Access::READ>
 {
-    virtual ErrorCode get(Extra& extra) override
+    virtual ErrorCode get(Extra& extra) const override
     {
         PropertyId id;
         if (!extra.get(id)) return ErrorCode::E_INVALID_ARG;
@@ -46,7 +46,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra) override
+    virtual ErrorCode get_size(Extra& extra) const override
     {
         if (_holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
         extra.reset();
@@ -104,7 +104,7 @@ struct HostServer : public HostBase
     void send_log(const uint8_t* log, const size_t size);
 
   protected:
-    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, bool encrypted);
+    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, const bool encrypted);
 
   protected:
     // 附加参数缓冲区

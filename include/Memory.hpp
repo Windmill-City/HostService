@@ -58,7 +58,7 @@ struct Memory : public PropertyAccess<_access>
      * @param idx 下标
      * @return T& 内容
      */
-    auto& operator[](size_t idx)
+    auto& operator[](const size_t idx)
     {
         return _value[idx];
     }
@@ -76,7 +76,7 @@ struct Memory : public PropertyAccess<_access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get(Extra& extra) override
+    virtual ErrorCode get(Extra& extra) const override
     {
         MemoryAccess access;
         // 检查访问参数是否正确
@@ -92,7 +92,7 @@ struct Memory : public PropertyAccess<_access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra) override
+    virtual ErrorCode get_size(Extra& extra) const override
     {
         extra.reset();
         extra.add<uint16_t>(sizeof(_value));

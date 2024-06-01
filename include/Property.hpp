@@ -43,7 +43,7 @@ struct Property : public PropertyAccess<access>
      * @param value 要写入的值
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode safe_set(T value)
+    virtual ErrorCode safe_set(const T value)
     {
         LockGuard lock(PropertyBase::MutexGlobal);
         _value = value;
@@ -104,7 +104,7 @@ struct Property : public PropertyAccess<access>
         return *this;
     }
 
-    virtual ErrorCode get(Extra& extra) override
+    virtual ErrorCode get(Extra& extra) const override
     {
         extra.reset();
         if (!extra.add(safe_get())) return ErrorCode::E_OUT_OF_BUFFER;
@@ -121,7 +121,7 @@ struct Property : public PropertyAccess<access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra) override
+    virtual ErrorCode get_size(Extra& extra) const override
     {
         extra.reset();
         extra.add<uint16_t>(sizeof(_value));

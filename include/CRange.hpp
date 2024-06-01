@@ -59,7 +59,7 @@ struct CRange
      * @return true 在范围内
      * @return false 不在范围内
      */
-    bool in_range(T value)
+    bool in_range(const T value) const
     {
         return value >= min() && value <= max();
     }
@@ -147,7 +147,7 @@ struct CRange
         return _value == right;
     }
 
-    ErrorCode set(HostClient& client)
+    ErrorCode set(HostClient& client) const
     {
         if (access == Access::READ || access == Access::READ_PROTECT) return ErrorCode::E_READ_ONLY;
 
@@ -175,7 +175,7 @@ struct CRange
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get(HostClient& client, RangeAccess range, bool encrypt)
+    ErrorCode get(HostClient& client, const RangeAccess range, const bool encrypt)
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -239,7 +239,7 @@ struct CRangedProperty : public CProperty<T, access>
 {
     using parent = CProperty<T, access>;
 
-    CRangedProperty(const frozen::string name, const RangeVal<T>& range, T val = 0)
+    CRangedProperty(const frozen::string name, const RangeVal<T>& range, const T val = 0)
         : parent(name)
         , _range(range)
     {
@@ -252,7 +252,7 @@ struct CRangedProperty : public CProperty<T, access>
      *
      * @return T 最小值
      */
-    T min()
+    T min() const
     {
         return _range.min;
     }
@@ -262,7 +262,7 @@ struct CRangedProperty : public CProperty<T, access>
      *
      * @return T 最大值
      */
-    T max()
+    T max() const
     {
         return _range.max;
     }
@@ -273,7 +273,7 @@ struct CRangedProperty : public CProperty<T, access>
      * @return true 在范围内
      * @return false 不在范围内
      */
-    bool in_range()
+    bool in_range() const
     {
         return this->_value >= min() && this->_value <= max();
     }
@@ -352,7 +352,7 @@ struct CRangedProperty : public CProperty<T, access>
         return ErrorCode::E_NO_IMPLEMENT;
     }
 
-    ErrorCode set(HostClient& client)
+    ErrorCode set(HostClient& client) const
     {
         return parent::set(client);
     }

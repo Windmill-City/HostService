@@ -23,14 +23,14 @@ struct CPropertyHolderBase
      * @param id 属性Id
      * @return ErrorCode
      */
-    virtual ErrorCode get_id_by_name(const frozen::string name, PropertyId& id) = 0;
+    virtual ErrorCode get_id_by_name(const frozen::string name, PropertyId& id) const = 0;
     /**
      * @brief 刷新id表
      *
      * @param client 客户端实例
      * @return ErrorCode
      */
-    virtual ErrorCode refresh(HostClient& client)                               = 0;
+    virtual ErrorCode refresh(HostClient& client)                                     = 0;
 };
 
 struct HostClient : public HostBase
