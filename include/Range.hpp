@@ -11,8 +11,8 @@ enum class RangeMode : uint8_t
 
 enum class RangeAccess : uint8_t
 {
-    Range = 0, // 范围值
-    Absolute   // 绝对范围
+    Range = 0, // 当前范围
+    Absolute   // 范围的绝对最大值
 };
 
 template <typename T>
