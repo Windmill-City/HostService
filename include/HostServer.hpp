@@ -54,7 +54,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         return ErrorCode::S_OK;
     }
 
-    PropertyHolderBase* _holder = nullptr;
+    PropertyHolderBase* const _holder = nullptr;
 };
 
 template <size_t _size>
