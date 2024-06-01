@@ -2,10 +2,6 @@
 #include <cstddef>
 #include <stdint.h>
 
-#define IS_ENCRYPTED(cmd)        ((uint8_t)(cmd) & 0x80)
-#define REMOVE_ENCRYPT_MARK(cmd) ((Command)((uint8_t)(cmd) & 0x7F))
-#define ADD_ENCRYPT_MARK(cmd)    ((Command)((uint8_t)(cmd) | 0x80))
-
 enum class ErrorCode : uint8_t
 {
     S_OK = 0,          // 执行成功

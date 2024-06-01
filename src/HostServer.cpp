@@ -111,7 +111,7 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, bool e
     }
     // 检查权限
     ErrorCode err;
-    switch (REMOVE_ENCRYPT_MARK(cmd))
+    switch (cmd)
     {
     case Command::GET_SIZE:
     case Command::GET_PROPERTY:

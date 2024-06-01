@@ -8,6 +8,10 @@
   #define __REV16(number) (((number) >> 8) | ((number) << 8));
 #endif
 
+#define IS_ENCRYPTED(cmd)        ((uint8_t)(cmd) & 0x80)
+#define REMOVE_ENCRYPT_MARK(cmd) ((Command)((uint8_t)(cmd) & 0x7F))
+#define ADD_ENCRYPT_MARK(cmd)    ((Command)((uint8_t)(cmd) | 0x80))
+
 /**
  * @brief 帧同步
  *
