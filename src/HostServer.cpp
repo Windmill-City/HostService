@@ -83,7 +83,7 @@ bool HostServer::poll()
  * @param log log信息
  * @param size log大小
  */
-void HostServer::send_log(const uint8_t* log, const size_t size)
+void HostServer::send_log(const void* log, const size_t size)
 {
     Header head;
     head.address = address;
