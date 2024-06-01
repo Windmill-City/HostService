@@ -37,31 +37,15 @@ struct HostClient : public HostBase
 {
     // 附加参数缓冲区
     Extra                extra;
-    // 随机数
-    NonceType            nonce;
-    // 通信密钥
-    KeyType              key;
     // 属性值Id容器
     CPropertyHolderBase& holder;
 
-    HostClient(const PropertyAddress& addr, CPropertyHolderBase& holder)
-        : HostBase(addr)
+    HostClient(const PropertyAddress& addr, CPropertyHolderBase& holder, SecretHolder& secret)
+        : HostBase(addr, secret)
         , holder(holder)
     {
     }
 
-    void         send_request(const Command cmd, Extra& extra, const bool encrypt = false);
-    bool         recv_response(const Command cmd, ErrorCode& err, Extra& extra);
-
-    /**
-     * @brief 日志输出接口
-     *
-     * @param log 日志信息
-     * @param size 日志字节长度
-     */
-    virtual void log_output(const char* log, const size_t size) = 0;
-
   protected:
     // 帧头缓冲区
-    Sync<Response> _buf;
 };

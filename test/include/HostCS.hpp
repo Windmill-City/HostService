@@ -11,8 +11,10 @@ struct HostClientImpl : public HostClient
 
     PropertyAddress   addr;
 
+    SecretHolder      secret;
+
     HostClientImpl(CPropertyHolderBase& holder)
-        : HostClient(addr, holder)
+        : HostClient(addr, holder, secret)
     {
     }
 
@@ -31,7 +33,9 @@ struct HostClientImpl : public HostClient
         }
     }
 
-    virtual void log_output(const char* log, const size_t size)override{}
+    virtual void log_output(const char* log, const size_t size) override
+    {
+    }
 };
 
 struct HostServerImpl : public HostServer
@@ -78,10 +82,10 @@ struct HostCSBase
         : server(holder, secret)
         , client(cholder)
     {
-        server.Q_Client = &client.Q_Client;
-        client.Q_Server = &server.Q_Server;
+        server.Q_Client     = &client.Q_Client;
+        client.Q_Server     = &server.Q_Server;
 
-        client.key      = server.secret.key;
-        client.nonce    = server.secret.nonce;
+        client.secret.key   = server.secret.key;
+        client.secret.nonce = server.secret.nonce;
     }
 };

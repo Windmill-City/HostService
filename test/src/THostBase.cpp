@@ -13,9 +13,10 @@ struct HostBaseImpl : public HostBase
 {
     std::queue<uint8_t> Q;
     PropertyAddress     addr;
+    SecretHolder        secret;
 
     HostBaseImpl()
-        : HostBase(addr)
+        : HostBase(addr, secret)
     {
     }
 
@@ -33,11 +34,15 @@ struct HostBaseImpl : public HostBase
             Q.push(buf[i]);
         }
     }
+
+    virtual void log_output(const char* log, const size_t size) override
+    {
+    }
 };
 
 TEST(HostBase, sizeof)
 {
-    ASSERT_EQ(sizeof(HostBase), 8);
+    ASSERT_EQ(sizeof(HostBase), 44);
 }
 
 TEST(HostBase, TxRx)
