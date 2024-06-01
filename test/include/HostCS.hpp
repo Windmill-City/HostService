@@ -30,6 +30,8 @@ struct HostClientImpl : public HostClient
             Q_Server->push(buf[i]);
         }
     }
+
+    virtual void log_output(const char* log, const size_t size)override{}
 };
 
 struct HostServerImpl : public HostServer

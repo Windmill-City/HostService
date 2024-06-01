@@ -9,7 +9,7 @@
  * @param cmd 请求的指令
  * @param extra 附加参数
  */
-void HostClient::send_request(const Command cmd, Extra& extra, bool encrypt)
+void HostClient::send_request(const Command cmd, Extra& extra, const bool encrypt)
 {
     if (encrypt) extra.encrypt(nonce, key);
     Request req;
@@ -90,7 +90,15 @@ End:
     if (rep.address != address) goto Start;
 
     // 验证命令
-    if (REMOVE_ENCRYPT_MARK(rep.cmd) != cmd) goto Start;
+    if (REMOVE_ENCRYPT_MARK(rep.cmd) != cmd)
+    {
+        // 输出 log 信息
+        if (REMOVE_ENCRYPT_MARK(rep.cmd) == Command::LOG)
+        {
+            log_output((const char*)extra.data(), extra.remain());
+        }
+        goto Start;
+    }
 
     return true;
 }

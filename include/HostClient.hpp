@@ -50,8 +50,16 @@ struct HostClient : public HostBase
     {
     }
 
-    void send_request(const Command cmd, Extra& extra, bool encrypt = false);
-    bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
+    void         send_request(const Command cmd, Extra& extra, const bool encrypt = false);
+    bool         recv_response(const Command cmd, ErrorCode& err, Extra& extra);
+
+    /**
+     * @brief 日志输出接口
+     *
+     * @param log 日志信息
+     * @param size 日志字节长度
+     */
+    virtual void log_output(const char* log, const size_t size) = 0;
 
   protected:
     // 帧头缓冲区
