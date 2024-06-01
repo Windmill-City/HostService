@@ -30,7 +30,7 @@ void HostClient::send_request(const Command cmd, Extra& extra, bool encrypt)
  * @return true 成功接收一帧
  * @return false 接收超时
  */
-bool HostClient::recv_response(Command cmd, ErrorCode& err, Extra& extra)
+bool HostClient::recv_response(const Command cmd, ErrorCode& err, Extra& extra)
 {
 Start:
     // 帧同步
@@ -42,7 +42,6 @@ Start:
     }
 
     Response rep = _buf.get();
-    cmd          = REMOVE_ENCRYPT_MARK(rep.cmd);
     err          = rep.error;
     extra.reset();
     extra.size()      = std::min(rep.size, extra.capacity());
@@ -89,6 +88,9 @@ Start:
 End:
     // 验证地址
     if (rep.address != address) goto Start;
+
+    // 验证命令
+    if (rep.cmd != cmd) goto Start;
 
     return true;
 }

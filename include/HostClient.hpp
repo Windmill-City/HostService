@@ -51,7 +51,7 @@ struct HostClient : public HostBase
     }
 
     void send_request(const Command cmd, Extra& extra, bool encrypt = false);
-    bool recv_response(Command cmd, ErrorCode& err, Extra& extra);
+    bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
 
   protected:
     // 帧头缓冲区
