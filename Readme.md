@@ -43,9 +43,11 @@
 | CBC-MAC    | /                   | CRC16-CCITT-False |
 
 注意: `消息认证码` 和 `加密内容` 共同参与 `校验和` 的计算
+
 注意: 参与 `校验和` 计算的是 `加密后` 的内容
 
 CBC-MAC 介绍: <https://en.wikipedia.org/wiki/CBC-MAC>
+
 消息认证码 介绍: <https://en.wikipedia.org/wiki/Message_authentication_code>
 
 加密采用 `AES-CCM` 算法, 能够确保数据的 `保密性` 和 `认证性`
