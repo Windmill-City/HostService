@@ -133,6 +133,13 @@ struct HostBase
     {
     }
 
+    void send_request(const Command cmd, Extra& extra, const bool encrypt = false);
+    bool recv_request(Command& cmd, Extra& extra);
+
+    void send_response(const Command cmd, const ErrorCode err, Extra& extra);
+    bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
+
+  protected:
     /**
      * @brief 底层数据接收方法, 接收 1 字节数据
      *
@@ -154,12 +161,6 @@ struct HostBase
      * @param size 日志字节长度
      */
     virtual void log_output(const char* log, const size_t size) = 0;
-
-    void         send_request(const Command cmd, Extra& extra, const bool encrypt = false);
-    bool         recv_request(Command& cmd, Extra& extra);
-
-    void         send_response(const Command cmd, const ErrorCode err, Extra& extra);
-    bool         recv_response(const Command cmd, ErrorCode& err, Extra& extra);
 
   protected:
     void _encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint16_t size);

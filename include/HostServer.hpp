@@ -100,11 +100,11 @@ struct HostServer : public HostBase
     {
     }
 
-    bool         poll();
-    void         send_log(const char* log, size_t size);
-    virtual void log_output(const char* log, const size_t size) override;
+    bool poll();
+    void send_log(const char* log, size_t size);
 
   protected:
+    virtual void  log_output(const char* log, const size_t size) override;
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
 
   protected:
