@@ -75,6 +75,18 @@ struct FixedQueue
     }
 
     /**
+     * @brief 以数组下标的形式访问元素
+     *
+     * @param idx 下标
+     * @return uint8_t 元素
+     */
+    const uint8_t& operator[](const size_t idx) const
+    {
+        size_t _idx = (idx + _data) % (_size + 1);
+        return _buf[_idx];
+    }
+
+    /**
      * @brief 判断队列是否满
      *
      * @return true 满

@@ -63,6 +63,27 @@ struct Memory : public PropertyAccess<_access>
         return _value[idx];
     }
 
+    /**
+     * @brief 获取属性值首地址
+     *
+     * @return uint8_t*
+     */
+    const uint8_t* operator&() const
+    {
+        return (uint8_t*)&_value;
+    }
+
+    /**
+     * @brief 按字节访问内存区内容
+     *
+     * @param idx 下标
+     * @return T& 内容
+     */
+    const auto& operator[](const size_t idx) const
+    {
+        return _value[idx];
+    }
+
     virtual ErrorCode set(Extra& extra) override
     {
         MemoryAccess access;

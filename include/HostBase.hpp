@@ -12,7 +12,7 @@ struct Sync : public FixedQueue<sizeof(T) + sizeof(Chksum), PopAction::PopOnPush
      * @return true 帧头有效
      * @return false 帧头无效
      */
-    bool verify()
+    bool verify() const
     {
         if (sizeof(T) + sizeof(Chksum) != this->size()) return false;
 

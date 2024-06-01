@@ -88,6 +88,30 @@ struct Property : public PropertyAccess<access>
     }
 
     /**
+     * @brief 获取属性的引用
+     *
+     * @note 此方法非线程安全
+     *
+     * @return T& 属性值引用
+     */
+    const T& ref() const
+    {
+        return _value;
+    }
+
+    /**
+     * @brief 获取属性值的地址
+     *
+     * @note 此方法非线程安全
+     *
+     * @return T* 属性值地址
+     */
+    const T* operator&() const
+    {
+        return (T*)&_value;
+    }
+
+    /**
      * @brief 写入属性值
      *
      * @note 此方法线程安全

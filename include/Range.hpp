@@ -83,6 +83,30 @@ struct Range : public Property<RangeVal<T>, access>
     }
 
     /**
+     * @brief 获取最小值
+     *
+     * @note 此方法非线程安全
+     *
+     * @return T 最小值
+     */
+    const T& min() const
+    {
+        return this->_value.min;
+    }
+
+    /**
+     * @brief 获取最大值
+     *
+     * @note 此方法非线程安全
+     *
+     * @return T 最大值
+     */
+    const T& max() const
+    {
+        return this->_value.max;
+    }
+
+    /**
      * @brief 检查数值是否在范围内
      *
      * @note 此方法线程安全
