@@ -90,6 +90,7 @@ void HostServer::send_log(const char* log, size_t size)
     rep.error   = ErrorCode::S_OK;
     rep.size    = size;
     _encode((uint8_t*)&rep, sizeof(rep), (uint8_t*)log, size);
+    recv_ack();
 }
 
 void HostServer::log_output(const char* log, const size_t size)

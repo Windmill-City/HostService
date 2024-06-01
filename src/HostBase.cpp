@@ -231,3 +231,31 @@ End:
 
     return true;
 }
+
+/**
+ * @brief 接收 ACK 响应
+ *
+ * @return true 成功接收 ACK
+ * @return false 接收超时
+ */
+bool HostBase::recv_ack()
+{
+Start:
+    // 帧同步
+    while (!_buf_rep.verify())
+    {
+        uint8_t byte;
+        if (!rx(byte)) return false; // 接收超时
+        _buf_rep.push(byte);
+    }
+
+    Response rep = _buf_rep.get();
+
+    // 验证地址
+    if (rep.address != address) goto Start;
+
+    // 验证命令
+    if (REMOVE_ENCRYPT_MARK(rep.cmd) != Command::ACK) goto Start;
+
+    return true;
+}

@@ -76,10 +76,16 @@ enum class Command : uint8_t
     /**
      * @brief log信息(仅服务端发送)
      *
-     * 请求: CMD,S_OK,log信息
-     * 应答: 无
+     * 请求: CMD,log信息
+     * 应答: ACK
      */
     LOG,
+    /**
+     * @brief 应答(仅客户端发送)
+     *
+     * 应答: CMD, S_OK
+     */
+    ACK,
 };
 
 /**
