@@ -90,7 +90,7 @@ End:
     if (rep.address != address) goto Start;
 
     // 验证命令
-    if (rep.cmd != cmd) goto Start;
+    if (REMOVE_ENCRYPT_MARK(rep.cmd) != cmd) goto Start;
 
     return true;
 }
