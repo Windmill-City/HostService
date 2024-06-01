@@ -52,7 +52,7 @@ TEST_F(TMemory, Set)
     }
     extra.add(data.data(), data.size());
 
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -77,7 +77,7 @@ TEST_F(TMemory, Get)
     access.size   = extra.capacity();
     extra.add(access);
 
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -101,7 +101,7 @@ TEST_F(TMemory, Set_OutOfRange)
     extra.add(access);
     extra.seek(256 + sizeof(PropertyId) + sizeof(access));
 
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -120,7 +120,7 @@ TEST_F(TMemory, Get_OutOfRange)
     access.size   = 256;
     extra.add(access);
 
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -133,7 +133,7 @@ TEST_F(TMemory, GetSize)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
-    client.send_request(Command::GET_SIZE, extra);
+    client.send(Command::GET_SIZE, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);

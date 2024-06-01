@@ -38,7 +38,7 @@ TEST_F(TWrite, Read)
     ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -52,7 +52,7 @@ TEST_F(TWrite, Read_Write)
     ErrorCode err;
     extra.add<PropertyId>(1);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -66,7 +66,7 @@ TEST_F(TWrite, Read_Protect_NotPrivileged)
     ErrorCode err;
     extra.add<PropertyId>(2);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -80,7 +80,7 @@ TEST_F(TWrite, Read_Protect_Privileged)
     ErrorCode err;
     extra.add<PropertyId>(2);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra, true);
+    client.send(Command::SET_PROPERTY, extra, true);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -94,7 +94,7 @@ TEST_F(TWrite, Write_Protect_NotPrivileged)
     ErrorCode err;
     extra.add<PropertyId>(3);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -108,7 +108,7 @@ TEST_F(TWrite, Write_Protect_Privileged)
     ErrorCode err;
     extra.add<PropertyId>(3);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra, true);
+    client.send(Command::SET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -122,7 +122,7 @@ TEST_F(TWrite, Read_Write_Protect_NotPrivileged)
     ErrorCode err;
     extra.add<PropertyId>(4);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -136,7 +136,7 @@ TEST_F(TWrite, Read_Write_Protect_Privileged)
     ErrorCode err;
     extra.add<PropertyId>(4);
     extra.add(0.0f);
-    client.send_request(Command::SET_PROPERTY, extra, true);
+    client.send(Command::SET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);

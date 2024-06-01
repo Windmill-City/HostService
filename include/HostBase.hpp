@@ -4,7 +4,7 @@
 #include <Property.hpp>
 
 template <typename T>
-struct Sync : public FixedQueue<sizeof(T), PopAction::PopOnPush>
+struct Sync : public FixedQueue<sizeof(T) + sizeof(Chksum), PopAction::PopOnPush>
 {
     /**
      * @brief 验证是否是一个有效的帧头
@@ -14,7 +14,7 @@ struct Sync : public FixedQueue<sizeof(T), PopAction::PopOnPush>
      */
     bool verify()
     {
-        if (sizeof(T) != this->size()) return false;
+        if (sizeof(T) + sizeof(Chksum) != this->size()) return false;
 
         uint16_t chksum = CRC_START_CCITT_FFFF;
         for (size_t i = 0; i < this->size(); i++)
@@ -133,10 +133,9 @@ struct HostBase
     {
     }
 
-    void send_request(const Command cmd, Extra& extra, const bool encrypt = false);
-    bool recv_request(Command& cmd, Extra& extra);
+    void send(const Command cmd, Extra& extra, const bool encrypt = false, const ErrorCode err = ErrorCode::S_OK);
+    bool recv(Command& cmd, ErrorCode& err, Extra& extra);
 
-    void send_response(const Command cmd, const ErrorCode err, Extra& extra);
     bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
 
     void send_ack();
@@ -156,7 +155,7 @@ struct HostBase
      * @param _buf 要发送的数据
      * @param size 数据的长度
      */
-    virtual void tx(const uint8_t* buf, const size_t size)      = 0;
+    virtual void tx(const void* buf, const size_t size)         = 0;
     /**
      * @brief 日志输出接口
      *
@@ -166,9 +165,9 @@ struct HostBase
     virtual void log_output(const char* log, const size_t size) = 0;
 
   protected:
-    void _encode(uint8_t* head, const uint8_t h_size, const uint8_t* extra, const uint16_t size);
+    void send(const Header& head, const void* extra, const uint16_t size);
+    bool sync(Header& head);
 
   protected:
-    Sync<Response> _buf_rep;
-    Sync<Request>  _buf_req;
+    Sync<Header> _buf_head;
 };

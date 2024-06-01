@@ -25,11 +25,11 @@ struct HostClientImpl : public HostClient
         return true;
     }
 
-    virtual void tx(const uint8_t* buf, const size_t size) override
+    virtual void tx(const void* buf, const size_t size) override
     {
         for (size_t i = 0; i < size; i++)
         {
-            Q_Server->push(buf[i]);
+            Q_Server->push(((uint8_t*)buf)[i]);
         }
     }
 
@@ -63,11 +63,11 @@ struct HostServerImpl : public HostServer
             return false;
     }
 
-    virtual void tx(const uint8_t* buf, const size_t size) override
+    virtual void tx(const void* buf, const size_t size) override
     {
         for (size_t i = 0; i < size; i++)
         {
-            Q_Client->push(buf[i]);
+            Q_Client->push(((uint8_t*)buf)[i]);
         }
     }
 };

@@ -101,7 +101,7 @@ struct CProperty
         if (err != ErrorCode::S_OK) return err;
         extra.add(id);
         // 发送请求
-        client.send_request(Command::GET_PROPERTY, extra, encrypt);
+        client.send(Command::GET_PROPERTY, extra, encrypt);
         // 接收响应
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
@@ -130,7 +130,7 @@ struct CProperty
         // 添加数据
         if (!extra.add(_value)) return ErrorCode::E_OUT_OF_BUFFER;
         // 发送请求
-        client.send_request(Command::SET_PROPERTY, extra, encrypt);
+        client.send(Command::SET_PROPERTY, extra, encrypt);
         // 接收响应
         if (!client.recv_response(Command::SET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;

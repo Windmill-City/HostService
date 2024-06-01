@@ -3,14 +3,9 @@
 #include <HostCS.hpp>
 #include <Property.hpp>
 
-TEST(Request, sizeof)
+TEST(Header, sizeof)
 {
-    ASSERT_EQ(sizeof(Request), 6);
-}
-
-TEST(Response, sizeof)
-{
-    ASSERT_EQ(sizeof(Response), 7);
+    ASSERT_EQ(sizeof(Header), 5);
 }
 
 static SecretHolder              secret;
@@ -38,7 +33,7 @@ TEST_F(HostCS, request)
     Extra     extra;
     ErrorCode err;
     extra.add(data, sizeof(data));
-    client.send_request(Command::ECHO, extra);
+    client.send(Command::ECHO, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::ECHO, err, client.extra);

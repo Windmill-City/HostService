@@ -37,7 +37,7 @@ TEST_F(TRead, Read)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -50,7 +50,7 @@ TEST_F(TRead, Read_Write)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(1);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -63,7 +63,7 @@ TEST_F(TRead, Read_Protect_NotPrivileged)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(2);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -76,7 +76,7 @@ TEST_F(TRead, Read_Protect_Privileged)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(2);
-    client.send_request(Command::GET_PROPERTY, extra, true);
+    client.send(Command::GET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -89,7 +89,7 @@ TEST_F(TRead, Write_Protect_NotPrivileged)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(3);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -102,7 +102,7 @@ TEST_F(TRead, Write_Protect_Privileged)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(3);
-    client.send_request(Command::GET_PROPERTY, extra, true);
+    client.send(Command::GET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -115,7 +115,7 @@ TEST_F(TRead, Read_Write_Protect_NotPrivileged)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(4);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -128,7 +128,7 @@ TEST_F(TRead, Read_Write_Protect_Privileged)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(4);
-    client.send_request(Command::GET_PROPERTY, extra, true);
+    client.send(Command::GET_PROPERTY, extra, true);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);

@@ -31,7 +31,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         // 添加id - symbols默认Id为 0
         extra.add<PropertyId>(0);
         // 发送请求
-        client.send_request(Command::GET_SIZE, extra, false);
+        client.send(Command::GET_SIZE, extra, false);
         // 接收响应
         if (!client.recv_response(Command::GET_SIZE, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
@@ -53,7 +53,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         // 添加id - 需要请求 symbol 的id
         extra.add<PropertyId>(id);
         // 发送请求
-        client.send_request(Command::GET_PROPERTY, extra, false);
+        client.send(Command::GET_PROPERTY, extra, false);
         // 接收响应
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;

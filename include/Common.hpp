@@ -82,7 +82,7 @@ enum class Command : uint8_t
     LOG,
     /**
      * @brief 应答(仅客户端发送)
-     * 
+     *
      * 作用: 控制 log 信息发送速率
      *
      * 应答: CMD, S_OK
@@ -98,21 +98,12 @@ using Chksum = uint16_t;
 
 #pragma pack(1)
 
-struct Request
-{
-    uint8_t  address; // 从机地址
-    Command  cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
-    uint16_t size;    // 附加参数长度
-    Chksum   chksum;  // 帧头校验和
-};
-
-struct Response
+struct Header
 {
     uint8_t   address; // 从机地址
     Command   cmd;     // 命令, MSB作为加密标记, 1=加密, 0=无加密
     uint16_t  size;    // 附加参数长度
     ErrorCode error;   // 错误码
-    Chksum    chksum;  // 帧头校验和
 };
 
 #pragma pack()

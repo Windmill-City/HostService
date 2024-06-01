@@ -12,22 +12,23 @@
  */
 bool HostServer::poll()
 {
+    bool      encrypted;
     Command   cmd;
     ErrorCode err;
     Extra&    extra = _extra;
-    if (!recv_request(cmd, extra)) return false;
+    if (!recv(cmd, err, extra)) return false;
 
     // 检查加密标记
-    if (extra.encrypted())
+    if (encrypted = extra.encrypted())
     {
         if (!extra.decrypt(secret.nonce, secret.key))
         {
-            send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
+            send(cmd, extra, false, ErrorCode::E_INVALID_ARG);
             return false;
         }
     }
 
-    switch (REMOVE_ENCRYPT_MARK(cmd))
+    switch (cmd)
     {
     case Command::ECHO:
     {
@@ -35,44 +36,44 @@ bool HostServer::poll()
         extra.readall();
         // 将收到的数据再发回去
         err = ErrorCode::S_OK;
-        send_response(cmd, err, extra);
+        send(cmd, extra, encrypted, err);
         break;
     }
     case Command::GET_PROPERTY:
     {
         PropertyBase* prop;
-        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
         // 读取属性值
         err = prop->get(extra);
-        send_response(cmd, err, extra);
+        send(cmd, extra, encrypted, err);
         break;
     }
     case Command::SET_PROPERTY:
     {
         PropertyBase* prop;
-        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
         // 写入属性值
         err = prop->set(extra);
-        send_response(cmd, err, extra);
+        send(cmd, extra, encrypted, err);
         break;
     }
     case Command::GET_SIZE:
     {
         PropertyBase* prop;
-        if (!(prop = _acquire_and_verify(cmd, extra))) return false;
+        if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
         // 读取Size
         err = prop->get_size(extra);
-        send_response(cmd, err, extra);
+        send(cmd, extra, encrypted, err);
         break;
     }
     default:
         err = ErrorCode::E_NO_IMPLEMENT;
-        send_response(cmd, err, extra);
+        send(cmd, extra, encrypted, err);
         break;
     }
 
     // 发送响应后再更新随机数
-    if (IS_ENCRYPTED(cmd)) secret.update_nonce();
+    if (encrypted) secret.update_nonce();
     return err == ErrorCode::S_OK;
 }
 
@@ -85,12 +86,12 @@ bool HostServer::poll()
  */
 bool HostServer::send_log(const char* log, size_t size)
 {
-    Response rep;
+    Header rep;
     rep.address = address;
     rep.cmd     = Command::LOG;
     rep.error   = ErrorCode::S_OK;
     rep.size    = size;
-    _encode((uint8_t*)&rep, sizeof(rep), (uint8_t*)log, size);
+    send(rep, log, size);
     return recv_ack();
 }
 
@@ -99,20 +100,20 @@ void HostServer::log_output(const char* log, const size_t size)
     // ignore
 }
 
-PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
+PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, bool encrypted)
 {
     // 解析Id
     PropertyId id;
     if (!extra.get(id))
     {
-        send_response(cmd, ErrorCode::E_INVALID_ARG, extra);
+        send(cmd, extra, encrypted, ErrorCode::E_INVALID_ARG);
         return nullptr;
     }
     // 查找属性值
     PropertyBase* prop;
     if (!(prop = _holder.get(id)))
     {
-        send_response(cmd, ErrorCode::E_ID_NOT_EXIST, extra);
+        send(cmd, extra, encrypted, ErrorCode::E_ID_NOT_EXIST);
         return nullptr;
     }
     // 检查权限
@@ -121,10 +122,10 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
     {
     case Command::GET_SIZE:
     case Command::GET_PROPERTY:
-        err = prop->check_read(IS_ENCRYPTED(cmd));
+        err = prop->check_read(encrypted);
         break;
     case Command::SET_PROPERTY:
-        err = prop->check_write(IS_ENCRYPTED(cmd));
+        err = prop->check_write(encrypted);
         break;
     default:
         err = ErrorCode::S_OK;
@@ -132,7 +133,7 @@ PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra)
     }
     if (err != ErrorCode::S_OK)
     {
-        send_response(cmd, err, extra);
+        send(cmd, extra, encrypted, err);
         return nullptr;
     }
     return prop;

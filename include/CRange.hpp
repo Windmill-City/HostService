@@ -167,7 +167,7 @@ struct CRange
         // 添加数据
         extra.add(_value);
         // 发送请求
-        client.send_request(Command::SET_PROPERTY, extra, encrypt);
+        client.send(Command::SET_PROPERTY, extra, encrypt);
         if (err != ErrorCode::S_OK) return err;
         // 接收响应
         if (!client.recv_response(Command::SET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
@@ -188,7 +188,7 @@ struct CRange
         // 添加访问类型
         extra.add(range);
         // 发送请求
-        client.send_request(Command::GET_PROPERTY, extra, encrypt);
+        client.send(Command::GET_PROPERTY, extra, encrypt);
         // 接收响应
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;

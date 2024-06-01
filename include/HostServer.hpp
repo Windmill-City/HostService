@@ -105,7 +105,7 @@ struct HostServer : public HostBase
 
   protected:
     virtual void  log_output(const char* log, const size_t size) override;
-    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra);
+    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, bool encrypted);
 
   protected:
     // 附加参数缓冲区

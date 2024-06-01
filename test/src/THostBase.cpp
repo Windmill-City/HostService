@@ -27,11 +27,11 @@ struct HostBaseImpl : public HostBase
         return true;
     }
 
-    virtual void tx(const uint8_t* buf, const size_t size) override
+    virtual void tx(const void* buf, const size_t size) override
     {
         for (size_t i = 0; i < size; i++)
         {
-            Q.push(buf[i]);
+            Q.push(((uint8_t*)buf)[i]);
         }
     }
 
@@ -42,7 +42,7 @@ struct HostBaseImpl : public HostBase
 
 TEST(HostBase, sizeof)
 {
-    ASSERT_EQ(sizeof(HostBase), 44);
+    ASSERT_EQ(sizeof(HostBase), 28);
 }
 
 TEST(HostBase, TxRx)
@@ -74,25 +74,30 @@ TEST(Sync, Sync)
 {
     struct Item
     {
-        uint8_t  item1;
-        uint8_t  item2;
-        uint16_t chksum;
+        uint8_t item1;
+        uint8_t item2;
     };
 
     // 构造帧头
     Item item;
     item.item1  = 1;
     item.item2  = 2;
-    item.chksum = crc_ccitt_ffff((uint8_t*)&item, sizeof(item) - sizeof(uint16_t));
-    item.chksum = __REV16(item.chksum);
+    auto chksum = crc_ccitt_ffff((uint8_t*)&item, sizeof(item));
+    chksum      = __REV16(chksum);
 
     // 帧头缓冲区
     Sync<Item> Q;
 
     // 将帧头放到缓冲区中
-    for (size_t i = 0; i < Q.capacity(); i++)
+    for (size_t i = 0; i < sizeof(Item); i++)
     {
         Q.push(((uint8_t*)&item)[i]);
+    }
+
+    // 将校验和放到缓冲区中
+    for (size_t i = 0; i < sizeof(Chksum); i++)
+    {
+        Q.push(((uint8_t*)&chksum)[i]);
     }
 
     // 验证帧头
@@ -102,7 +107,6 @@ TEST(Sync, Sync)
     Item fromQueue = Q.get();
     ASSERT_EQ(fromQueue.item1, item.item1);
     ASSERT_EQ(fromQueue.item2, item.item2);
-    ASSERT_EQ(fromQueue.chksum, item.chksum);
 
     // 队列在获取帧头后应当被清空
     ASSERT_EQ(Q.size(), 0);

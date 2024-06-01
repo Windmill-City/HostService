@@ -61,7 +61,7 @@ TEST_F(TProperty, Get)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
-    client.send_request(Command::GET_PROPERTY, extra);
+    client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_PROPERTY, err, client.extra);
@@ -80,7 +80,7 @@ TEST_F(TProperty, Set)
     ErrorCode err;
     extra.add<PropertyId>(0);
     extra.add(18.8f);
-    client.send_request(Command::SET_PROPERTY, extra);
+    client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
@@ -93,7 +93,7 @@ TEST_F(TProperty, GetSize)
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
-    client.send_request(Command::GET_SIZE, extra);
+    client.send(Command::GET_SIZE, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
