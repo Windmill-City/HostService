@@ -78,6 +78,18 @@ struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
     }
 
     /**
+     * @brief 获取属性的地址
+     *
+     * @note 此方法非线程安全
+     *
+     * @return T* 属性地址
+     */
+    const uint8_t* operator&() const
+    {
+        return this->_value.data();
+    }
+
+    /**
      * @brief 写入属性值
      *
      * @note 此方法线程安全
