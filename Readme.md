@@ -50,7 +50,7 @@ CBC-MAC 介绍: <https://en.wikipedia.org/wiki/CBC-MAC>
 
 <https://crccalc.com/?crc=&method=CRC-16/CCITT-FALSE&datatype=hex&outtype=0>
 
-## 帧同步算法
+## 帧同步
 
 ```mermaid
 flowchart TD
@@ -65,7 +65,7 @@ flowchart TD
     End(帧头有效-帧同步完成)
 ```
 
-## 帧头解析算法
+## 帧解析
 
 ```mermaid
 flowchart TD
