@@ -16,6 +16,14 @@ Start:
     if (!recv(r_cmd, err, extra)) return false;
 
     // 验证命令
-    if (r_cmd != cmd) goto Start;
+    if (r_cmd != cmd)
+    {
+        // 输出 log 信息
+        if (r_cmd == Command::LOG)
+        {
+            log_output((const char*)extra.data(), extra.remain());
+        }
+        goto Start;
+    }
     return true;
 }

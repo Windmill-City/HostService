@@ -47,4 +47,13 @@ struct HostClient : public HostBase
     }
 
     bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
+
+  protected:
+    /**
+     * @brief 日志输出接口
+     *
+     * @param log 日志信息
+     * @param size 日志字节长度
+     */
+    virtual void log_output(const char* log, const size_t size) = 0;
 };
