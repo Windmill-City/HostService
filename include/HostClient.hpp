@@ -46,6 +46,5 @@ struct HostClient : public HostBase
     {
     }
 
-  protected:
-    // 帧头缓冲区
+    bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
 };

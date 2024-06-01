@@ -34,10 +34,6 @@ struct HostBaseImpl : public HostBase
             Q.push(((uint8_t*)buf)[i]);
         }
     }
-
-    virtual void log_output(const char* log, const size_t size) override
-    {
-    }
 };
 
 TEST(HostBase, sizeof)

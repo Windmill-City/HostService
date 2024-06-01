@@ -40,23 +40,3 @@ TEST_F(HostCS, request)
 
     ASSERT_TRUE(memcmp(client.extra.data(), data, sizeof(data)) == 0);
 }
-
-TEST_F(HostCS, log)
-{
-    auto msg       = "Hello World!";
-
-    auto ft_server = std::async(std::launch::async,
-                                [&]()
-                                {
-                                    server.send_log(msg, strlen(msg));
-                                });
-    auto ft_client = std::async(std::launch::async,
-                                [&]()
-                                {
-                                    ErrorCode err;
-                                    client.recv_response(Command::LOG, err, client.extra);
-                                    client.send_ack();
-                                });
-    ft_server.get();
-    ft_client.get();
-}

@@ -101,10 +101,18 @@ struct HostServer : public HostBase
     }
 
     bool poll();
-    bool send_log(const char* log, size_t size);
+    void send_log(const char* log, size_t size);
 
   protected:
-    virtual void  log_output(const char* log, const size_t size) override;
+    /**
+     * @brief 日志输出接口
+     *
+     * @param log 日志信息
+     * @param size 日志字节长度
+     */
+    virtual void log_output(const char* log, const size_t size) = 0;
+
+  protected:
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, bool encrypted);
 
   protected:

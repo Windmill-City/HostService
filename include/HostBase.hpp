@@ -136,11 +136,6 @@ struct HostBase
     void send(const Command cmd, Extra& extra, const bool encrypt = false, const ErrorCode err = ErrorCode::S_OK);
     bool recv(Command& cmd, ErrorCode& err, Extra& extra);
 
-    bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
-
-    void send_ack();
-    bool recv_ack();
-
   protected:
     /**
      * @brief 底层数据接收方法, 接收 1 字节数据
@@ -148,21 +143,14 @@ struct HostBase
      * @param rx 接收数据的变量
      * @return 是否接收成功
      */
-    virtual bool rx(uint8_t& rx)                                = 0;
+    virtual bool rx(uint8_t& rx)                        = 0;
     /**
      * @brief 底层数据发送方法, 阻塞地发送任意长度字节
      *
      * @param _buf 要发送的数据
      * @param size 数据的长度
      */
-    virtual void tx(const void* buf, const size_t size)         = 0;
-    /**
-     * @brief 日志输出接口
-     *
-     * @param log 日志信息
-     * @param size 日志字节长度
-     */
-    virtual void log_output(const char* log, const size_t size) = 0;
+    virtual void tx(const void* buf, const size_t size) = 0;
 
   protected:
     void send(const Header& head, const void* extra, const uint16_t size);

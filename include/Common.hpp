@@ -77,17 +77,9 @@ enum class Command : uint8_t
      * @brief log信息(仅服务端发送)
      *
      * 请求: CMD,log信息
-     * 应答: ACK
+     * 应答: 无
      */
     LOG,
-    /**
-     * @brief 应答(仅客户端发送)
-     *
-     * 作用: 控制 log 信息发送速率
-     *
-     * 应答: CMD, S_OK
-     */
-    ACK,
 };
 
 /**

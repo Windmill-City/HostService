@@ -82,22 +82,15 @@ bool HostServer::poll()
  *
  * @param log log信息
  * @param size log大小
- * @return bool 是否接收到 ACK
  */
-bool HostServer::send_log(const char* log, size_t size)
+void HostServer::send_log(const char* log, size_t size)
 {
-    Header rep;
-    rep.address = address;
-    rep.cmd     = Command::LOG;
-    rep.error   = ErrorCode::S_OK;
-    rep.size    = size;
-    send(rep, log, size);
-    return recv_ack();
-}
-
-void HostServer::log_output(const char* log, const size_t size)
-{
-    // ignore
+    Header head;
+    head.address = address;
+    head.cmd     = Command::LOG;
+    head.error   = ErrorCode::S_OK;
+    head.size    = size;
+    send(head, log, size);
 }
 
 PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, bool encrypted)

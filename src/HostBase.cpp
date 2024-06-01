@@ -95,26 +95,6 @@ End:
 }
 
 /**
- * @brief 接收响应
- *
- * @param cmd 期望的命令
- * @param err 错误码
- * @param extra 附加参数
- * @return true 成功接收一帧
- * @return false 接收超时
- */
-bool HostBase::recv_response(const Command cmd, ErrorCode& err, Extra& extra)
-{
-Start:
-    Command r_cmd;
-    if (!recv(r_cmd, err, extra)) return false;
-
-    // 验证命令
-    if (r_cmd != cmd) goto Start;
-    return true;
-}
-
-/**
  * @brief 发送数据帧
  *
  * @param head 帧头
@@ -163,39 +143,4 @@ void HostBase::send(const Command cmd, Extra& extra, const bool encrypt, const E
         send(head, extra.tag(), extra.size() + sizeof(TagType));
     else
         send(head, extra.data(), extra.size());
-}
-
-/**
- * @brief 发送 ACK 响应
- *
- */
-void HostBase::send_ack()
-{
-    Header head;
-    head.address = address;
-    head.cmd     = Command::ACK;
-    head.error   = ErrorCode::S_OK;
-    head.size    = 0;
-    send(head, nullptr, 0);
-}
-
-/**
- * @brief 接收 ACK 响应
- *
- * @return true 成功接收 ACK
- * @return false 接收超时
- */
-bool HostBase::recv_ack()
-{
-Start:
-    Header head;
-    if (!sync(head)) return false;
-
-    // 验证命令
-    if (REMOVE_ENCRYPT_MARK(head.cmd) != Command::ACK) goto Start;
-
-    // 验证地址
-    if (head.address != address) goto Start;
-
-    return true;
 }

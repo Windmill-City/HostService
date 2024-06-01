@@ -32,10 +32,6 @@ struct HostClientImpl : public HostClient
             Q_Server->push(((uint8_t*)buf)[i]);
         }
     }
-
-    virtual void log_output(const char* log, const size_t size) override
-    {
-    }
 };
 
 struct HostServerImpl : public HostServer
@@ -69,6 +65,10 @@ struct HostServerImpl : public HostServer
         {
             Q_Client->push(((uint8_t*)buf)[i]);
         }
+    }
+
+    virtual void log_output(const char* log, const size_t size) override
+    {
     }
 };
 
