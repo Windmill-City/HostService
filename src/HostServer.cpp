@@ -81,8 +81,9 @@ bool HostServer::poll()
  *
  * @param log log信息
  * @param size log大小
+ * @return bool 是否接收到 ACK
  */
-void HostServer::send_log(const char* log, size_t size)
+bool HostServer::send_log(const char* log, size_t size)
 {
     Response rep;
     rep.address = address;
@@ -90,7 +91,7 @@ void HostServer::send_log(const char* log, size_t size)
     rep.error   = ErrorCode::S_OK;
     rep.size    = size;
     _encode((uint8_t*)&rep, sizeof(rep), (uint8_t*)log, size);
-    recv_ack();
+    return recv_ack();
 }
 
 void HostServer::log_output(const char* log, const size_t size)
