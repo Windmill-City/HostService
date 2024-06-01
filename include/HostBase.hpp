@@ -114,9 +114,14 @@ struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
 struct SecretHolder
 {
     // 加密通信随机数, 用来防止重放攻击
-    PropertyNonce nonce;
+    PropertyNonce      nonce;
     // 加密通信密钥
-    PropertyKey   key;
+    const PropertyKey& key;
+
+    SecretHolder(const PropertyKey& key)
+        : key(key)
+    {
+    }
 
     /**
      * @brief 更新随机数
@@ -125,7 +130,7 @@ struct SecretHolder
      * @note 此随机数应当保证不同设备间是不同的
      * @note 在响应完毕一个加密的数据包之后, 此方法会被调用
      */
-    virtual void  update_nonce()
+    virtual void update_nonce()
     {
     }
 };

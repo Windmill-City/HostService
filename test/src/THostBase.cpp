@@ -12,11 +12,15 @@
 struct HostBaseImpl : public HostBase
 {
     std::queue<uint8_t> Q;
+
     PropertyAddress     addr;
+
+    PropertyKey         key;
     SecretHolder        secret;
 
     HostBaseImpl()
-        : HostBase(addr, secret)
+        : secret(key)
+        , HostBase(addr, secret)
     {
     }
 

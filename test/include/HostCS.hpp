@@ -11,9 +11,7 @@ struct HostClientImpl : public HostClient
 
     PropertyAddress   addr;
 
-    SecretHolder      secret;
-
-    HostClientImpl(CPropertyHolderBase& holder)
+    HostClientImpl(CPropertyHolderBase& holder, SecretHolder& secret)
         : HostClient(addr, holder, secret)
     {
     }
@@ -74,18 +72,17 @@ struct HostServerImpl : public HostServer
 
 struct HostCSBase
 {
+    PropertyKey    key;
     SecretHolder   secret;
     HostServerImpl server;
     HostClientImpl client;
 
     HostCSBase(const PropertyHolderBase& holder, CPropertyHolderBase& cholder)
-        : server(holder, secret)
-        , client(cholder)
+        : secret(key)
+        , server(holder, secret)
+        , client(cholder, secret)
     {
-        server.Q_Client     = &client.Q_Client;
-        client.Q_Server     = &server.Q_Server;
-
-        client.secret.key   = server.secret.key;
-        client.secret.nonce = server.secret.nonce;
+        server.Q_Client = &client.Q_Client;
+        client.Q_Server = &server.Q_Server;
     }
 };

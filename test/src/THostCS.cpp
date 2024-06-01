@@ -8,7 +8,8 @@ TEST(Header, sizeof)
     ASSERT_EQ(sizeof(Header), 5);
 }
 
-static SecretHolder              secret;
+static PropertyKey               key;
+static SecretHolder              secret(key);
 // 静态初始化
 static constexpr PropertyMap<1>  map = {{{"nonce", &(PropertyBase&)secret.nonce}}};
 static PropertyHolder            holder(map);
