@@ -82,6 +82,8 @@ enum class Command : uint8_t
     LOG,
     /**
      * @brief 应答(仅客户端发送)
+     * 
+     * 作用: 控制 log 信息发送速率
      *
      * 应答: CMD, S_OK
      */
