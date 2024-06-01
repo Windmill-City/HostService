@@ -139,6 +139,7 @@ struct HostBase
     void send_response(const Command cmd, const ErrorCode err, Extra& extra);
     bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
 
+    void send_ack();
     bool recv_ack();
 
   protected:

@@ -225,11 +225,26 @@ End:
         if (REMOVE_ENCRYPT_MARK(rep.cmd) == Command::LOG)
         {
             log_output((const char*)extra.data(), extra.remain());
+            send_ack();
         }
         goto Start;
     }
 
     return true;
+}
+
+/**
+ * @brief 发送 ACK 响应
+ *
+ */
+void HostBase::send_ack()
+{
+    Response rep;
+    rep.address = address;
+    rep.cmd     = Command::ACK;
+    rep.error   = ErrorCode::S_OK;
+    rep.size    = 0;
+    _encode((uint8_t*)&rep, sizeof(rep), nullptr, 0);
 }
 
 /**
