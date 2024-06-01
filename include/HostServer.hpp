@@ -101,7 +101,7 @@ struct HostServer : public HostBase
     }
 
     bool poll();
-    void send_log(const uint8_t* log, size_t size);
+    void send_log(const uint8_t* log, const size_t size);
 
   protected:
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, bool encrypted);
