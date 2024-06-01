@@ -21,7 +21,7 @@ Start:
         // 输出 log 信息
         if (r_cmd == Command::LOG)
         {
-            log_output((const char*)extra.data(), extra.remain());
+            log_output(extra.data(), extra.remain());
         }
         goto Start;
     }

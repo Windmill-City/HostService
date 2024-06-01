@@ -33,7 +33,7 @@ struct HostClientImpl : public HostClient
         }
     }
 
-    virtual void log_output(const char* log, const size_t size) override
+    virtual void log_output(const uint8_t* log, const size_t size) override
     {
     }
 };

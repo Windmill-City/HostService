@@ -55,5 +55,5 @@ struct HostClient : public HostBase
      * @param log 日志信息
      * @param size 日志字节长度
      */
-    virtual void log_output(const char* log, const size_t size) = 0;
+    virtual void log_output(const uint8_t* log, const size_t size) = 0;
 };
