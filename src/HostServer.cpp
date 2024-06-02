@@ -19,7 +19,7 @@ bool HostServer::poll()
     if (!recv(cmd, err, extra)) return false;
 
     // 检查加密标记
-    if (encrypted = extra.encrypted())
+    if ((encrypted = extra.encrypted()))
     {
         if (!extra.decrypt(secret.nonce, secret.key))
         {
