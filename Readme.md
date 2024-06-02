@@ -108,6 +108,7 @@ flowchart TD
 ```
 
 命令: GET_SIZE
+
 附加参数: `0(uint16_t)`
 
 - `0` 为 `symbols` 属性的 `属性Id`
@@ -119,6 +120,7 @@ flowchart TD
 ---
 
 命令: GET_PROPERTY
+
 附加参数: `0(uint16_t)`, `i(uint16_t)`
 
 - `0` 为 `symbols` 属性的 `属性Id`
@@ -126,7 +128,7 @@ flowchart TD
 
 应答:
 
-- `zero-teminated string` `符号名`
+- `符号名` `uint8_t[]`
 
 ## 命令
 
