@@ -154,11 +154,11 @@ flowchart TD
 
 附加参数:
 
-- 属性 Id
+- 属性 Id `uint16_t`
 
 返回值:
 
-- 属性值
+- 属性值 `uint8_t[sizeof(T)]`
 
 ---
 
@@ -168,8 +168,8 @@ flowchart TD
 
 附加参数:
 
-- 属性 Id
-- MemoryAccess
+- 属性 Id `uint16_t`
+- `MemoryAccess`
 
 ```c++
 struct MemoryAccess
@@ -181,7 +181,7 @@ struct MemoryAccess
 
 返回值:
 
-- 内存区数据
+- 内存区数据 `uint8_t[size]`
 
 ---
 
@@ -191,8 +191,8 @@ struct MemoryAccess
 
 附加参数:
 
-- 属性 Id
-- RangeAccess
+- 属性 Id `uint16_t`
+- `RangeAccess` `uint8_t`
 
 ```c++
 enum class RangeAccess : uint8_t
@@ -204,7 +204,7 @@ enum class RangeAccess : uint8_t
 
 返回值:
 
-- RangeVal
+- 属性值 `uint8_t[sizeof(RangeVal<T>)]`
 
 ```c++
 template <Number T>
@@ -223,8 +223,8 @@ struct RangeVal
 
 附加参数:
 
-- 属性 Id
-- 属性值
+- 属性 Id `uint16_t`
+- 属性值 `uint8_t[sizeof(T)]`
 
 返回值:
 
@@ -240,9 +240,9 @@ struct RangeVal
 
 附加参数:
 
-- 属性 Id
-- MemoryAccess
-- 内存区数据
+- 属性 Id `uint16_t`
+- `MemoryAccess`
+- 内存区数据 `uint8_t[size]`
 
 返回值:
 
@@ -256,9 +256,9 @@ struct RangeVal
 
 附加参数:
 
-- 属性 Id
-- RangeAccess
-- RangeVal
+- 属性 Id `uint16_t`
+- `RangeAccess`
+- 属性值 `uint8_t[sizeof(RangeVal<T>)]`
 
 返回值:
 
@@ -272,11 +272,11 @@ struct RangeVal
 
 附加参数:
 
-- 属性 Id
+- 属性 Id `uint16_t`
 
 返回值:
 
-- 属性字节长度
+- 属性字节长度 `uint16_t`
 
 ---
 
@@ -286,11 +286,11 @@ struct RangeVal
 
 附加参数:
 
-- 属性 Id
+- 属性 Id `uint16_t`
 
 返回值:
 
-- 内存区字节长度
+- 内存区字节长度 `uint16_t`
 
 ---
 
@@ -300,12 +300,12 @@ struct RangeVal
 
 附加参数:
 
-- 属性 Id
-- RangeAccess
+- 属性 Id `uint16_t`
+- `RangeAccess`
 
 返回值:
 
-- RangeVal 的字节长度
+- RangeVal 的字节长度 `uint16_t`
 
 ### LOG
 
@@ -315,7 +315,9 @@ struct RangeVal
 
 附加参数:
 
-- 字符串
+- Trice 数据 `uint8_t[]`
+
+Trice 介绍: <https://github.com/rokath/trice>
 
 ## 文件说明
 
