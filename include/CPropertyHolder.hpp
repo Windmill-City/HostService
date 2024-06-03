@@ -35,10 +35,6 @@ struct CPropertyHolder : public CPropertyHolderBase
         // 接收响应
         if (!client.recv_response(Command::GET_SIZE, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
-        // 接收数据
-        PropertyId id_r;
-        if (!extra.get(id_r) || 0 != id_r) return ErrorCode::E_FAIL;
-        if (!extra.get(size)) return ErrorCode::E_FAIL;
         return ErrorCode::S_OK;
     }
 
@@ -57,10 +53,6 @@ struct CPropertyHolder : public CPropertyHolderBase
         // 接收响应
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
-        // 接收数据
-        PropertyId id_r;
-        if (!extra.get(id_r) || 0 != id_r) return ErrorCode::E_FAIL;
-        if (!extra.get(id_r) || id != id_r) return ErrorCode::E_FAIL;
         return ErrorCode::S_OK;
     }
 
@@ -81,6 +73,7 @@ struct CPropertyHolder : public CPropertyHolderBase
             found++;
         }
 
+        // 返回是否所有符号都找到了
         return found == map.size() ? ErrorCode::S_OK : ErrorCode::E_FAIL;
     }
 };
