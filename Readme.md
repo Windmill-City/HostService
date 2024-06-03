@@ -95,16 +95,20 @@ flowchart TD
 ## 同步符号表
 
 ```mermaid
-flowchart TD
-    GetSize --> For --> Get --> Bind
-    Bind --[i < size]--> For
-    Bind --[i = size]--> End
+sequenceDiagram
+    Client ->> Server: GET_SIZE, 0
+    activate Server
+    Server ->> Client: GET_SIZE, S_OK, 10
+    deactivate Server
+    Note over Client, Server: 获取 符号表 元素个数
 
-    GetSize(获取符号表长度:GET_SIZE,0)
-    For(for i to size)
-    Get(获取 i 处的 符号名 :GET_PROPERTY,0,i)
-    Bind(将 id 与 符号名 保存在本地映射表中)
-    End(同步完成)
+    loop from i to size
+        Client ->> Server: GET_PROPERTY, 0, i
+        activate Server
+        Server ->> Client: GET_PROPERTY, S_OK, 符号名
+        deactivate Server
+        Note over Client, Server: 获取 i 处 符号名
+    end
 ```
 
 `符号表` 是一个字符串常量数组, 其 `索引(Index)` 即为 `属性Id`
