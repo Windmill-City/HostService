@@ -44,7 +44,7 @@ bool HostServer::poll()
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
         // 读取属性值
-        err = prop->get(extra);
+        err = prop->get(extra, encrypted);
         send(cmd, extra, encrypted, err);
         break;
     }
@@ -53,7 +53,7 @@ bool HostServer::poll()
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
         // 写入属性值
-        err = prop->set(extra);
+        err = prop->set(extra, encrypted);
         send(cmd, extra, encrypted, err);
         break;
     }
@@ -62,7 +62,7 @@ bool HostServer::poll()
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
         // 读取Size
-        err = prop->get_size(extra);
+        err = prop->get_size(extra, encrypted);
         send(cmd, extra, encrypted, err);
         break;
     }

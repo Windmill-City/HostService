@@ -32,23 +32,26 @@ struct PropertyBase
      * @brief 设置属性值
      *
      * @param extra [in]附加参数
+     * @param privileged [in]特权模式
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode set(Extra& extra);
+    virtual ErrorCode set(Extra& extra, bool privileged);
     /**
      * @brief 读取属性值
      *
      * @param extra [in/out]附加参数
+     * @param privileged [in]特权模式
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get(Extra& extra) const;
+    virtual ErrorCode get(Extra& extra, bool privileged) const;
     /**
      * @brief 获取属性长度
      *
      * @param extra [out]附加参数
+     * @param privileged [in]特权模式
      * @return ErrorCode 错误码
      */
-    virtual ErrorCode get_size(Extra& extra) const;
+    virtual ErrorCode get_size(Extra& extra, bool privileged) const;
     /**
      * @brief 检查读取参数
      *

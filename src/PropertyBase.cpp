@@ -19,17 +19,17 @@ Mutex&              PropertyBase::MutexGlobal = LockDefault;
 
 #endif
 
-ErrorCode PropertyBase::set(Extra& extra)
+ErrorCode PropertyBase::set(Extra& extra, bool privileged)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
 
-ErrorCode PropertyBase::get(Extra& extra) const
+ErrorCode PropertyBase::get(Extra& extra, bool privileged) const
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
 
-ErrorCode PropertyBase::get_size(Extra& extra) const
+ErrorCode PropertyBase::get_size(Extra& extra, bool privileged) const
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }

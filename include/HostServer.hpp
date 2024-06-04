@@ -34,7 +34,7 @@ struct PropertyHolderBase
 
 struct PropertySymbols : public PropertyAccess<Access::READ>
 {
-    virtual ErrorCode get(Extra& extra) const override
+    virtual ErrorCode get(Extra& extra, bool privileged) const override
     {
         PropertyId id;
         if (!extra.get(id)) return ErrorCode::E_INVALID_ARG;
@@ -46,7 +46,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra) const override
+    virtual ErrorCode get_size(Extra& extra, bool privileged) const override
     {
         if (_holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
         extra.reset();

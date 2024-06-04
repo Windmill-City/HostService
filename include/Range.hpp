@@ -149,7 +149,7 @@ struct Range : public Property<RangeVal<T>, access>
         return *this;
     }
 
-    virtual ErrorCode set(Extra& extra) override
+    virtual ErrorCode set(Extra& extra, bool privileged) override
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
@@ -173,7 +173,7 @@ struct Range : public Property<RangeVal<T>, access>
         return ErrorCode::E_INVALID_ARG;
     }
 
-    virtual ErrorCode get(Extra& extra) const override
+    virtual ErrorCode get(Extra& extra, bool privileged) const override
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;
@@ -193,7 +193,7 @@ struct Range : public Property<RangeVal<T>, access>
         return ErrorCode::E_INVALID_ARG;
     }
 
-    virtual ErrorCode get_size(Extra& extra) const override
+    virtual ErrorCode get_size(Extra& extra, bool privileged) const override
     {
         RangeAccess access;
         if (!extra.get(access)) return ErrorCode::E_INVALID_ARG;

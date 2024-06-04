@@ -104,7 +104,7 @@ struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
         return *this;
     }
 
-    virtual ErrorCode get(Extra& extra) const override final
+    virtual ErrorCode get(Extra& extra, bool privileged) const override final
     {
         // 不允许回读密钥
         return ErrorCode::E_NO_IMPLEMENT;

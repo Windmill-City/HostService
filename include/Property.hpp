@@ -128,14 +128,14 @@ struct Property : public PropertyAccess<access>
         return *this;
     }
 
-    virtual ErrorCode get(Extra& extra) const override
+    virtual ErrorCode get(Extra& extra, bool privileged) const override
     {
         extra.reset();
         if (!extra.add(safe_get())) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode set(Extra& extra) override
+    virtual ErrorCode set(Extra& extra, bool privileged) override
     {
         ErrorCode err;
         T         value;
@@ -145,7 +145,7 @@ struct Property : public PropertyAccess<access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra) const override
+    virtual ErrorCode get_size(Extra& extra, bool privileged) const override
     {
         extra.reset();
         extra.add<uint16_t>(sizeof(_value));
