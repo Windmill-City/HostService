@@ -38,7 +38,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get_name(HostClient& client, const PropertyId id) const
+    ErrorCode get_name(HostClient& client, const PropertyId id, bool encrypted) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -49,7 +49,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         // 添加id - 需要请求 symbol 的id
         extra.add<PropertyId>(id);
         // 发送请求
-        client.send(Command::GET_PROPERTY, extra, false);
+        client.send(Command::GET_PROPERTY, extra, encrypted);
         // 接收响应
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
@@ -64,7 +64,12 @@ struct CPropertyHolder : public CPropertyHolderBase
         if ((err = get_size(client, size)) != ErrorCode::S_OK) return err;
         for (size_t i = 0; i < size; i++)
         {
-            if (get_name(client, i) != ErrorCode::S_OK) continue;
+            // 使用无加密模式获取符号名
+            if (get_name(client, i, false) != ErrorCode::S_OK)
+            {
+                // 使用加密模式再获取一次
+                if (get_name(client, i, true) != ErrorCode::S_OK) continue;
+            }
 
             frozen::string name((const char*)client.extra.data(), (size_t)client.extra.remain());
             // 允许服务端拥有比客户端更多的属性
