@@ -35,6 +35,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         // 接收响应
         if (!client.recv_response(Command::GET_SIZE, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
+        if (!extra.get(size)) return ErrorCode::E_FAIL;
         return ErrorCode::S_OK;
     }
 
@@ -69,9 +70,11 @@ struct CPropertyHolder : public CPropertyHolderBase
             {
                 // 使用加密模式再获取一次
                 if (get_name(client, i, true) != ErrorCode::S_OK) continue;
+                // 解密数据
+                if (!client.extra.decrypt(client.secret.nonce, client.secret.key)) continue;
             }
 
-            frozen::string name((const char*)client.extra.data(), (size_t)client.extra.remain());
+            frozen::string name((const char*)client.extra.curr(), (size_t)client.extra.remain());
             // 允许服务端拥有比客户端更多的属性
             if (!map.contains(name)) continue;
             map.at(name) = i;
