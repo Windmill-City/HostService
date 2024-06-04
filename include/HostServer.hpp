@@ -40,9 +40,19 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         if (!extra.get(id)) return ErrorCode::E_INVALID_ARG;
         if (id >= _holder->size()) return ErrorCode::E_OUT_OF_INDEX;
 
-        frozen::string desc = _holder->get_desc(id);
         extra.reset();
-        extra.add(desc.data(), desc.size());
+        PropertyBase* prop = _holder->get(id);
+        if (prop->check_read(privileged) == ErrorCode::S_OK)
+        {
+            frozen::string desc = _holder->get_desc(id);
+            extra.add(desc.data(), desc.size());
+        }
+        else
+        {
+            frozen::string desc = "no-access";
+            extra.add(desc.data(), desc.size());
+        }
+
         return ErrorCode::S_OK;
     }
 
