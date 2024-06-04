@@ -2,6 +2,7 @@
 #include <array>
 #include <Common.hpp>
 #include <string.h>
+#include <type_traits>
 #include <uaes.h>
 
 // 只允许标准布局类型和非指针类型
