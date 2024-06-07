@@ -44,7 +44,7 @@ struct ExtraT
         // 检查是否超长
         if (size > spare()) return false;
         // 复制数据
-        memcpy(curr(), (uint8_t*)value, size);
+        memcpy(curr(), (const uint8_t*)value, size);
         seek(_data + size);
         return true;
     }

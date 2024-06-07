@@ -16,7 +16,7 @@ enum class Access : uint8_t
     READ_WRITE,
     WRITE_PROTECT,
     READ_PROTECT,
-    READ_WRITE_PROTECT,
+    READ_WRITE_PROTECT
 };
 
 /**

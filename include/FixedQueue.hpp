@@ -6,8 +6,8 @@
 
 enum PopAction
 {
-    NoPop,     // 队列满时丢弃放入的数据
-    PopOnPush, // 队列满时丢弃首部的数据
+    NoPop,    // 队列满时丢弃放入的数据
+    PopOnPush // 队列满时丢弃首部的数据
 };
 
 template <size_t _size, PopAction action = PopAction::NoPop>

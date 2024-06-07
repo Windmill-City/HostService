@@ -104,7 +104,7 @@ struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
         return *this;
     }
 
-    virtual ErrorCode get(Extra& extra, bool privileged) const override final
+    virtual ErrorCode get(Extra&, bool) const override final
     {
         // 不允许回读密钥
         return ErrorCode::E_NO_IMPLEMENT;
@@ -164,7 +164,7 @@ struct HostBase
     /**
      * @brief 底层数据发送方法, 阻塞地发送任意长度字节
      *
-     * @param _buf 要发送的数据
+     * @param buf 要发送的数据
      * @param size 数据的长度
      */
     virtual void tx(const void* buf, const size_t size) = 0;

@@ -1,5 +1,4 @@
 #include "PropertyBase.hpp"
-#include <mutex>
 
 #if NO_LOCK
 
@@ -19,17 +18,17 @@ Mutex&              PropertyBase::MutexGlobal = LockDefault;
 
 #endif
 
-ErrorCode PropertyBase::set(Extra& extra, bool privileged)
+ErrorCode PropertyBase::set(Extra&, bool)
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
 
-ErrorCode PropertyBase::get(Extra& extra, bool privileged) const
+ErrorCode PropertyBase::get(Extra&, bool) const
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }
 
-ErrorCode PropertyBase::get_size(Extra& extra, bool privileged) const
+ErrorCode PropertyBase::get_size(Extra&, bool) const
 {
     return ErrorCode::E_NO_IMPLEMENT;
 }

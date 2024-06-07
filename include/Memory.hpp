@@ -84,7 +84,7 @@ struct Memory : public PropertyAccess<_access>
         return _value[idx];
     }
 
-    virtual ErrorCode set(Extra& extra, bool privileged) override
+    virtual ErrorCode set(Extra& extra, bool) override
     {
         MemoryAccess access;
         // 检查访问参数是否正确
@@ -97,7 +97,7 @@ struct Memory : public PropertyAccess<_access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get(Extra& extra, bool privileged) const override
+    virtual ErrorCode get(Extra& extra, bool) const override
     {
         MemoryAccess access;
         // 检查访问参数是否正确
@@ -113,7 +113,7 @@ struct Memory : public PropertyAccess<_access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra, bool privileged) const override
+    virtual ErrorCode get_size(Extra& extra, bool) const override
     {
         extra.reset();
         extra.add<uint16_t>(sizeof(_value));

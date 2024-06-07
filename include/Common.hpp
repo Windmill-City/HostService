@@ -1,5 +1,4 @@
 #pragma once
-#include <cstddef>
 #include <stdint.h>
 
 enum class ErrorCode : uint8_t
@@ -16,7 +15,7 @@ enum class ErrorCode : uint8_t
     E_OUT_OF_INDEX,    // 内存访问越界
     E_OVER_HIGH_LIMIT, // 超出上限
     E_OVER_LOW_LIMIT,  // 超出下限
-    E_ILLEGAL_STATE,   // 非法状态
+    E_ILLEGAL_STATE    // 非法状态
 };
 
 enum class Command : uint8_t
@@ -75,7 +74,7 @@ enum class Command : uint8_t
      * 请求: CMD,log信息
      * 应答: 无
      */
-    LOG,
+    LOG
 };
 
 /**

@@ -19,8 +19,8 @@ struct HostBaseImpl : public HostBase
     SecretHolder        secret;
 
     HostBaseImpl()
-        : secret(key)
-        , HostBase(addr, secret)
+        : HostBase(addr, secret)
+        , secret(key)
     {
     }
 

@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include <Extra.hpp>
 #include <FixedQueue.hpp>
 #include <frozen/string.h>
@@ -51,7 +50,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra, bool privileged) const override
+    virtual ErrorCode get_size(Extra& extra, bool) const override
     {
         if (_holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
         extra.reset();

@@ -15,7 +15,7 @@ concept PropertyVal = std::is_standard_layout_v<T>;
 template <PropertyVal T, Access access = Access::READ_WRITE>
 struct Property : public PropertyAccess<access>
 {
-    Property(T value = {0})
+    Property(T value = {})
     {
         safe_set(value);
     }
@@ -117,9 +117,9 @@ struct Property : public PropertyAccess<access>
      * @note 此方法线程安全
      * @note 不能在中断函数内使用
      *
-     * @tparam K
-     * @param other
-     * @return auto&
+     * @tparam K 属性类型
+     * @param other 右属性
+     * @return auto& 自身引用
      */
     template <PropertyVal K>
     auto& operator=(const K other)
@@ -128,14 +128,14 @@ struct Property : public PropertyAccess<access>
         return *this;
     }
 
-    virtual ErrorCode get(Extra& extra, bool privileged) const override
+    virtual ErrorCode get(Extra& extra, bool) const override
     {
         extra.reset();
         if (!extra.add(safe_get())) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode set(Extra& extra, bool privileged) override
+    virtual ErrorCode set(Extra& extra, bool) override
     {
         ErrorCode err;
         T         value;
@@ -145,7 +145,7 @@ struct Property : public PropertyAccess<access>
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_size(Extra& extra, bool privileged) const override
+    virtual ErrorCode get_size(Extra& extra, bool) const override
     {
         extra.reset();
         extra.add<uint16_t>(sizeof(_value));
