@@ -1,6 +1,5 @@
 #pragma once
 #include <CProperty.hpp>
-#include <cstddef>
 #include <HostClient.hpp>
 #include <Range.hpp>
 
