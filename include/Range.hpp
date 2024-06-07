@@ -47,8 +47,8 @@ struct RangeVal
  * @tparam T 数值类型
  * @tparam access 访问级别
  */
-template <Number T, Access access = Access::READ_WRITE>
-struct Range : public Property<RangeVal<T>, access>
+template <Number T, Access _access = Access::READ_WRITE>
+struct Range : public Property<RangeVal<T>, _access>
 {
     const RangeVal<T> Absolute;
 
