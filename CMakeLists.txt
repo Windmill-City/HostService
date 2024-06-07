@@ -4,12 +4,10 @@ project(HostService)
 # ##############################################################################
 # 编译选项
 # ##############################################################################
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(-Werror -Wall -Wextra)
-
-option(BUILD_HOST_SERVICE_TEST "Build HostService Test" OFF)
 
 # ##############################################################################
 # 源文件
@@ -37,8 +35,6 @@ add_subdirectory(libs/frozen EXCLUDE_FROM_ALL)
 # ##############################################################################
 # 测试
 # ##############################################################################
-if(BUILD_HOST_SERVICE_TEST)
-  include(CTest)
-  enable_testing()
-  add_subdirectory(test build/test)
-endif(BUILD_HOST_SERVICE_TEST)
+include(CTest)
+enable_testing()
+add_subdirectory(test build/test)
