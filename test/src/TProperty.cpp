@@ -78,7 +78,7 @@ TEST_F(TProperty, GetSize)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::GET_SIZE, err, client.extra);
 
-    uint16_t size;
+    Size size;
     client.extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }

@@ -55,7 +55,7 @@ struct PropertySymbols : public PropertyAccess<Access::READ>
     {
         if (_holder->size() > UINT16_MAX) return ErrorCode::E_OUT_OF_INDEX;
         extra.reset();
-        extra.add<uint16_t>(_holder->size());
+        extra.add<Size>(_holder->size());
         return ErrorCode::S_OK;
     }
 

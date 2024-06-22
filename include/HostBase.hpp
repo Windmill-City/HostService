@@ -15,7 +15,7 @@ struct Sync : public FixedQueue<sizeof(T) + sizeof(Checksum), PopAction::PopOnPu
     {
         if (sizeof(T) + sizeof(Checksum) != this->size()) return false;
 
-        uint16_t chksum = CRC_START_CCITT_FFFF;
+        Checksum chksum = CRC_START_CCITT_FFFF;
         for (size_t i = 0; i < this->size(); i++)
         {
             chksum = update_crc_ccitt(chksum, (*this)[i]);

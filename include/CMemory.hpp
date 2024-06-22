@@ -79,9 +79,9 @@ struct CMemory
         // 是否需要加密
         bool         encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::WRITE_PROTECT;
         // 每次同步的最大长度
-        uint16_t     space   = MEMORY_ACCESS_SIZE_MAX;
+        Size         space   = MEMORY_ACCESS_SIZE_MAX;
         // buffer的偏移
-        uint16_t     _offset = 0;
+        Size         _offset = 0;
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
@@ -113,9 +113,9 @@ struct CMemory
         // 是否需要加密
         bool         encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::READ_PROTECT;
         // 每次同步的最大长度
-        uint16_t     space   = MEMORY_ACCESS_SIZE_MAX;
+        Size         space   = MEMORY_ACCESS_SIZE_MAX;
         // buffer 的偏移
-        uint16_t     _offset = 0;
+        Size         _offset = 0;
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;

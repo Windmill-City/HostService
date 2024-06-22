@@ -22,7 +22,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         return ErrorCode::E_ID_NOT_EXIST;
     }
 
-    ErrorCode get_size(HostClient& client, uint16_t& size) const
+    ErrorCode get_size(HostClient& client, Size& size) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -60,8 +60,8 @@ struct CPropertyHolder : public CPropertyHolderBase
     virtual ErrorCode refresh(HostClient& client) override
     {
         ErrorCode err;
-        uint16_t  size;
-        uint16_t  found = 0;
+        Size      size;
+        Size      found = 0;
         if ((err = get_size(client, size)) != ErrorCode::S_OK) return err;
         for (size_t i = 0; i < size; i++)
         {
@@ -75,7 +75,7 @@ struct CPropertyHolder : public CPropertyHolderBase
             }
 
             frozen::string name((const char*)client.extra.curr(), (size_t)client.extra.remain());
-            // 
+            //
             if (!map.contains(name)) continue;
             map.at(name) = i;
             found++;
