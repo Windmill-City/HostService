@@ -2,35 +2,6 @@
 #include "Property.hpp"
 
 /**
- * @brief 存放范围属性的结构体
- *
- * @tparam T 属性的类型
- */
-template <Number T>
-struct RangeVal
-{
-    T    min;
-    T    max;
-
-    /**
-     * @brief 检查数值是否在范围内
-     *
-     * @param value 要检查的数值
-     * @return true 在范围内
-     * @return false 不在范围内
-     */
-    bool in_range(const T value) const
-    {
-        return value >= min && value <= max;
-    }
-
-    bool operator==(const RangeVal& range) const
-    {
-        return this->min == range.min && this->max == range.max;
-    }
-};
-
-/**
  * @brief 范围属性值模板
  *
  * 设置命令:

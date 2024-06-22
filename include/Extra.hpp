@@ -30,12 +30,12 @@ struct ExtraT
      * @return true 添加成功
      * @return false 缓冲区长度不足
      */
-    bool add(const void* value, const size_t size)
+    bool add(const void* value, size_t size)
     {
         // 检查是否超长
         if (size > spare()) return false;
         // 复制数据
-        memcpy(curr(), (const uint8_t*)value, size);
+        memcpy(curr(), (uint8_t*)value, size);
         seek(_data + size);
         return true;
     }
@@ -62,7 +62,7 @@ struct ExtraT
      * @return true 成功获取
      * @return false 缓冲区长度不足
      */
-    bool get(void* value, const size_t size)
+    bool get(void* value, size_t size)
     {
         // 检查长度是否足够
         if (size > remain()) return false;

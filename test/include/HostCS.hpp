@@ -29,7 +29,7 @@ struct HostClientImpl : public HostClient
         return true;
     }
 
-    virtual void tx(const void* buf, const size_t size) override
+    virtual void tx(const void* buf, size_t size) override
     {
         for (size_t i = 0; i < size; i++)
         {
@@ -65,7 +65,7 @@ struct HostServerImpl : public HostServer
             return false;
     }
 
-    virtual void tx(const void* buf, const size_t size) override
+    virtual void tx(const void* buf, size_t size) override
     {
         for (size_t i = 0; i < size; i++)
         {

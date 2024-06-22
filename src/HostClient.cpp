@@ -10,7 +10,7 @@
  * @return true 成功接收一帧
  * @return false 接收超时
  */
-bool HostClient::recv_response(const Command cmd, ErrorCode& err, Extra& extra)
+bool HostClient::recv_response(Command cmd, ErrorCode& err, Extra& extra)
 {
 Start:
     Command r_cmd;

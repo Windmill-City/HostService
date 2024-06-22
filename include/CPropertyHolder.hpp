@@ -39,7 +39,7 @@ struct CPropertyHolder : public CPropertyHolderBase
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get_name(HostClient& client, const PropertyId id, bool encrypted) const
+    ErrorCode get_name(HostClient& client, PropertyId id, bool encrypted) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;

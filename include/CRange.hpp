@@ -26,7 +26,7 @@ struct CRange
     {
     }
 
-    ErrorCode get(HostClient& client, RangeAccess access, RangeVal<T>& value)
+    ErrorCode get(HostClient& client, RangeAccess access, RangeVal<T>& value) const
     {
         ErrorCode err;
         Extra&    extra   = client.extra;

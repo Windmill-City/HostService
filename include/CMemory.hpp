@@ -24,7 +24,7 @@ struct CMemory
     {
     }
 
-    ErrorCode set_block(HostClient& client, MemoryAccess& access, const uint8_t* data, const bool encrypt) const
+    ErrorCode set_block(HostClient& client, MemoryAccess& access, const uint8_t* data, bool encrypt) const
     {
         ErrorCode err;
         Extra&    extra = client.extra;
@@ -48,7 +48,7 @@ struct CMemory
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get_block(HostClient& client, MemoryAccess& access, uint8_t* data, const bool encrypt)
+    ErrorCode get_block(HostClient& client, MemoryAccess& access, uint8_t* data, bool encrypt)
     {
         ErrorCode err;
         Extra&    extra = client.extra;
