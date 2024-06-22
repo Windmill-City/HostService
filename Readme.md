@@ -326,7 +326,6 @@ struct RangeVal
 
 - 日志数据 `uint8_t[]`
 
-
 ## 文件说明
 
 - Common.hpp - 公共属性定义
@@ -345,12 +344,11 @@ struct RangeVal
 - CPropertyBase - Client 属性基类
 - CMemory.hpp - Client 内存属性模板
 - CProperty.hpp - Client 属性模板
-- CRange.hpp - Client 带范围限制属性模板
+- CRange.hpp - Client 范围属性模板
 
 ---
 
-- Mutex - Server 互斥量接口
 - PropertyBase - Server 属性基类
 - Memory - Server 内存属性模板
 - Property - Server 属性模板
-- Range - Server 带范围限制属性模板
+- Range - Server 范围属性模板
