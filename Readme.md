@@ -7,7 +7,7 @@
 1. 支持使用属性名作为变量标识符
 2. 支持权限控制
 3. 支持加密通信
-4. 单个属性值最少占用 4 字节内存(用来存放虚表指针)
+4. 单个属性值仅需占用 8 字节内存
 5. 通信协议简单(仿 Modbus 通信协议)
 6. 全静态内存分配, 无需 `malloc`
 
@@ -56,14 +56,14 @@ CBC-MAC 介绍: <https://en.wikipedia.org/wiki/CBC-MAC>
 
 ```mermaid
 flowchart TD
-    Read --[True]--> Size --[True]--> Crc --> End
-    Crc --[False]--> Pop --> Read
+    Read --[True]--> Size --[True]--> CRC --> End
+    CRC --[False]--> Pop --> Read
     Size --[False]--> Read
 
     Read(读取 1 字节放入缓冲区)
     Size(缓冲区长度 == 帧头长度?)
     Pop(缓冲区弹出 1 字节)
-    Crc(校验和一致?)
+    CRC(校验和一致?)
     End(帧头有效-帧同步完成)
 ```
 
@@ -77,17 +77,17 @@ flowchart TD
     Encrypt --[True]--> Read_MAC
     Encrypt --[False]--> Read_Data
     Read_MAC --> Read_Data
-    Read_Data --> Crc
-    Crc --[True]--> Address
+    Read_Data --> CRC
+    CRC --[True]--> Address
     Address --[True]--> End
-    Address & Crc --[False]--> Sync
+    Address & CRC --[False]--> Sync
 
     Sync(帧同步)
     Encrypt(加密?)
     Read_MAC(读取 消息认证码)
     Read_Data(读取 附加参数 和 校验和)
     Size(附加参数长度?)
-    Crc(校验和一致?)
+    CRC(校验和一致?)
     Address(地址与本机相同?)
     End(解析命令)
 ```
@@ -311,7 +311,6 @@ struct RangeVal
 附加参数:
 
 - 属性 Id `uint16_t`
-- `RangeAccess`
 
 返回值:
 
@@ -325,9 +324,8 @@ struct RangeVal
 
 附加参数:
 
-- Trice 数据 `uint8_t[]`
+- 日志数据 `uint8_t[]`
 
-Trice 介绍: <https://github.com/rokath/trice>
 
 ## 文件说明
 
