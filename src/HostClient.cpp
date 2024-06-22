@@ -1,4 +1,5 @@
 #include "HostClient.hpp"
+#include <cstdint>
 
 /**
  * @brief 接收响应
@@ -21,7 +22,9 @@ Start:
         // 输出 log 信息
         if (r_cmd == Command::LOG)
         {
-            log_output(extra.data(), extra.remain());
+            uint8_t level;
+            if (!extra.get(level)) goto Start;
+            log_output((LogLevel)level, extra.curr(), extra.remain());
         }
         goto Start;
     }

@@ -15,9 +15,9 @@ set(INCLUDES include)
 # ##############################################################################
 
 # Library Target
-target_sources(firmware.elf PRIVATE ${SOURCES})
-target_include_directories(firmware.elf PUBLIC ${INCLUDES})
+target_sources(HostService PRIVATE ${SOURCES})
+target_include_directories(HostService PUBLIC ${INCLUDES})
 target_compile_definitions(
-  firmware.elf PUBLIC UAES_ENABLE_ALL=0 UAES_ENABLE_256=1 UAES_KEY_CONFIG=1
-                      UAES_SBOX_CONFIG=1 UAES_32BIT_CONFIG=1 UAES_ENABLE_CCM=1
+  HostService PUBLIC UAES_ENABLE_ALL=0 UAES_ENABLE_256=1 UAES_KEY_CONFIG=1
+                     UAES_SBOX_CONFIG=1 UAES_32BIT_CONFIG=1 UAES_ENABLE_CCM=1
 )

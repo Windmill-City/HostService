@@ -1,7 +1,6 @@
+#include "FixedQueue.hpp"
 #include "gtest/gtest.h"
-#include <Extra.hpp>
-#include <HostBase.hpp>
-#include <queue>
+#include <HostCS.hpp>
 
 #if defined(__GNUC__) || defined(__clang__)
   #define __REV16(number) (__builtin_bswap16(number))
@@ -11,23 +10,19 @@
 
 struct HostBaseImpl : public HostBase
 {
-    std::queue<uint8_t> Q;
+    FixedQueue<256>  Queue;
 
-    PropertyAddress     addr;
-
-    PropertyKey         key;
-    SecretHolder        secret;
+    SecretHolderImpl secret;
 
     HostBaseImpl()
-        : HostBase(addr, secret)
-        , secret(key)
+        : HostBase(0x00, secret)
     {
     }
 
     virtual bool rx(uint8_t& byte) override
     {
-        byte = Q.front();
-        Q.pop();
+        while (!Queue.pop(&byte))
+            ;
         return true;
     }
 
@@ -35,7 +30,7 @@ struct HostBaseImpl : public HostBase
     {
         for (size_t i = 0; i < size; i++)
         {
-            Q.push(((uint8_t*)buf)[i]);
+            Queue.push(((uint8_t*)buf)[i]);
         }
     }
 };
@@ -95,7 +90,7 @@ TEST(Sync, Sync)
     }
 
     // 将校验和放到缓冲区中
-    for (size_t i = 0; i < sizeof(Chksum); i++)
+    for (size_t i = 0; i < sizeof(Checksum); i++)
     {
         Q.push(((uint8_t*)&chksum)[i]);
     }

@@ -1,146 +1,33 @@
 #pragma once
 #include "PropertyBase.hpp"
-#include <type_traits>
-
-template <typename T>
-concept PropertyVal = std::is_standard_layout_v<T>;
 
 /**
  * @brief 属性值模板
  *
  *
- * @tparam T 数值类型
+ * @tparam T 类型参数
  * @tparam access 访问级别
  */
-template <PropertyVal T, Access access = Access::READ_WRITE>
-struct Property : public PropertyAccess<access>
+template <PropertyVal T, Access _access = Access::READ>
+struct Property : public PropertyAccess<_access>
 {
-    Property(T value = {})
+    Property(T& value)
+        : _value(value)
     {
-        safe_set(value);
-    }
-
-    /**
-     * @brief 读取属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @return T 属性值
-     */
-    virtual T safe_get() const
-    {
-        LockGuard lock(PropertyBase::MutexGlobal);
-        return _value;
-    }
-
-    /**
-     * @brief 设置属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @param value 要写入的值
-     * @return ErrorCode 错误码
-     */
-    virtual ErrorCode safe_set(const T value)
-    {
-        LockGuard lock(PropertyBase::MutexGlobal);
-        _value = value;
-        return ErrorCode::S_OK;
-    }
-
-    /**
-     * @brief 读取属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @return T 属性值
-     */
-    operator T() const
-    {
-        return safe_get();
-    }
-
-    /**
-     * @brief 获取属性的引用
-     *
-     * @note 此方法非线程安全
-     *
-     * @return T& 属性值引用
-     */
-    T& ref()
-    {
-        return _value;
-    }
-
-    /**
-     * @brief 获取属性值的地址
-     *
-     * @note 此方法非线程安全
-     *
-     * @return T* 属性值地址
-     */
-    T* operator&()
-    {
-        return (T*)&_value;
-    }
-
-    /**
-     * @brief 获取属性的引用
-     *
-     * @note 此方法非线程安全
-     *
-     * @return T& 属性值引用
-     */
-    const T& ref() const
-    {
-        return _value;
-    }
-
-    /**
-     * @brief 获取属性值的地址
-     *
-     * @note 此方法非线程安全
-     *
-     * @return T* 属性值地址
-     */
-    const T* operator&() const
-    {
-        return (T*)&_value;
-    }
-
-    /**
-     * @brief 写入属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @tparam K 属性类型
-     * @param other 右属性
-     * @return auto& 自身引用
-     */
-    template <PropertyVal K>
-    auto& operator=(const K other)
-    {
-        safe_set(other);
-        return *this;
     }
 
     virtual ErrorCode get(Extra& extra, bool) const override
     {
         extra.reset();
-        if (!extra.add(safe_get())) return ErrorCode::E_OUT_OF_BUFFER;
+        if (!extra.add(this->_value)) return ErrorCode::E_OUT_OF_BUFFER;
         return ErrorCode::S_OK;
     }
 
     virtual ErrorCode set(Extra& extra, bool) override
     {
-        ErrorCode err;
-        T         value;
+        T value;
         if (!extra.get(value)) return ErrorCode::E_INVALID_ARG;
-        if ((err = safe_set(value)) != ErrorCode::S_OK) return err;
+        this->_value = value;
         extra.reset();
         return ErrorCode::S_OK;
     }
@@ -153,5 +40,5 @@ struct Property : public PropertyAccess<access>
     }
 
   protected:
-    T _value;
+    T& _value;
 };

@@ -2,104 +2,42 @@
 #include <HostCS.hpp>
 #include <Range.hpp>
 
-TEST(RangedProperty, sizeof)
+TEST(RangeVal, sizeof)
 {
-    EXPECT_EQ(sizeof(RangedProperty<float>), 12);
     EXPECT_EQ(sizeof(RangeVal<float>), 8);
 }
 
-TEST(RangedProperty, Mode)
-{
-    Range<int>                            range({0, 10});
-    RangedProperty<int, RangeMode::Hard>  hard(range.ref());
-    RangedProperty<int, RangeMode::Soft>  soft(range.ref());
-    RangedProperty<int, RangeMode::Clamp> clamp(range.ref());
-
-    // 测试边界能否赋值
-    hard = 10;
-    EXPECT_EQ(hard, 10);
-    hard = 0;
-    EXPECT_EQ(hard, 0);
-
-    // 测试不同模式能否赋值
-    hard = soft = 10;
-    EXPECT_EQ(hard, 10);
-    EXPECT_EQ(soft, 10);
-
-    // 测试是否拦截赋值
-    hard = 100;
-    EXPECT_EQ(hard, 10);
-
-    // 测试是否允许赋值
-    soft = 100;
-    EXPECT_EQ(soft, 100);
-    // 测试in_range
-    EXPECT_FALSE(soft.in_range());
-
-    // 测试in_range
-    soft = 7;
-    EXPECT_EQ(soft, 7);
-    EXPECT_TRUE(soft.in_range());
-
-    // 测试clamp是否正常
-    EXPECT_EQ(clamp = 100, 10);
-    EXPECT_EQ(clamp = -100, 0);
-}
-
-TEST(Range, BoundTest)
-{
-    Range<float> range({0, 0.1});
-
-    // 测试是否拦截赋值
-    range = RangeVal<float>{-100, 100};
-    EXPECT_FLOAT_EQ(range.min(), 0);
-    EXPECT_FLOAT_EQ(range.max(), 0.1);
-}
-
-static Range<float>             prop1({0, 100});
-static RangedProperty<float>    prop2(prop1.ref());
+static RangeVal<float>          RangeVal_1{0, 100};
+static Range                    Prop_1(RangeVal_1, {0, 100});
 // 静态初始化
-static constexpr PropertyMap<2> map = {
-    {{"prop1", &(PropertyBase&)prop1}, {"prop2", &(PropertyBase&)prop2}}
+static constexpr PropertyMap<1> Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
 };
-static PropertyHolder            holder(map);
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<1> cmap = {
-    {{"prop1", 0}, {"prop2", 1}}
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop1", 0},
+     }
 };
-static CPropertyHolder cholder(cmap);
+static CPropertyHolder CHolder(CMap);
 
 struct TRange
     : public HostCSBase
     , public testing::Test
 {
     TRange()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 };
 
-TEST_F(TRange, Get_Property)
+TEST_F(TRange, Get_Range)
 {
-    prop2 = 18.8f;
-
-    Extra     extra;
-    ErrorCode err;
-    extra.add<PropertyId>(1);
-    client.send(Command::GET_PROPERTY, extra);
-
-    ASSERT_TRUE(server.poll());
-    client.recv_response(Command::GET_PROPERTY, err, client.extra);
-
-    float value;
-    client.extra.get(value);
-    EXPECT_EQ(value, 18.8f);
-}
-
-TEST_F(TRange, Get_Range_R)
-{
-    prop1.min() = 10;
-    prop1.max() = 80;
+    RangeVal_1.min = 10;
+    RangeVal_1.max = 80;
 
     Extra     extra;
     ErrorCode err;
@@ -118,10 +56,10 @@ TEST_F(TRange, Get_Range_R)
     EXPECT_EQ(max, 80);
 }
 
-TEST_F(TRange, Get_Absolute_R)
+TEST_F(TRange, Get_Absolute)
 {
-    prop1.min() = 10;
-    prop1.max() = 80;
+    RangeVal_1.min = 10;
+    RangeVal_1.max = 80;
 
     Extra     extra;
     ErrorCode err;
@@ -140,24 +78,10 @@ TEST_F(TRange, Get_Absolute_R)
     EXPECT_EQ(max, 100);
 }
 
-TEST_F(TRange, Set_Property)
+TEST_F(TRange, Set_Range)
 {
-    Extra     extra;
-    ErrorCode err;
-    extra.add<PropertyId>(1);
-    extra.add(18.8f);
-    client.send(Command::SET_PROPERTY, extra);
-
-    ASSERT_TRUE(server.poll());
-    client.recv_response(Command::SET_PROPERTY, err, client.extra);
-
-    EXPECT_EQ(prop2, 18.8f);
-}
-
-TEST_F(TRange, Set_Range_R)
-{
-    prop1.min() = 0;
-    prop1.max() = 100;
+    RangeVal_1.min = 0;
+    RangeVal_1.max = 100;
 
     Extra     extra;
     ErrorCode err;
@@ -170,11 +94,11 @@ TEST_F(TRange, Set_Range_R)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(prop1.min(), 10.f);
-    EXPECT_EQ(prop1.max(), 80.f);
+    EXPECT_EQ(RangeVal_1.min, 10.f);
+    EXPECT_EQ(RangeVal_1.max, 80.f);
 }
 
-TEST_F(TRange, Set_Absolute_R)
+TEST_F(TRange, Set_Absolute)
 {
     Extra     extra;
     ErrorCode err;
@@ -188,43 +112,11 @@ TEST_F(TRange, Set_Absolute_R)
     EXPECT_EQ(err, ErrorCode::E_READ_ONLY);
 }
 
-TEST_F(TRange, GetSize_Property)
-{
-    Extra     extra;
-    ErrorCode err;
-    extra.add<PropertyId>(1);
-    client.send(Command::GET_SIZE, extra);
-
-    ASSERT_TRUE(server.poll());
-    client.recv_response(Command::GET_SIZE, err, client.extra);
-
-    uint16_t size;
-    client.extra.get(size);
-    EXPECT_EQ(size, sizeof(float));
-}
-
-TEST_F(TRange, GetSize_Range_R)
+TEST_F(TRange, GetSize)
 {
     Extra     extra;
     ErrorCode err;
     extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Range);
-    client.send(Command::GET_SIZE, extra);
-
-    ASSERT_TRUE(server.poll());
-    client.recv_response(Command::GET_SIZE, err, client.extra);
-
-    uint16_t size;
-    client.extra.get(size);
-    EXPECT_EQ(size, 2 * sizeof(float));
-}
-
-TEST_F(TRange, GetSize_Absolute_R)
-{
-    Extra     extra;
-    ErrorCode err;
-    extra.add<PropertyId>(0);
-    extra.add(RangeAccess::Absolute);
     client.send(Command::GET_SIZE, extra);
 
     ASSERT_TRUE(server.poll());

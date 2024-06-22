@@ -4,13 +4,22 @@
 #include <HostCS.hpp>
 #include <thread>
 
-static Property<float>           prop;
+static float                               FloatVal;
+static Property<float, Access::READ_WRITE> Prop_1(FloatVal);
 // 静态初始化
-static constexpr PropertyMap<1>  map = {{{"prop", &(PropertyBase&)prop}}};
-static PropertyHolder            holder(map);
+static constexpr PropertyMap<1>            Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
+};
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<1> cmap = {{{"prop", 0}}};
-static CPropertyHolder           cholder(cmap);
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop.1", 0},
+     }
+};
+static CPropertyHolder CHolder(CMap);
 
 struct TCProperty
     : public HostCSBase
@@ -20,7 +29,7 @@ struct TCProperty
     std::future<void> end;
 
     TCProperty()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 
@@ -46,18 +55,18 @@ struct TCProperty
 
 TEST_F(TCProperty, Set)
 {
-    CProperty<float> c_prop("prop");
-    c_prop = 18.8;
+    float            CFloatVal = 18.8;
+    CProperty<float> c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.set(client), ErrorCode::S_OK);
-    EXPECT_TRUE(memcmp(&c_prop, &prop, sizeof(float)) == 0);
+    EXPECT_EQ(c_prop.set(client, CFloatVal), ErrorCode::S_OK);
+    EXPECT_EQ(CFloatVal, FloatVal);
 }
 
 TEST_F(TCProperty, Get)
 {
-    CProperty<float> c_prop("prop");
-    prop = 16.7f;
+    float            CFloatVal;
+    CProperty<float> c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.get(client), ErrorCode::S_OK);
-    EXPECT_TRUE(memcmp(&c_prop, &prop, sizeof(float)) == 0);
+    EXPECT_EQ(c_prop.get(client, CFloatVal), ErrorCode::S_OK);
+    EXPECT_EQ(CFloatVal, FloatVal);
 }

@@ -4,18 +4,22 @@
 #include <HostCS.hpp>
 #include <thread>
 
-static Range<float>             prop1({0, 100});
-static RangedProperty<float>    prop2(prop1.ref());
+static RangeVal<float>                  RangeVal_1;
+static Range<float, Access::READ_WRITE> Prop_1(RangeVal_1, {0, 100});
 // 静态初始化
-static constexpr PropertyMap<2> map = {
-    {{"prop1", &(PropertyBase&)prop1}, {"prop2", &(PropertyBase&)prop2}}
+static constexpr PropertyMap<1>         Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
 };
-static PropertyHolder            holder(map);
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<2> cmap = {
-    {{"prop1", 0}, {"prop2", 1}}
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop.1", 0},
+     }
 };
-static CPropertyHolder cholder(cmap);
+static CPropertyHolder CHolder(CMap);
 
 struct TCRange
     : public HostCSBase
@@ -25,7 +29,7 @@ struct TCRange
     std::future<void> end;
 
     TCRange()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 
@@ -49,41 +53,29 @@ struct TCRange
     }
 };
 
-TEST_F(TCRange, Set_R)
+TEST_F(TCRange, Set_Range)
 {
-    CRange<float> c_prop("prop1", {0, 100});
-    c_prop.set({16, 17});
+    RangeVal<float> CRangeVal{1, 5};
+    CRange<float>   c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.set(client), ErrorCode::S_OK);
-    EXPECT_EQ(c_prop, prop1);
+    EXPECT_EQ(c_prop.set(client, CRangeVal), ErrorCode::S_OK);
+    EXPECT_EQ(CRangeVal, RangeVal_1);
 }
 
-TEST_F(TCRange, Get_R)
+TEST_F(TCRange, Get_Range)
 {
-    CRange<float> c_prop("prop1", {16, 17});
+    RangeVal<float> CRangeVal;
+    CRange<float>   c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.get(client), ErrorCode::S_OK);
-    EXPECT_EQ(c_prop, prop1);
-    EXPECT_EQ(c_prop.Absolute, prop1.Absolute);
+    EXPECT_EQ(c_prop.get(client, RangeAccess::Range, CRangeVal), ErrorCode::S_OK);
+    EXPECT_EQ(CRangeVal, RangeVal_1);
 }
 
-TEST_F(TCRange, Set_P)
+TEST_F(TCRange, Get_Absolute)
 {
-    RangeVal<float>        range{0, 100};
-    CRangedProperty<float> c_prop("prop2", range);
-    c_prop.set(7);
-    prop1 = {0, 100};
+    RangeVal<float> CRangeVal;
+    CRange<float>   c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.set(client), ErrorCode::S_OK);
-    EXPECT_EQ(c_prop, prop2);
-}
-
-TEST_F(TCRange, Get_P)
-{
-    RangeVal<float>        range{0, 100};
-    CRangedProperty<float> c_prop("prop2", range);
-    prop2 = 10;
-
-    EXPECT_EQ(c_prop.get(client), ErrorCode::S_OK);
-    EXPECT_EQ(c_prop, prop2);
+    EXPECT_EQ(c_prop.get(client, RangeAccess::Absolute, CRangeVal), ErrorCode::S_OK);
+    EXPECT_EQ(CRangeVal, Prop_1.Absolute);
 }

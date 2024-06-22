@@ -1,17 +1,8 @@
 #pragma once
-#include <array>
-#include <Common.hpp>
 #include <string.h>
-#include <type_traits>
 #include <uaes.h>
 
-// 只允许标准布局类型和非指针类型
-template <typename T>
-concept Data    = std::is_standard_layout_v<T> && !std::is_pointer_v<T>;
-
-using TagType   = std::array<uint8_t, 16>;
-using NonceType = std::array<uint8_t, 12>;
-using KeyType   = std::array<uint8_t, 256 / 8>;
+#include <Types.hpp>
 
 template <size_t _size>
 struct ExtraT
@@ -25,7 +16,7 @@ struct ExtraT
      * @return true 添加成功
      * @return false 缓冲区长度不足
      */
-    template <Data T>
+    template <PropertyVal T>
     bool add(const T value)
     {
         return add(&value, sizeof(value));
@@ -57,7 +48,7 @@ struct ExtraT
      * @return true 成功获取
      * @return false 缓冲区长度不足
      */
-    template <Data T>
+    template <PropertyVal T>
     bool get(T& value)
     {
         return get(&value, sizeof(value));
@@ -159,7 +150,7 @@ struct ExtraT
      *
      * @param offset 相对缓冲区基地址的偏移
      */
-    void seek(uint16_t offset)
+    void seek(Size offset)
     {
         _data = offset;
         if (_tail < _data) _tail = _data;
@@ -198,9 +189,9 @@ struct ExtraT
     /**
      * @brief 返回未读数据的长度
      *
-     * @return uint8_t 未读数据长度
+     * @return Size 未读数据长度
      */
-    uint16_t remain() const
+    Size remain() const
     {
         return _tail - _data;
     }
@@ -208,9 +199,9 @@ struct ExtraT
     /**
      * @brief 返回空闲区域的长度
      *
-     * @return uint8_t 空闲区域长度
+     * @return Size 空闲区域长度
      */
-    uint16_t spare() const
+    Size spare() const
     {
         return _size - _tail;
     }
@@ -218,9 +209,9 @@ struct ExtraT
     /**
      * @brief 返回缓冲区总长度
      *
-     * @return uint8_t 缓冲区总长度
+     * @return Size 缓冲区总长度
      */
-    uint16_t& size()
+    Size& size()
     {
         return _tail;
     }
@@ -228,9 +219,9 @@ struct ExtraT
     /**
      * @brief 返回缓冲区最大容量
      *
-     * @return uint16_t 最大容量
+     * @return Size 最大容量
      */
-    uint16_t capacity() const
+    Size capacity() const
     {
         return _size;
     }
@@ -267,9 +258,9 @@ struct ExtraT
     // 缓冲区是否加密
     bool                       _encrypted = false;
     // 数据区长度
-    uint16_t                   _tail      = 0;
+    Size                       _tail      = 0;
     // 未读数据的偏移
-    uint16_t                   _data      = 0;
+    Size                       _data      = 0;
     // Tag区
     TagType                    _tag;
     // 缓冲区
@@ -277,7 +268,7 @@ struct ExtraT
 };
 
 #ifndef MEMORY_ACCESS_SIZE_MAX
-  #define MEMORY_ACCESS_SIZE_MAX 256
+  #define MEMORY_ACCESS_SIZE_MAX 1024
 #endif
 
 // sizeof(MemoryAccess) = 4

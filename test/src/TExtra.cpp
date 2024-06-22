@@ -3,10 +3,10 @@
 
 TEST(Extra, sizeof)
 {
-    ASSERT_EQ(sizeof(Extra), 284);
+    ASSERT_EQ(sizeof(ExtraT<256>), 278);
 }
 
-TEST(Extra, read_write)
+TEST(Extra, Read_Write)
 {
     Extra extra;
     float value = 10.f;

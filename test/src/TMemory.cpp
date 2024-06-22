@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include <cstdint>
 #include <HostCS.hpp>
 #include <Memory.hpp>
 
@@ -13,20 +14,29 @@ TEST(MemoryAccess, sizeof)
     EXPECT_EQ(sizeof(MemoryAccess), 4);
 }
 
-static Memory<std::array<uint8_t, 1024>> mem;
+static std::array<uint8_t, 1024>                      ArrayVal;
+static Memory<decltype(ArrayVal), Access::READ_WRITE> Prop_1(ArrayVal);
 // 静态初始化
-static constexpr PropertyMap<1>          map = {{{"mem", &(PropertyBase&)mem}}};
-static PropertyHolder                    holder(map);
+static constexpr PropertyMap<1>                       Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
+};
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<1>         cmap = {{{"mem", 0}}};
-static CPropertyHolder                   cholder(cmap);
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop.1", 0},
+     }
+};
+static CPropertyHolder CHolder(CMap);
 
 struct TMemory
     : public HostCSBase
     , public testing::Test
 {
     TMemory()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 };
@@ -39,33 +49,31 @@ TEST_F(TMemory, Set)
 
     MemoryAccess access;
     access.offset = 0;
-    access.size   = extra.spare() - sizeof(access);
+    access.size   = 1024;
     extra.add(access);
 
     // 将剩余空间填充满
-    size_t               spare = access.size;
     std::vector<uint8_t> data;
-    data.resize(spare);
-    for (size_t i = 0; i < spare; i++)
+    data.resize(1024);
+    for (size_t i = 0; i < 1024; i++)
     {
         data[i] = i;
     }
-    extra.add(data.data(), data.size());
-
+    ASSERT_TRUE(extra.add(data.data(), data.size()));
     client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_TRUE(memcmp(&mem, data.data(), data.size()) == 0);
+    EXPECT_TRUE(memcmp(ArrayVal.data(), data.data(), data.size()) == 0);
 }
 
 TEST_F(TMemory, Get)
 {
     // 初始化内存区
-    for (size_t i = 0; i < mem.size(); i++)
+    for (size_t i = 0; i < ArrayVal.size(); i++)
     {
-        mem[i] = i;
+        ArrayVal[i] = i;
     }
 
     Extra     extra;
@@ -74,9 +82,8 @@ TEST_F(TMemory, Get)
 
     MemoryAccess access;
     access.offset = 0;
-    access.size   = extra.capacity();
+    access.size   = 1024;
     extra.add(access);
-
     client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_TRUE(server.poll());
@@ -86,7 +93,7 @@ TEST_F(TMemory, Get)
     std::vector<uint8_t> recv;
     recv.resize(access.size);
     client.extra.get(recv.data(), recv.size());
-    EXPECT_TRUE(memcmp(recv.data(), &mem, access.size) == 0);
+    EXPECT_TRUE(memcmp(recv.data(), ArrayVal.data(), access.size) == 0);
 }
 
 TEST_F(TMemory, Set_OutOfRange)
@@ -100,7 +107,6 @@ TEST_F(TMemory, Set_OutOfRange)
     access.size   = 256;
     extra.add(access);
     extra.seek(256 + sizeof(PropertyId) + sizeof(access));
-
     client.send(Command::SET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());
@@ -119,7 +125,6 @@ TEST_F(TMemory, Get_OutOfRange)
     access.offset = 1024;
     access.size   = 256;
     extra.add(access);
-
     client.send(Command::GET_PROPERTY, extra);
 
     ASSERT_FALSE(server.poll());

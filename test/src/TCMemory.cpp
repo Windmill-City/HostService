@@ -4,13 +4,22 @@
 #include <HostCS.hpp>
 #include <thread>
 
-static Memory<std::array<uint8_t, 1024>> mem;
+static std::array<uint8_t, 1024>                      ArrayVal;
+static Memory<decltype(ArrayVal), Access::READ_WRITE> Prop_1(ArrayVal);
 // 静态初始化
-static constexpr PropertyMap<1>          map = {{{"mem", &(PropertyBase&)mem}}};
-static PropertyHolder                    holder(map);
+static constexpr PropertyMap<1>                       Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
+};
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<1>         cmap = {{{"mem", 0}}};
-static CPropertyHolder                   cholder(cmap);
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop.1", 0},
+     }
+};
+static CPropertyHolder CHolder(CMap);
 
 struct TCMemory
     : public HostCSBase
@@ -20,7 +29,7 @@ struct TCMemory
     std::future<void> end;
 
     TCMemory()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 
@@ -46,26 +55,18 @@ struct TCMemory
 
 TEST_F(TCMemory, Set)
 {
-    CMemory<std::array<uint8_t, 1024>> c_mem("mem");
+    std::array<uint8_t, 1024>    CArrayVal;
+    CMemory<decltype(CArrayVal)> c_prop("prop.1");
 
-    for (size_t i = 0; i < 1024; i++)
-    {
-        c_mem[i] = i;
-    }
-
-    EXPECT_EQ(c_mem.set(client), ErrorCode::S_OK);
-    EXPECT_TRUE(memcmp(&c_mem, &mem, 1024) == 0);
+    EXPECT_EQ(c_prop.set(client, 0, CArrayVal.data(), CArrayVal.size()), ErrorCode::S_OK);
+    EXPECT_TRUE(memcmp(CArrayVal.data(), ArrayVal.data(), 1024) == 0);
 }
 
 TEST_F(TCMemory, Get)
 {
-    CMemory<std::array<uint8_t, 1024>> c_mem("mem");
+    std::array<uint8_t, 1024>    CArrayVal;
+    CMemory<decltype(CArrayVal)> c_prop("prop.1");
 
-    for (size_t i = 0; i < 1024; i++)
-    {
-        mem[i] = i;
-    }
-
-    EXPECT_EQ(c_mem.get(client), ErrorCode::S_OK);
-    EXPECT_TRUE(memcmp(&c_mem, &mem, 1024) == 0);
+    EXPECT_EQ(c_prop.get(client, 0, CArrayVal.data(), CArrayVal.size()), ErrorCode::S_OK);
+    EXPECT_TRUE(memcmp(CArrayVal.data(), ArrayVal.data(), 1024) == 0);
 }

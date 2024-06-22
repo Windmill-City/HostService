@@ -1,4 +1,5 @@
 #include "HostServer.hpp"
+#include "Types.hpp"
 
 #include <algorithm>
 #include <array>
@@ -78,12 +79,12 @@ bool HostServer::poll()
 }
 
 /**
- * @brief 发送 Server log
+ * @brief 发送 Server 日志
  *
- * @param log log信息
- * @param size log大小
+ * @param log 日志数据
+ * @param size 日志数据字节长度
  */
-void HostServer::send_log(const void* log, const size_t size)
+void HostServer::log(const void* log, size_t size)
 {
     Header head;
     head.address = address;
@@ -93,7 +94,7 @@ void HostServer::send_log(const void* log, const size_t size)
     send(head, log, size);
 }
 
-PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, const bool encrypted)
+PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, bool encrypted)
 {
     // 解析Id
     PropertyId id;

@@ -1,28 +1,34 @@
 #include "gtest/gtest.h"
-#include <future>
 #include <HostCS.hpp>
-#include <Property.hpp>
 
 TEST(Header, sizeof)
 {
     ASSERT_EQ(sizeof(Header), 5);
 }
 
-static PropertyKey               key;
-static SecretHolder              secret(key);
+static bool                     BoolVal;
+static Property                 Prop_1(BoolVal);
 // 静态初始化
-static constexpr PropertyMap<1>  map = {{{"nonce", &(PropertyBase&)secret.nonce}}};
-static PropertyHolder            holder(map);
+static constexpr PropertyMap<1> Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
+};
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<1> cmap = {{{"nonce", 0}}};
-static CPropertyHolder           cholder(cmap);
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop.1", 0},
+     }
+};
+static CPropertyHolder CHolder(CMap);
 
 struct HostCS
     : public HostCSBase
     , public testing::Test
 {
     HostCS()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 };

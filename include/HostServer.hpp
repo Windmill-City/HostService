@@ -1,4 +1,5 @@
 #pragma once
+#include "Types.hpp"
 #include <Extra.hpp>
 #include <FixedQueue.hpp>
 #include <frozen/string.h>
@@ -98,14 +99,14 @@ struct PropertyHolder : public PropertyHolderBase
 
 struct HostServer : public HostBase
 {
-    HostServer(const PropertyAddress& addr, const PropertyHolderBase& holder, SecretHolder& secret)
-        : HostBase(addr, secret)
+    HostServer(Address address, const PropertyHolderBase& holder, SecretHolder& secret)
+        : HostBase(address, secret)
         , _holder(holder)
     {
     }
 
     bool poll();
-    void send_log(const void* log, const size_t size);
+    void log(const void* log, size_t size);
 
   protected:
     PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, const bool encrypted);

@@ -1,12 +1,15 @@
 #include "gtest/gtest.h"
-#include <CMemory.hpp>
 #include <future>
+
+#include <CMemory.hpp>
 #include <HostCS.hpp>
-#include <thread>
+
+static bool                                 bool1;
+static bool                                 bool2;
 
 static PropertySymbols                      symbols;
-static Property<bool>                       prop_1;
-static Property<bool, Access::READ_PROTECT> prop_2;
+static Property                             prop_1(bool1);
+static Property<bool, Access::READ_PROTECT> prop_2(bool2);
 // 静态初始化
 static constexpr PropertyMap<3>             map = {
     {

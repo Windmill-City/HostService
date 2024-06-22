@@ -27,5 +27,5 @@ add_custom_target(
 file(COPY gentab32.inc gentab64.inc DESTINATION tab)
 
 # Add Library
-target_sources(firmware.elf PRIVATE ${SOURCES})
-target_include_directories(firmware.elf PUBLIC include)
+target_sources(HostService PRIVATE ${SOURCES})
+target_include_directories(HostService PUBLIC include)

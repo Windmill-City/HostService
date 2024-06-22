@@ -1,4 +1,5 @@
 #pragma once
+#include "Types.hpp"
 #include <Extra.hpp>
 #include <FixedQueue.hpp>
 #include <frozen/map.h>
@@ -40,13 +41,13 @@ struct HostClient : public HostBase
     // 属性值Id容器
     CPropertyHolderBase& holder;
 
-    HostClient(const PropertyAddress& addr, CPropertyHolderBase& holder, SecretHolder& secret)
-        : HostBase(addr, secret)
+    HostClient(Address address, CPropertyHolderBase& holder, SecretHolder& secret)
+        : HostBase(address, secret)
         , holder(holder)
     {
     }
 
-    bool recv_response(const Command cmd, ErrorCode& err, Extra& extra);
+    bool recv_response(Command cmd, ErrorCode& err, Extra& extra);
 
   protected:
     /**
@@ -55,5 +56,5 @@ struct HostClient : public HostBase
      * @param log 日志信息
      * @param size 日志字节长度
      */
-    virtual void log_output(const uint8_t* log, const size_t size) = 0;
+    virtual void log_output(LogLevel level, const uint8_t* log, size_t size) = 0;
 };

@@ -75,7 +75,7 @@ struct CPropertyHolder : public CPropertyHolderBase
             }
 
             frozen::string name((const char*)client.extra.curr(), (size_t)client.extra.remain());
-            // 允许服务端拥有比客户端更多的属性
+            // 
             if (!map.contains(name)) continue;
             map.at(name) = i;
             found++;

@@ -1,4 +1,5 @@
 #pragma once
+#include "Types.hpp"
 #include <cstddef>
 #include <HostClient.hpp>
 #include <Memory.hpp>
@@ -11,7 +12,7 @@
  * @tparam T 标准布局类型
  * @tparam access 访问级别
  */
-template <MemoryData T, Access _access = Access::READ_WRITE>
+template <PropertyVal T, Access _access = Access::READ_WRITE>
 struct CMemory
 {
     // 绑定的属性名称
@@ -20,58 +21,6 @@ struct CMemory
     CMemory(const frozen::string name)
         : name(name)
     {
-    }
-
-    /**
-     * @brief 获取内存区属性的字节长度
-     *
-     * @return uint16_t 字节长度
-     */
-    uint16_t size() const
-    {
-        return sizeof(_value);
-    }
-
-    /**
-     * @brief 获取属性值首地址
-     *
-     * @return uint8_t*
-     */
-    uint8_t* operator&()
-    {
-        return (uint8_t*)&_value;
-    }
-
-    /**
-     * @brief 按字节访问内存区内容
-     *
-     * @param idx 下标
-     * @return T& 内容
-     */
-    auto& operator[](const size_t idx)
-    {
-        return _value[idx];
-    }
-
-    /**
-     * @brief 获取属性值首地址
-     *
-     * @return uint8_t*
-     */
-    const uint8_t* operator&() const
-    {
-        return (uint8_t*)&_value;
-    }
-
-    /**
-     * @brief 按字节访问内存区内容
-     *
-     * @param idx 下标
-     * @return T& 内容
-     */
-    const auto& operator[](const size_t idx) const
-    {
-        return _value[idx];
     }
 
     ErrorCode set_block(HostClient& client, MemoryAccess& access, const uint8_t* data, const bool encrypt) const
@@ -122,7 +71,7 @@ struct CMemory
         return ErrorCode::S_OK;
     }
 
-    ErrorCode set(HostClient& client) const
+    ErrorCode set(HostClient& client, Size offset, void* buffer, size_t size) const
     {
         if (_access == Access::READ || _access == Access::READ_PROTECT) return ErrorCode::E_READ_ONLY;
 
@@ -134,21 +83,21 @@ struct CMemory
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
-        access.offset = 0;
+        access.offset = offset;
         // 本地数据访问指针
-        uint8_t* data = (uint8_t*)&_value;
+        uint8_t* data = (uint8_t*)buffer;
 
         // 分块发送数据 - 整数倍部分
-        for (size_t i = 0; i < sizeof(_value) / space; i++)
+        for (size_t i = 0; i < size / space; i++)
         {
             ErrorCode err = set_block(client, access, data, encrypt);
             if (err != ErrorCode::S_OK) return err;
         }
 
         // 分块发送数据 - 余下的部分
-        if (access.offset != sizeof(_value))
+        if (access.offset != size)
         {
-            access.size   = sizeof(_value) - access.offset;
+            access.size   = size - access.offset;
             ErrorCode err = set_block(client, access, data, encrypt);
             if (err != ErrorCode::S_OK) return err;
         }
@@ -156,7 +105,7 @@ struct CMemory
         return ErrorCode::S_OK;
     }
 
-    ErrorCode get(HostClient& client)
+    ErrorCode get(HostClient& client, Size offset, void* buffer, size_t size)
     {
         Extra&       extra   = client.extra;
         // 是否需要加密
@@ -166,27 +115,24 @@ struct CMemory
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
-        access.offset = 0;
+        access.offset = offset;
         // 本地数据访问指针
-        uint8_t* data = (uint8_t*)&_value;
+        uint8_t* data = (uint8_t*)buffer;
 
         // 分块读取数据 - 整数倍部分
-        for (size_t i = 0; i < sizeof(_value) / space; i++)
+        for (size_t i = 0; i < size / space; i++)
         {
             ErrorCode err = get_block(client, access, data, encrypt);
             if (err != ErrorCode::S_OK) return err;
         }
 
         // 分块读取数据 - 余下的部分
-        if (access.offset != sizeof(_value))
+        if (access.offset != size)
         {
-            access.size   = sizeof(_value) - access.offset;
+            access.size   = size - access.offset;
             ErrorCode err = get_block(client, access, data, encrypt);
             if (err != ErrorCode::S_OK) return err;
         }
         return ErrorCode::S_OK;
     }
-
-  protected:
-    T _value;
 };

@@ -105,11 +105,11 @@ End:
  * @param extra 附加参数
  * @param size 附加参数长度
  */
-void HostBase::send(const Header& head, const void* extra, const uint16_t size)
+void HostBase::send(const Header& head, const void* extra, uint16_t size)
 {
-    Chksum chksum = crc_ccitt_ffff((uint8_t*)&head, sizeof(head));
+    Checksum chksum = crc_ccitt_ffff((uint8_t*)&head, sizeof(head));
     // 注意: CRC-16 校验和大小端翻转后, 在接收端计算时才会为 0
-    chksum        = __REV16(chksum);
+    chksum          = __REV16(chksum);
     tx(&head, sizeof(head));
     tx(&chksum, sizeof(chksum));
 
@@ -133,7 +133,7 @@ void HostBase::send(const Header& head, const void* extra, const uint16_t size)
  * @param encrypt 是否加密?
  * @param err 错误码
  */
-void HostBase::send(const Command cmd, Extra& extra, const bool encrypt, const ErrorCode err)
+void HostBase::send(Command cmd, Extra& extra, bool encrypt, ErrorCode err)
 {
     // 截断多余的数据
     extra.truncate();

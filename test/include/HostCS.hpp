@@ -3,16 +3,22 @@
 #include <Extra.hpp>
 #include <HostClient.hpp>
 #include <HostServer.hpp>
+#include <thread>
+
+struct SecretHolderImpl : public SecretHolder
+{
+    virtual void update_nonce() override
+    {
+    }
+};
 
 struct HostClientImpl : public HostClient
 {
-    FixedQueue<1024>* Q_Server;
-    FixedQueue<1024>  Q_Client;
-
-    PropertyAddress   addr;
+    FixedQueue<2048>* Q_Server;
+    FixedQueue<2048>  Q_Client;
 
     HostClientImpl(CPropertyHolderBase& holder, SecretHolder& secret)
-        : HostClient(addr, holder, secret)
+        : HostClient(0x00, holder, secret)
     {
     }
 
@@ -31,7 +37,7 @@ struct HostClientImpl : public HostClient
         }
     }
 
-    virtual void log_output(const uint8_t*, const size_t) override
+    virtual void log_output(LogLevel, const uint8_t*, size_t) override
     {
     }
 };
@@ -39,13 +45,11 @@ struct HostClientImpl : public HostClient
 struct HostServerImpl : public HostServer
 {
     bool              Running = true;
-    FixedQueue<1024>  Q_Server;
-    FixedQueue<1024>* Q_Client;
-
-    PropertyAddress   addr;
+    FixedQueue<2048>  Q_Server;
+    FixedQueue<2048>* Q_Client;
 
     HostServerImpl(const PropertyHolderBase& holder, SecretHolder& secret)
-        : HostServer(addr, holder, secret)
+        : HostServer(0x00, holder, secret)
     {
     }
 
@@ -72,14 +76,12 @@ struct HostServerImpl : public HostServer
 
 struct HostCSBase
 {
-    PropertyKey    key;
-    SecretHolder   secret;
-    HostServerImpl server;
-    HostClientImpl client;
+    SecretHolderImpl secret;
+    HostServerImpl   server;
+    HostClientImpl   client;
 
     HostCSBase(const PropertyHolderBase& holder, CPropertyHolderBase& cholder)
-        : secret(key)
-        , server(holder, secret)
+        : server(holder, secret)
         , client(cholder, secret)
     {
         server.Q_Client = &client.Q_Client;

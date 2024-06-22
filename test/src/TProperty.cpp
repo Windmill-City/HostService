@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include <HostCS.hpp>
-#include <Property.hpp>
 
 TEST(Property, sizeof)
 {
@@ -8,55 +7,36 @@ TEST(Property, sizeof)
     EXPECT_EQ(sizeof(Property<float>), 8);
 }
 
-TEST(Property, Assign)
-{
-    Property<bool> prop_1 = true;
-    Property<bool> prop_2 = false;
-
-    EXPECT_EQ(prop_1, true);
-    EXPECT_EQ(prop_2, false);
-
-    prop_1 = prop_2;
-    EXPECT_EQ(prop_1, false);
-}
-
-TEST(Property, Calc)
-{
-    Property<float> prop_1 = 5;
-    Property<float> prop_2 = 7;
-
-    EXPECT_EQ(prop_1 + 8, 5 + 8.f);
-    EXPECT_EQ(prop_1 - 8, 5 - 8.f);
-    EXPECT_EQ(prop_1 * 8, 5 * 8.f);
-    EXPECT_EQ(prop_1 / 8, 5 / 8.f);
-
-    EXPECT_EQ(prop_1 + prop_2, 5 + 7.f);
-    EXPECT_EQ(prop_1 - prop_2, 5 - 7.f);
-    EXPECT_EQ(prop_1 * prop_2, 5 * 7.f);
-    EXPECT_EQ(prop_1 / prop_2, 5 / 7.f);
-}
-
-static Property<float>           prop;
+static float                               FloatVal;
+static Property<float, Access::READ_WRITE> Prop_1(FloatVal);
 // 静态初始化
-static constexpr PropertyMap<1>  map = {{{"prop", &(PropertyBase&)prop}}};
-static PropertyHolder            holder(map);
+static constexpr PropertyMap<1>            Map = {
+    {
+     {"prop.1", &(PropertyBase&)Prop_1},
+     }
+};
+static PropertyHolder            Holder(Map);
 
-static constinit CPropertyMap<1> cmap = {{{"prop", 0}}};
-static CPropertyHolder           cholder(cmap);
+static constinit CPropertyMap<1> CMap = {
+    {
+     {"prop.1", 0},
+     }
+};
+static CPropertyHolder CHolder(CMap);
 
 struct TProperty
     : public HostCSBase
     , public testing::Test
 {
     TProperty()
-        : HostCSBase(holder, cholder)
+        : HostCSBase(Holder, CHolder)
     {
     }
 };
 
 TEST_F(TProperty, Get)
 {
-    prop = 18.8f;
+    FloatVal = 18.8f;
 
     Extra     extra;
     ErrorCode err;
@@ -74,7 +54,7 @@ TEST_F(TProperty, Get)
 
 TEST_F(TProperty, Set)
 {
-    prop = 0.0f;
+    FloatVal = 0.0f;
 
     Extra     extra;
     ErrorCode err;
@@ -85,7 +65,7 @@ TEST_F(TProperty, Set)
     ASSERT_TRUE(server.poll());
     client.recv_response(Command::SET_PROPERTY, err, client.extra);
 
-    EXPECT_EQ(prop, 18.8f);
+    EXPECT_EQ(FloatVal, 18.8f);
 }
 
 TEST_F(TProperty, GetSize)

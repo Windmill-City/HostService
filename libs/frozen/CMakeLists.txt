@@ -12,5 +12,5 @@ set(INCLUDES include)
 # ##############################################################################
 
 # Library Target
-target_include_directories(firmware.elf PUBLIC ${INCLUDES})
-target_compile_definitions(firmware.elf PUBLIC FROZEN_NO_EXCEPTIONS=1)
+target_include_directories(HostService PUBLIC ${INCLUDES})
+target_compile_definitions(HostService PUBLIC FROZEN_NO_EXCEPTIONS=1)

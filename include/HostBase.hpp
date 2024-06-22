@@ -1,10 +1,9 @@
 #pragma once
-#include <Common.hpp>
 #include <FixedQueue.hpp>
 #include <Property.hpp>
 
 template <typename T>
-struct Sync : public FixedQueue<sizeof(T) + sizeof(Chksum), PopAction::PopOnPush>
+struct Sync : public FixedQueue<sizeof(T) + sizeof(Checksum), PopAction::PopOnPush>
 {
     /**
      * @brief 验证是否是一个有效的帧头
@@ -14,7 +13,7 @@ struct Sync : public FixedQueue<sizeof(T) + sizeof(Chksum), PopAction::PopOnPush
      */
     bool verify() const
     {
-        if (sizeof(T) + sizeof(Chksum) != this->size()) return false;
+        if (sizeof(T) + sizeof(Checksum) != this->size()) return false;
 
         uint16_t chksum = CRC_START_CCITT_FFFF;
         for (size_t i = 0; i < this->size(); i++)
@@ -47,61 +46,9 @@ struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
 {
     using parent = Property<KeyType, Access::READ_WRITE_PROTECT>;
 
-    PropertyKey(KeyType value = {0})
+    PropertyKey(KeyType& value)
         : parent(value)
     {
-    }
-
-    /**
-     * @brief 读取属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @return 密钥
-     */
-    operator KeyType() const
-    {
-        return safe_get();
-    }
-
-    /**
-     * @brief 获取属性的地址
-     *
-     * @note 此方法非线程安全
-     *
-     * @return T* 属性地址
-     */
-    uint8_t* operator&()
-    {
-        return this->_value.data();
-    }
-
-    /**
-     * @brief 获取属性的地址
-     *
-     * @note 此方法非线程安全
-     *
-     * @return T* 属性地址
-     */
-    const uint8_t* operator&() const
-    {
-        return this->_value.data();
-    }
-
-    /**
-     * @brief 写入属性值
-     *
-     * @note 此方法线程安全
-     * @note 不能在中断函数内使用
-     *
-     * @param other 要写的值
-     * @return auto& 自身的引用
-     */
-    auto& operator=(const KeyType other)
-    {
-        safe_set(other);
-        return *this;
     }
 
     virtual ErrorCode get(Extra&, bool) const override final
@@ -113,26 +60,19 @@ struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
 
 struct SecretHolder
 {
-    // 加密通信随机数, 用来防止重放攻击
-    PropertyNonce      nonce;
-    // 加密通信密钥
-    const PropertyKey& key;
-
-    SecretHolder(const PropertyKey& key)
-        : key(key)
-    {
-    }
+    // 密钥
+    KeyType      key;
+    // 随机数
+    NonceType    nonce;
 
     /**
      * @brief 更新随机数
      *
-     * @note 随机数应当使用随机数外设生成, 若没有对应的外设, 应当使用MCU的唯一Id作为随机数
+     * @note 随机数应当使用随机数外设生成, 若没有对应的外设, 应当使用 MCU 的唯一 Id 作为随机数
      * @note 此随机数应当保证不同设备间是不同的
      * @note 在响应完毕一个加密的数据包之后, 此方法会被调用
      */
-    virtual void update_nonce()
-    {
-    }
+    virtual void update_nonce() = 0;
 };
 
 using PropertyAddress = Property<uint8_t>;
@@ -140,17 +80,17 @@ using PropertyAddress = Property<uint8_t>;
 struct HostBase
 {
     // 从机地址
-    const PropertyAddress& address;
+    Address       address;
     // 密钥容器
-    SecretHolder&          secret;
+    SecretHolder& secret;
 
-    HostBase(const PropertyAddress& addr, SecretHolder& secret)
-        : address(addr)
+    HostBase(Address address, SecretHolder& secret)
+        : address(address)
         , secret(secret)
     {
     }
 
-    void send(const Command cmd, Extra& extra, const bool encrypt = false, const ErrorCode err = ErrorCode::S_OK);
+    void send(Command cmd, Extra& extra, bool encrypt = false, ErrorCode err = ErrorCode::S_OK);
     bool recv(Command& cmd, ErrorCode& err, Extra& extra);
 
   protected:
@@ -170,7 +110,7 @@ struct HostBase
     virtual void tx(const void* buf, const size_t size) = 0;
 
   protected:
-    void send(const Header& head, const void* extra, const uint16_t size);
+    void send(const Header& head, const void* extra, const Size size);
     bool sync(Header& head);
 
   protected:
