@@ -109,7 +109,7 @@ struct HostServer : public HostBase
     void log(const void* log, size_t size);
 
   protected:
-    PropertyBase* _acquire_and_verify(Command& cmd, Extra& extra, bool encrypted);
+    PropertyBase* _acquire_and_verify(Command cmd, Extra& extra, bool encrypted);
 
   protected:
     // 附加参数缓冲区

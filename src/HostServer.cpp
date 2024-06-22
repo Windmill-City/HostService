@@ -94,7 +94,7 @@ void HostServer::log(const void* log, size_t size)
     send(head, log, size);
 }
 
-PropertyBase* HostServer::_acquire_and_verify(Command& cmd, Extra& extra, bool encrypted)
+PropertyBase* HostServer::_acquire_and_verify(Command cmd, Extra& extra, bool encrypted)
 {
     // 解析Id
     PropertyId id;
