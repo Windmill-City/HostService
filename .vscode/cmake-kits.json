@@ -1,9 +1,0 @@
-[
-    {
-        "name": "arm-none-eabi",
-        "toolchainFile": "../arm-none-eabi.cmake",
-        "preferredGenerator": {
-            "name": "Ninja"
-        }
-    }
-]
