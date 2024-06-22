@@ -142,8 +142,6 @@ sequenceDiagram
 
 ### ECHO
 
-名称: 回声
-
 功能: 将接收到的附加参数原封不动地发回
 
 附加参数: 任意长度数据
@@ -158,8 +156,6 @@ sequenceDiagram
 
 ### GET_PROPERTY
 
-命令: 读取属性
-
 功能: 读取数值型属性/结构体属性
 
 附加参数:
@@ -171,8 +167,6 @@ sequenceDiagram
 - 属性值 `uint8_t[sizeof(T)]`
 
 ---
-
-命令: 读取内存
 
 功能: 读取内存型属性
 
@@ -194,8 +188,6 @@ struct MemoryAccess
 - 内存区数据 `uint8_t[size]`
 
 ---
-
-命令: 读取范围属性
 
 功能: 读取范围属性
 
@@ -227,8 +219,6 @@ struct RangeVal
 
 ### SET_PROPERTY
 
-命令: 写入属性
-
 功能: 写入指令型/数值型/结构体属性
 
 附加参数:
@@ -244,8 +234,6 @@ struct RangeVal
 
 ---
 
-命令: 写入内存
-
 功能: 写入内存型属性
 
 附加参数:
@@ -259,8 +247,6 @@ struct RangeVal
 - 空
 
 ---
-
-命令: 写入范围
 
 功能: 写入范围属性
 
@@ -276,8 +262,6 @@ struct RangeVal
 
 ### GET_SIZE
 
-命令: 获取属性字节长度
-
 功能: 获取数值型/结构体属性的字节长度
 
 附加参数:
@@ -290,9 +274,7 @@ struct RangeVal
 
 ---
 
-命令: 获取内存区字节长度
-
-功能: 获取内存区属性的字节长度
+功能: 获取内存区字节长度
 
 附加参数:
 
@@ -304,8 +286,6 @@ struct RangeVal
 
 ---
 
-命令: 获取范围字节长度
-
 功能: 获取范围属性的字节长度
 
 附加参数:
@@ -316,9 +296,37 @@ struct RangeVal
 
 - RangeVal 的字节长度 `uint16_t`
 
-### LOG
+### GET_ACCESS
 
-名称: 日志
+功能: 获取属性访问级别
+
+附加参数:
+
+- 属性 Id `uint16_t`
+
+返回值:
+
+- 访问级别 `uint8_t`
+
+```c++
+
+enum class Access : uint8_t
+{
+    /**
+     *         |READ|READ_WRITE|WRITE_PROTECT|READ_PROTECT|READ_WRITE_PROTECT|
+     * 普通模式|   r|         rw|           r |            |                  |
+     * 特权模式|   r|         rw|           rw|           r|                rw|
+     *
+     */
+    READ = 0,
+    READ_WRITE,
+    WRITE_PROTECT,
+    READ_PROTECT,
+    READ_WRITE_PROTECT
+};
+```
+
+### LOG
 
 功能: Server 通过此命令传递运行中产生的日志信息
 
