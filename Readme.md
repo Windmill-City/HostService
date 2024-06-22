@@ -98,7 +98,7 @@ flowchart TD
 sequenceDiagram
     Client ->> Server: GET_SIZE, 0
     activate Server
-    Server ->> Client: GET_SIZE, S_OK, 10
+    Server ->> Client: GET_SIZE, S_OK, size
     deactivate Server
     Note over Client, Server: 获取 符号表 元素个数
 
