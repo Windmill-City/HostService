@@ -98,6 +98,14 @@ enum class Command : uint8_t
      */
     GET_SIZE,
     /**
+     * @brief 获取属性值的访问级别
+     *
+     * 请求: CMD,属性Id
+     * 应答:
+     * CMD,S_OK,访问级别
+     */
+    GET_ACCESS,
+    /**
      * @brief Server 日志
      *
      * 请求: CMD,LogLevel,日志内容
@@ -171,7 +179,7 @@ struct Header
 } __packed;
 
 /**
- * @brief 内存属性值访问参数
+ * @brief 内存属性的访问参数
  *
  */
 struct MemoryAccess
@@ -186,9 +194,9 @@ struct MemoryAccess
 } __packed;
 
 /**
- * @brief 存放范围属性的结构体
+ * @brief 范围属性
  *
- * @tparam T 属性的类型
+ * @tparam T 数值类型
  */
 template <Number T>
 struct RangeVal

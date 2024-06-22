@@ -62,8 +62,17 @@ bool HostServer::poll()
     {
         PropertyBase* prop;
         if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
-        // 读取Size
+        // 读取 Size
         err = prop->get_size(extra, encrypted);
+        send(cmd, extra, encrypted, err);
+        break;
+    }
+    case Command::GET_ACCESS:
+    {
+        PropertyBase* prop;
+        if (!(prop = _acquire_and_verify(cmd, extra, encrypted))) return false;
+        // 读取 Access
+        err = prop->get_access(extra, encrypted);
         send(cmd, extra, encrypted, err);
         break;
     }
@@ -115,6 +124,7 @@ PropertyBase* HostServer::_acquire_and_verify(Command cmd, Extra& extra, bool en
     switch (cmd)
     {
     case Command::GET_SIZE:
+    case Command::GET_ACCESS:
     case Command::GET_PROPERTY:
         err = prop->check_read(encrypted);
         break;
