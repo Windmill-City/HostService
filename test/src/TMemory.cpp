@@ -147,3 +147,18 @@ TEST_F(TMemory, GetSize)
     client.extra.get(size);
     EXPECT_EQ(size, 1024);
 }
+
+TEST_F(TMemory, GetAccess)
+{
+    Extra     extra;
+    ErrorCode err;
+    extra.add<PropertyId>(0);
+    client.send(Command::GET_ACCESS, extra);
+
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_ACCESS, err, client.extra);
+
+    Access access;
+    client.extra.get((uint8_t&)access);
+    EXPECT_EQ(access, Access::READ_WRITE);
+}

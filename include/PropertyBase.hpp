@@ -72,7 +72,7 @@ struct PropertyAccess : public PropertyBase
         return ErrorCode::S_OK;
     }
 
-    virtual ErrorCode get_access(Extra& extra, bool privileged) const override
+    virtual ErrorCode get_access(Extra& extra, bool) const override
     {
         extra.reset();
         extra.add((uint8_t)access);

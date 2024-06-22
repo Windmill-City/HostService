@@ -82,3 +82,18 @@ TEST_F(TProperty, GetSize)
     client.extra.get(size);
     EXPECT_EQ(size, sizeof(float));
 }
+
+TEST_F(TProperty, GetAccess)
+{
+    Extra     extra;
+    ErrorCode err;
+    extra.add<PropertyId>(0);
+    client.send(Command::GET_ACCESS, extra);
+
+    ASSERT_TRUE(server.poll());
+    client.recv_response(Command::GET_ACCESS, err, client.extra);
+
+    Access access;
+    client.extra.get((uint8_t&)access);
+    EXPECT_EQ(access, Access::READ_WRITE);
+}
