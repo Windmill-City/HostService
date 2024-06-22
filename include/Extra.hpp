@@ -271,6 +271,4 @@ struct ExtraT
   #define MEMORY_ACCESS_SIZE_MAX 1024
 #endif
 
-// sizeof(MemoryAccess) = 4
-// sizeof(PropertyId) = 2
-using Extra = ExtraT<MEMORY_ACCESS_SIZE_MAX + 2 + 4>;
+using Extra = ExtraT<MEMORY_ACCESS_SIZE_MAX + sizeof(PropertyId) + sizeof(MemoryAccess)>;
