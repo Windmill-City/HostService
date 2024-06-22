@@ -2,9 +2,8 @@
 #include <CMemory.hpp>
 #include <future>
 #include <HostCS.hpp>
-#include <thread>
 
-static std::array<uint8_t, 1024>                      ArrayVal;
+static std::array<uint8_t, 2048 + 256>                ArrayVal;
 static Memory<decltype(ArrayVal), Access::READ_WRITE> Prop_1(ArrayVal);
 // 静态初始化
 static constexpr PropertyMap<1>                       Map = {
@@ -55,18 +54,32 @@ struct TCMemory
 
 TEST_F(TCMemory, Set)
 {
-    std::array<uint8_t, 1024>    CArrayVal;
-    CMemory<decltype(CArrayVal)> c_prop("prop.1");
+    std::array<uint8_t, 1024 + 256> CArrayVal;
+    CMemory<decltype(CArrayVal)>    c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.set(client, 0, CArrayVal.data(), CArrayVal.size()), ErrorCode::S_OK);
-    EXPECT_TRUE(memcmp(CArrayVal.data(), ArrayVal.data(), 1024) == 0);
+    for (size_t i = 0; i < CArrayVal.size(); i++)
+    {
+        CArrayVal[i] = i;
+    }
+
+    memset(ArrayVal.data(), 0xCC, ArrayVal.size());
+
+    EXPECT_EQ(c_prop.set(client, 64, CArrayVal.data(), CArrayVal.size()), ErrorCode::S_OK);
+    EXPECT_TRUE(memcmp(CArrayVal.data(), &ArrayVal[64], CArrayVal.size()) == 0);
 }
 
 TEST_F(TCMemory, Get)
 {
-    std::array<uint8_t, 1024>    CArrayVal;
-    CMemory<decltype(CArrayVal)> c_prop("prop.1");
+    std::array<uint8_t, 1024 + 256> CArrayVal;
+    CMemory<decltype(CArrayVal)>    c_prop("prop.1");
 
-    EXPECT_EQ(c_prop.get(client, 0, CArrayVal.data(), CArrayVal.size()), ErrorCode::S_OK);
-    EXPECT_TRUE(memcmp(CArrayVal.data(), ArrayVal.data(), 1024) == 0);
+    for (size_t i = 0; i < ArrayVal.size(); i++)
+    {
+        ArrayVal[i] = i;
+    }
+
+    memset(CArrayVal.data(), 0xCC, CArrayVal.size());
+
+    EXPECT_EQ(c_prop.get(client, 64, CArrayVal.data(), CArrayVal.size()), ErrorCode::S_OK);
+    EXPECT_TRUE(memcmp(CArrayVal.data(), &ArrayVal[64], CArrayVal.size()) == 0);
 }

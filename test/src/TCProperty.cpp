@@ -2,7 +2,6 @@
 #include <CProperty.hpp>
 #include <future>
 #include <HostCS.hpp>
-#include <thread>
 
 static float                               FloatVal;
 static Property<float, Access::READ_WRITE> Prop_1(FloatVal);

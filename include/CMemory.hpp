@@ -1,6 +1,7 @@
 #pragma once
 #include "Types.hpp"
 #include <cstddef>
+#include <cstdint>
 #include <HostClient.hpp>
 #include <Memory.hpp>
 
@@ -9,7 +10,7 @@
  *
  * @note 内存区属性的读写分块进行, 需要额外的机制来保障数据的完整性
  *
- * @tparam T 标准布局类型
+ * @tparam T 属性类型
  * @tparam access 访问级别
  */
 template <PropertyVal T, Access _access = Access::READ_WRITE>
@@ -36,7 +37,7 @@ struct CMemory
         // 添加访问参数
         extra.add(access);
         // 添加数据
-        extra.add(&data[access.offset], access.size);
+        extra.add(data, access.size);
         // 发送请求
         client.send(Command::SET_PROPERTY, extra, encrypt);
         // 接收响应
@@ -65,21 +66,22 @@ struct CMemory
         if (!client.recv_response(Command::GET_PROPERTY, err, extra)) return ErrorCode::E_TIMEOUT;
         if (err != ErrorCode::S_OK) return err;
         // 接收数据
-        if (!extra.get(data + access.offset, access.size)) return ErrorCode::E_FAIL;
+        if (!extra.get(data, access.size)) return ErrorCode::E_FAIL;
         // 自增偏移
         access.offset += access.size;
         return ErrorCode::S_OK;
     }
 
-    ErrorCode set(HostClient& client, Size offset, void* buffer, size_t size) const
+    ErrorCode set(HostClient& client, Size offset, const void* buffer, size_t size) const
     {
         if (_access == Access::READ || _access == Access::READ_PROTECT) return ErrorCode::E_READ_ONLY;
 
-        Extra&       extra   = client.extra;
         // 是否需要加密
         bool         encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::WRITE_PROTECT;
         // 每次同步的最大长度
-        uint16_t     space   = extra.capacity() - sizeof(MemoryAccess) - sizeof(PropertyId);
+        uint16_t     space   = MEMORY_ACCESS_SIZE_MAX;
+        // buffer的偏移
+        uint16_t     _offset = 0;
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
@@ -90,15 +92,16 @@ struct CMemory
         // 分块发送数据 - 整数倍部分
         for (size_t i = 0; i < size / space; i++)
         {
-            ErrorCode err = set_block(client, access, data, encrypt);
+            ErrorCode err = set_block(client, access, &data[_offset], encrypt);
             if (err != ErrorCode::S_OK) return err;
+            _offset += access.size;
         }
 
         // 分块发送数据 - 余下的部分
-        if (access.offset != size)
+        if (_offset != size)
         {
-            access.size   = size - access.offset;
-            ErrorCode err = set_block(client, access, data, encrypt);
+            access.size   = size - _offset;
+            ErrorCode err = set_block(client, access, &data[_offset], encrypt);
             if (err != ErrorCode::S_OK) return err;
         }
 
@@ -107,11 +110,12 @@ struct CMemory
 
     ErrorCode get(HostClient& client, Size offset, void* buffer, size_t size)
     {
-        Extra&       extra   = client.extra;
         // 是否需要加密
         bool         encrypt = _access == Access::READ_WRITE_PROTECT || _access == Access::READ_PROTECT;
         // 每次同步的最大长度
-        uint16_t     space   = extra.capacity();
+        uint16_t     space   = MEMORY_ACCESS_SIZE_MAX;
+        // buffer 的偏移
+        uint16_t     _offset = 0;
         // 内存访问参数
         MemoryAccess access;
         access.size   = space;
@@ -122,15 +126,16 @@ struct CMemory
         // 分块读取数据 - 整数倍部分
         for (size_t i = 0; i < size / space; i++)
         {
-            ErrorCode err = get_block(client, access, data, encrypt);
+            ErrorCode err = get_block(client, access, &data[_offset], encrypt);
             if (err != ErrorCode::S_OK) return err;
+            _offset += access.size;
         }
 
         // 分块读取数据 - 余下的部分
-        if (access.offset != size)
+        if (_offset != size)
         {
-            access.size   = size - access.offset;
-            ErrorCode err = get_block(client, access, data, encrypt);
+            access.size   = size - _offset;
+            ErrorCode err = get_block(client, access, &data[_offset], encrypt);
             if (err != ErrorCode::S_OK) return err;
         }
         return ErrorCode::S_OK;

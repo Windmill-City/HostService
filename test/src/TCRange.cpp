@@ -2,7 +2,6 @@
 #include <CRange.hpp>
 #include <future>
 #include <HostCS.hpp>
-#include <thread>
 
 static RangeVal<float>                  RangeVal_1;
 static Range<float, Access::READ_WRITE> Prop_1(RangeVal_1, {0, 100});
