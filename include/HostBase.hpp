@@ -75,7 +75,7 @@ struct SecretHolder
     virtual void update_nonce() = 0;
 };
 
-using PropertyAddress = Property<uint8_t>;
+using PropertyAddress = Property<Address>;
 
 struct HostBase
 {
