@@ -40,24 +40,6 @@ struct Sync : public FixedQueue<sizeof(T) + sizeof(Checksum), PopAction::PopOnPu
     }
 };
 
-using PropertyNonce = Property<NonceType, Access::READ>;
-
-struct PropertyKey : public Property<KeyType, Access::READ_WRITE_PROTECT>
-{
-    using parent = Property<KeyType, Access::READ_WRITE_PROTECT>;
-
-    PropertyKey(KeyType& value)
-        : parent(value)
-    {
-    }
-
-    virtual ErrorCode get(Extra&, bool) const override final
-    {
-        // 不允许回读密钥
-        return ErrorCode::E_NO_IMPLEMENT;
-    }
-};
-
 struct SecretHolder
 {
     // 密钥
@@ -74,8 +56,6 @@ struct SecretHolder
      */
     virtual void update_nonce() = 0;
 };
-
-using PropertyAddress = Property<uint8_t>;
 
 struct HostBase
 {
