@@ -12,10 +12,11 @@ struct HostBaseImpl : public HostBase
 {
     FixedQueue<256>  Queue;
 
+    Address          address;
     SecretHolderImpl secret;
 
     HostBaseImpl()
-        : HostBase(0x00, secret)
+        : HostBase(address, secret)
     {
     }
 

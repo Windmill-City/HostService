@@ -80,11 +80,11 @@ using PropertyAddress = Property<Address>;
 struct HostBase
 {
     // 从机地址
-    Address       address;
+    Address&      address;
     // 密钥容器
     SecretHolder& secret;
 
-    HostBase(Address address, SecretHolder& secret)
+    HostBase(Address& address, SecretHolder& secret)
         : address(address)
         , secret(secret)
     {

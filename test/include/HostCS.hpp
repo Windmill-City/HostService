@@ -14,11 +14,12 @@ struct SecretHolderImpl : public SecretHolder
 
 struct HostClientImpl : public HostClient
 {
+    Address           address;
     FixedQueue<2048>* Q_Server;
     FixedQueue<2048>  Q_Client;
 
     HostClientImpl(CPropertyHolderBase& holder, SecretHolder& secret)
-        : HostClient(0x00, holder, secret)
+        : HostClient(address, holder, secret)
     {
     }
 
@@ -44,12 +45,13 @@ struct HostClientImpl : public HostClient
 
 struct HostServerImpl : public HostServer
 {
+    Address           address;
     bool              Running = true;
     FixedQueue<2048>  Q_Server;
     FixedQueue<2048>* Q_Client;
 
     HostServerImpl(const PropertyHolderBase& holder, SecretHolder& secret)
-        : HostServer(0x00, holder, secret)
+        : HostServer(address, holder, secret)
     {
     }
 

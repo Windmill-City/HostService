@@ -41,7 +41,7 @@ struct HostClient : public HostBase
     // 属性值Id容器
     CPropertyHolderBase& holder;
 
-    HostClient(Address address, CPropertyHolderBase& holder, SecretHolder& secret)
+    HostClient(Address& address, CPropertyHolderBase& holder, SecretHolder& secret)
         : HostBase(address, secret)
         , holder(holder)
     {

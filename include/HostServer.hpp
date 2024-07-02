@@ -99,7 +99,7 @@ struct PropertyHolder : public PropertyHolderBase
 
 struct HostServer : public HostBase
 {
-    HostServer(Address address, const PropertyHolderBase& holder, SecretHolder& secret)
+    HostServer(Address& address, const PropertyHolderBase& holder, SecretHolder& secret)
         : HostBase(address, secret)
         , _holder(holder)
     {
